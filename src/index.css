@@ -24,6 +24,10 @@
   flex-direction: column;
 }
 
+.landing-page .landing-title p {
+  margin: 0.75rem;
+}
+
 .landing-page .landing-title .the {
   font-size: 1.5rem;
 }
