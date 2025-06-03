@@ -1,11 +1,16 @@
+@font-face {
+  font-family: 'Coelbren';
+  src: url('./assets/fonts/BabelStoneCoelbren.woff') format('woff');
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Coelbren', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #464645; /* iron ore */
+  background-color: hsl(35, 21%, 73%); /* shiitake */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,13 +18,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-@font-face {
-  font-family: 'Coelbren';
-  src: url('./assets/fonts/BabelStoneCoelbren.woff') format('woff');
+.landing-page .landing-title {
+  white-space: normal;
+  display: flex;
+  flex-direction: column;
 }
 
-.coelbren {
-  font-family: 'Coelbren';
+.landing-page .landing-title .the {
+  font-size: 1.5rem;
+}
+
+.landing-page .landing-title .three-rays {
+  font-size: 1.17rem;
 }
 
 a {
