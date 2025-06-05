@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'Coelbren';
   src: url('./assets/fonts/BabelStoneCoelbren.woff') format('woff');
+  /* font origin: https://www.babelstone.co.uk/Fonts/Coelbren.html */
 }
 
 :root {
@@ -16,6 +17,19 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* LANDING PAGE STYLES */
+
+.landing-page {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 100%;
+  height: 100vh;
 }
 
 .landing-page .landing-title {
@@ -36,6 +50,72 @@
   font-size: 1.17rem;
 }
 
+/* END LANDING PAGE STYLES */
+
+/* SPOOKTOBERFEST PAGE STYLES */
+
+.spooktoberfest-page {
+  padding: 2rem;
+}
+
+.spooktoberfest-page h1 {
+  margin-bottom: 0;
+}
+
+.spooktoberfest-page center {
+  margin: 1rem 6rem;
+
+  @media (max-width: 768px) {
+    margin: 1rem;
+  }
+}
+
+.spooktoberfest-page main {
+  max-width: 66%;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+}
+
+/* END SPOOKTOBERFEST PAGE STYLES */
+
+/* COMMON STYLES */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: start;
+  }
+}
+
+.page-header h1, h2 {
+  margin: 0;
+  font-weight: 400;
+}
+
+.page-header .bottom-border {
+  border-bottom: 1px dashed #464645;
+  width: 20%;
+  margin-top: 1rem;
+}
+
+.coelbren-subheading {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.subheading {
+  font-size: 1.2rem;
+}
+
+.back-navigation {
+  margin-top: 1rem;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -45,10 +125,14 @@ a:hover {
   color: #535bf2;
 }
 
+button {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: none;
+}
+
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -56,4 +140,8 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+
+  @media (max-width: 768px) {
+    font-size: 2.5em;
+  }
 }
