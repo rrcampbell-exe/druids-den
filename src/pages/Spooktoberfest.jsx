@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { Coelbren, Flower, Leaf } from '../components'
 
 const Spooktoberfest = () => {
   return (
@@ -6,7 +7,11 @@ const Spooktoberfest = () => {
       <div className='page-header'>
         <div>
           <h1>Spooktoberfest</h1>
-          <h2 className='coelbren-subheading'>(&#xE03B;&#xE012;&#xE009;&#xE009;&#xE017;&#xE01B;&#xE009;&#xE00D;&#xE033;&#xE026;&#xE015;&#xE033;&#xE03B;&#xE01B;)</h2>
+          <Coelbren
+            renderAs='h2'
+            text='(Spooktoberfest)'
+            className='coelbren-subheading' 
+          />
           <h2 className='subheading'>October 9th - 12th, 2025</h2>
           <div className='bottom-border' />
         </div>
@@ -15,9 +20,9 @@ const Spooktoberfest = () => {
         </Link>
       </div>
       <center>
-        <p>&#6821;</p>
+        <Flower />
         <p>Spooktoberfest is a (now annual) celebration of the season, combining Oktoberfest, Halloween, the Autumn Equinox, and, less importantly, Ryan's birthday into a single weekend of fun and merriment.</p>
-        <p>&#10087;</p>
+        <Leaf />
       </center>
       <main>
         <h2>What To Expect</h2>
