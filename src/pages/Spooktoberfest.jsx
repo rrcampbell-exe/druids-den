@@ -9,9 +9,10 @@ const Spooktoberfest = () => {
           <h1>Spooktoberfest</h1>
           <Coelbren
             renderAs='h2'
-            text='(Spooktoberfest)'
             className='coelbren-subheading' 
-          />
+          >
+            Spooktoberfest
+          </Coelbren>
           <h2 className='subheading'>October 9th - 12th, 2025</h2>
           <div className='bottom-border' />
         </div>
