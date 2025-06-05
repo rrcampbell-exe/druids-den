@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Coelbren, Flower, Leaf } from '../components'
+import { Coelbren, Flower, Leaf, Awen } from '../components'
 
 const Spooktoberfest = () => {
   return (
@@ -16,7 +16,7 @@ const Spooktoberfest = () => {
           <div className='bottom-border' />
         </div>
         <Link to='/'>
-          <div className='back-navigation'>&#xE000; Go Back</div> 
+          <div className='back-navigation'><Awen /> Go Back</div> 
         </Link>
       </div>
       <center>
