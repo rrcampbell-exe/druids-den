@@ -134,6 +134,7 @@ button {
 html, body {
   margin: 0;
   min-width: 320px;
+  height: --webkit-fill-available;
 }
 
 h1 {
