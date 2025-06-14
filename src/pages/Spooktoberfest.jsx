@@ -61,7 +61,7 @@ const Spooktoberfest = () => {
         <h2>Where To Expect It</h2>
 
         <p>The address for The Druids Den was on the physical invite you received in the mail. We can of course text you the address if you need it again.</p>
-        <p>We did submit our address to Google Maps and Apple Maps so that it (hopefully) appears in those apps prior to October, but if it does not, we'll reach out to share the best directions at that time.</p>
+        <p>Apple Maps does now feature our address and we did submit it to Google Maps as well, but if it doesn't appear there by October and you need to use Google Maps, let us know and we'll share the best directions at that time.</p>
 
         <h2>More to Come</h2>
         <p>We'll have more updates as we get closer to the kickoff of Spooktoberfest 2025.</p>
