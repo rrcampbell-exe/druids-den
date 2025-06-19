@@ -30,6 +30,35 @@
   margin: 0 auto;
   width: 100%;
   height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-image: url('/assets/images/druids_den_sky_image.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+
+.landing-page.image-loaded {
+  opacity: 1;
+}
+
+.landing-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: hsla(35, 21%, 73%, 0.85); /* shiitake */
+  z-index: 0;
+  pointer-events: none;
+}
+
+.landing-page > * {
+  position: relative;
+  z-index: 1;
 }
 
 .landing-page .landing-title {
