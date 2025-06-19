@@ -32,16 +32,21 @@
   height: 100vh;
   min-height: 100vh;
   min-width: 100vw;
-  background-image: url('./assets/images/druids_den_sky_image.jpg');
+  background-image: url('/assets/images/druids_den_sky_image.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   position: relative;
   z-index: 1;
+  opacity: 0;
+  transition: opacity 3s ease;
 }
 
-/* Add this for the overlay */
+.landing-page.image-loaded {
+  opacity: 1;
+}
+
 .landing-page::before {
   content: '';
   position: absolute;
@@ -51,7 +56,6 @@
   pointer-events: none;
 }
 
-/* Ensure content is above the overlay */
 .landing-page > * {
   position: relative;
   z-index: 1;
