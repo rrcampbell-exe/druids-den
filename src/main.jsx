@@ -2,8 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import Landing from './pages/Landing.jsx'
-import Spooktoberfest from './pages/Spooktoberfest.jsx'
+import { Landing, Spooktoberfest } from './pages'
+import { Navigate } from 'react-router'
 
 let router = createBrowserRouter([
   {
@@ -13,6 +13,10 @@ let router = createBrowserRouter([
   {
     path: '/spooktoberfest',
     Component: Spooktoberfest
+  },
+  {
+    path: '/*',
+    element: <Navigate to='/' replace />
   }
 ])
 
