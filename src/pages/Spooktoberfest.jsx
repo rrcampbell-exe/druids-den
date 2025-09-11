@@ -35,23 +35,18 @@ const Spooktoberfest = () => {
           <li>Hiking</li>
           <li>Hanging out around a fire</li>
           <li>Kicking it on, at, or by any one of the countless lakes in the area</li>
-          <li>Patronizing the local watering holes (Buckshot's on Hwy 45 is a good one)</li>
+          <li>Patronizing the local watering holes (Buckshot's on Hwy 45 is a good one, as is Brew's Pub up in Land O' Lakes)</li>
           <li>Board games, cards, etc.</li>
           <li>Rent a boat?? We can do this if the weather is nice enough and enough people are interested</li>
         </ul>
 
         <h3>Food</h3>
         <p>We're tentatively planning on going out for dinner on Thursday and Friday nights to <a href='https://buckshotseagleriver.com/buckshots-saloon-and-eatery/' rel='noopener noreferrer' target='_blank'>Buckshot's</a> and <a href='https://www.thecraftsmanamericantavern.com/' rel='noopener noreferrer' target='_blank'>The Craftsman</a>, respectively. On Saturday, we can do an evening fire and grill-a-thon back at the cabin.</p>
-        <p>For breakfasts and lunch, our ask would be that all attending parties plan to make or bring at least one meal for all to share. We'll have a signup sheet for specific meals once we get closer to the event and know how many people will be attending.</p>
+        <p>For breakfasts and lunch, our ask would be that all attending parties plan to make or bring at least one meal for all to share. We'll get a text chain going closer to the event to sort that out in more detail.</p>
 
         <h3>Sleeping Arrangements</h3>
-        <p>The cabin can comfortably sleep six (two in the primary bedroom, two in the loft, and two on the sleeper sofa), but with as many as eleven people staying overnight on any given night, we may have to get cozy with air mattresses and sleeping bags elsewhere in the space.</p>
+        <p>The cabin can comfortably sleep six (two in the primary bedroom, two in the loft, and two on the air mattress), but with as many as eight people staying overnight (Saturday), we'll get cozy with an additional air mattress set up in the space.</p>
         <p>Alternatively, <strong>you're welcome to bring a tent and camp on the land.</strong> Please let us know if you plan to do this so we can get a better feel for how to set up the cabin interior to support those who choose to sleep indoors.</p>
-
-        <h2>Who To Expect</h2>
-
-        <p>You, hopefully!</p>
-        <p>As a reminder, we ask that you RSVP to Ryan and *confirm which days/nights you plan to attend* by September 9th.</p>
 
         <h2>When To Expect It</h2>
 
