@@ -1,17 +1,30 @@
+
 @font-face {
   font-family: 'Coelbren';
   src: url('./assets/fonts/BabelStoneCoelbren.woff') format('woff');
-  /* font origin: https://www.babelstone.co.uk/Fonts/Coelbren.html */
 }
 
+
 :root {
+  /* Color variables */
+  --color-iron-ore: #464645;
+  --color-shiitake: hsl(35, 21%, 73%);
+  --color-shiitake-85: hsla(35, 21%, 73%, 0.85);
+  --color-shiitake-90: hsla(35, 21%, 73%, 0.9);
+  
+  /* Breakpoint variables */
+  --breakpoint-mobile: 768px;
+  
+  /* Animation variables */
+  --transition-fade: opacity 3s ease;
+  
   font-family: 'Coelbren', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: #464645; /* iron ore */
-  background-color: hsl(35, 21%, 73%); /* shiitake */
+  color: var(--color-iron-ore);
+  background-color: var(--color-shiitake);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -32,7 +45,7 @@
   height: 100vh;
   min-height: 100vh;
   min-width: 100vw;
-  background-image: url('/assets/images/druids_den_sky_image.jpg');
+  background-image: url('/assets/images/druids_den_autumn_evening_fire_pit.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -40,7 +53,7 @@
   position: relative;
   z-index: 1;
   opacity: 0;
-  transition: opacity 3s ease;
+  transition: var(--transition-fade);
 }
 
 .landing-page.image-loaded {
@@ -51,7 +64,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: hsla(35, 21%, 73%, 0.85); /* shiitake */
+  background: var(--color-shiitake-85);
   z-index: 0;
   pointer-events: none;
 }
@@ -79,6 +92,78 @@
   font-size: 1.17rem;
 }
 
+/* WEATHER WIDGET STYLES */
+
+.weather-widget {
+  position: absolute;
+  font-family: sans-serif;
+  letter-spacing: 0.05rem;
+  bottom: 2rem;
+  left: 2rem;
+  background: var(--color-shiitake-90);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid hsla(0, 0%, 100%, 0.2);
+  z-index: 2;
+  min-width: 150px;
+  opacity: 0;
+  transition: var(--transition-fade);
+}
+
+.weather-widget.weather-loaded {
+  opacity: 1;
+}
+
+.weather-location h3 {
+  font-size: 0.8rem;
+  color: var(--color-iron-ore);
+  font-weight: 500;
+  margin: 0;
+}
+
+.weather-temp {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--color-iron-ore);
+  margin: 0.25rem 0;
+}
+
+.temperature-value {
+  font-size: inherit;
+}
+
+.temperature-unit {
+  font-size: 0.8rem;
+}
+
+.weather-condition {
+  font-size: 0.65rem;
+  color: var(--color-iron-ore);
+  margin: 0;
+}
+
+.weather-loading, .weather-error {
+  font-size: 0.9rem;
+  color: var(--color-iron-ore);
+  padding: 0.5rem;
+}
+
+@media (max-width: var(--breakpoint-mobile)) {
+  .weather-widget {
+    bottom: 1rem;
+    left: 1rem;
+    padding: 0.75rem;
+    min-width: 120px;
+  }
+  
+  .weather-temp {
+    font-size: 1.5rem;
+  }
+}
+
+/* END WEATHER WIDGET STYLES */
+
 /* END LANDING PAGE STYLES */
 
 /* SPOOKTOBERFEST PAGE STYLES */
@@ -94,7 +179,7 @@
 .spooktoberfest-page center {
   margin: 1rem 6rem;
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--breakpoint-mobile)) {
     margin: 1rem;
   }
 }
@@ -102,7 +187,7 @@
 .spooktoberfest-page main {
   max-width: 66%;
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--breakpoint-mobile)) {
     max-width: 100%;
   }
 }
@@ -115,7 +200,7 @@
   display: flex;
   justify-content: space-between;
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--breakpoint-mobile)) {
     flex-direction: column;
     align-items: start;
   }
@@ -127,7 +212,7 @@
 }
 
 .page-header .bottom-border {
-  border-bottom: 1px dashed #464645;
+  border-bottom: 1px dashed var(--color-iron-ore);
   width: 20%;
   margin-top: 1rem;
 }
@@ -170,7 +255,7 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 
-  @media (max-width: 768px) {
+  @media (max-width: var(--breakpoint-mobile)) {
     font-size: 2.5em;
   }
 }
