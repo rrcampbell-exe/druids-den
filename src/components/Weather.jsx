@@ -9,8 +9,12 @@ const Weather = () => {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        // Sign up at https://www.weatherapi.com/signup.aspx to get a free API key
-        const API_KEY = process.env.REACT_APP_WEATHER_API_KEY || 'demo_key'
+        const API_KEY = import.meta.env.VITE_WEATHER_API_KEY
+        
+        // Don't make API call if no valid key is available
+        if (!API_KEY || API_KEY === 'demo_key') {
+          throw new Error('Weather API key not configured')
+        }
         
         const query = 'Conover,WI'
         
