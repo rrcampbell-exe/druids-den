@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import { Landing, Spooktoberfest } from './pages'
+import { Landing } from './pages'
 import { Navigate } from 'react-router'
 
 let router = createBrowserRouter([
@@ -12,7 +12,7 @@ let router = createBrowserRouter([
   },
   {
     path: '/spooktoberfest',
-    Component: Spooktoberfest
+    Component: Landing // seasonal redirect to main landing page
   },
   {
     path: '/*',
