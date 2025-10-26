@@ -15,7 +15,7 @@ const Weather = () => {
         const query = 'Conover,WI'
         
         const response = await fetch(
-          `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${query}&aqi=no`
+          `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${query}&aqi=no`
         )
         
         if (!response.ok) {
