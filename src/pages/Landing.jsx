@@ -7,7 +7,7 @@ const Landing = () => {
 
   useEffect(() => {
     const img = new window.Image()
-    img.src = '/assets/images/druids_den_autumn_evening_fire_pit.jpg'
+    img.src = '/assets/images/druids_den_winter_snowman.jpg'
     img.onload = () => {
       if (ref.current) {
         ref.current.classList.add('image-loaded')
