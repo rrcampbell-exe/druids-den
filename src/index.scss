@@ -1,0 +1,127 @@
+@use './variables' as *;
+
+@font-face {
+  font-family: 'Coelbren';
+  src: url('./assets/fonts/BabelStoneCoelbren.woff') format('woff');
+}
+
+/* CSS Custom Properties */
+:root {
+  /* Color variables */
+  --color-iron-ore: #464645;
+  --color-shiitake: hsl(35, 21%, 73%);
+  --color-shiitake-85: hsla(35, 21%, 73%, 0.85);
+  --color-shiitake-90: hsla(35, 21%, 73%, 0.9);
+  
+  /* Animation variables */
+  --transition-fade: opacity 3s ease;
+  
+  font-family: 'Coelbren', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--color-iron-ore);
+  background-color: var(--color-shiitake);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* COMMON STYLES - Shared page header styles */
+
+/* Page header styles - applied to all pages */
+.spooktoberfest-page .page-header,
+.what-to-expect-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+
+  @media (max-width: $breakpoint-mobile) {
+    flex-direction: column;
+    align-items: start;
+    gap: 1.5rem;
+  }
+}
+
+.spooktoberfest-page .page-header h1,
+.what-to-expect-page .page-header h1,
+.spooktoberfest-page .page-header h2,
+.what-to-expect-page .page-header h2 {
+  margin: 0;
+  font-weight: 400;
+}
+
+.spooktoberfest-page .page-header .bottom-border,
+.what-to-expect-page .page-header .bottom-border {
+  border-bottom: 1px dashed var(--color-iron-ore);
+  width: 20%;
+  margin-top: 1rem;
+}
+
+.spooktoberfest-page .coelbren-subheading,
+.what-to-expect-page .coelbren-subheading {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.spooktoberfest-page .subheading,
+.what-to-expect-page .subheading {
+  font-size: 1.2rem;
+}
+
+.spooktoberfest-page .back-navigation,
+.what-to-expect-page .back-navigation {
+  margin-top: 1rem;
+  white-space: nowrap;
+  
+  @media (max-width: $breakpoint-mobile) {
+    margin-top: 0;
+  }
+}
+
+/* Global link and button styles */
+body a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+body a:hover {
+  color: #535bf2;
+}
+
+body button {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: none;
+}
+
+/* Base HTML styles */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2.5rem;
+  
+  @media (max-width: $breakpoint-tablet) {
+    scroll-padding-top: 5rem;
+  }
+}
+
+html, body {
+  margin: 0;
+  min-width: 320px;
+  height: 100dvh;
+}
+
+body h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 2.5em;
+  }
+}
+

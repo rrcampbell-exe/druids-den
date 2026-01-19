@@ -1,0 +1,25 @@
+@use '../variables' as *;
+
+.spooktoberfest-page {
+  padding: 2rem;
+}
+
+.spooktoberfest-page h1 {
+  margin-bottom: 0;
+}
+
+.spooktoberfest-page center {
+  margin: 1rem 6rem;
+
+  @media (max-width: $breakpoint-mobile) {
+    margin: 1rem;
+  }
+}
+
+.spooktoberfest-page main {
+  max-width: 66%;
+
+  @media (max-width: $breakpoint-tablet) {
+    max-width: 100%;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import '../App.css'
+import './Landing.scss'
 import { Coelbren, Awen, Weather } from '../components'
+import { Link } from 'react-router'
 
 const Landing = () => {
   const ref = useRef()
@@ -22,6 +23,9 @@ const Landing = () => {
         <Coelbren className='druids-den'>Druids Den</Coelbren>
         <p className='three-rays'><Awen /></p>
       </h1>
+      <Link to='/what-to-expect' className='landing-cta'>
+        What To Expect &gt;
+      </Link>
       <Weather />
     </div>
   )

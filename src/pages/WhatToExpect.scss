@@ -1,0 +1,179 @@
+@use '../variables' as *;
+
+.what-to-expect-page {
+  padding: 2rem;
+}
+
+.what-to-expect-page h1 {
+  margin-bottom: 0;
+}
+
+.what-to-expect-page center {
+  margin: 1rem 6rem;
+
+  @media (max-width: $breakpoint-mobile) {
+    margin: 1rem;
+  }
+}
+
+.what-to-expect-content-wrapper {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  
+  @media (max-width: $breakpoint-tablet) {
+    flex-direction: column;
+  }
+}
+
+.what-to-expect-page main {
+  flex: 1;
+  min-width: 0;
+
+  @media (max-width: $breakpoint-tablet) {
+    max-width: 100%;
+  }
+}
+
+.what-to-expect-page section {
+  margin: 4rem 0;
+}
+
+.what-to-expect-page section:first-of-type {
+  margin-top: 0rem;
+}
+
+.what-to-expect-page main h2 {
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-iron-ore);
+  padding-bottom: 0.5rem;
+}
+
+.what-to-expect-page h3 {
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+/* Image Placeholders */
+.what-to-expect-image {
+  width: 100%;
+  background: linear-gradient(135deg, #e8dcc8 0%, #c4b5a0 100%);
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 2px dashed var(--color-iron-ore);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1.5s ease-out, transform 0.6s ease-out;
+  overflow: hidden;
+
+  &.image-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center center; // Default: can be overridden per image
+    border-radius: 8px 8px 0 0;
+    display: block;
+  }
+  
+  figcaption {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    color: var(--color-iron-ore);
+    background: rgba(198, 181, 160, 0.1);
+    border-radius: 0 0 8px 8px;
+  }
+  
+  &:has(img) {
+    border: none;
+    background: none;
+    
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.what-to-expect-image:hover {
+  opacity: 0.8;
+}
+
+.what-to-expect-image::after {
+  content: '📷 Photo placeholder';
+  font-size: 1.2rem;
+  color: var(--color-iron-ore);
+  font-family: sans-serif;
+}
+
+
+.what-to-expect-image.area-map::after {
+  content: '🗺️ Area map with local attractions coming soon!';
+}
+
+/* Seasonal Sections */
+.seasonal-guide {
+  background: rgba(198, 181, 160, 0.15);
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.seasonal-guide h2 {
+  border-bottom: none;
+  margin-top: 0;
+}
+
+.season-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.season-details ul {
+  margin: 0.5rem 0 1rem 0;
+}
+
+.season-details li {
+  margin: 0.5rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: $breakpoint-mobile) {
+  .what-to-expect-page {
+    padding: 1rem;
+  }
+  
+  .what-to-expect-image {
+    min-height: 200px;
+  }
+  
+  .seasonal-guide {
+    padding: 1rem;
+  }
+}
+
+/* Image positioning utilities */
+.what-to-expect-image img.position-left { object-position: left center; }
+.what-to-expect-image img.position-right { object-position: right center; }
+.what-to-expect-image img.position-top { object-position: center top; }
+.what-to-expect-image img.position-bottom { object-position: center bottom; }
+.what-to-expect-image img.position-top-left { object-position: left top; }
+.what-to-expect-image img.position-top-right { object-position: right top; }
+.what-to-expect-image img.position-bottom-left { object-position: left bottom; }
+.what-to-expect-image img.position-bottom-right { object-position: right bottom; }
