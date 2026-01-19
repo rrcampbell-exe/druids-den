@@ -24,7 +24,7 @@ const Landing = () => {
         <p className='three-rays'><Awen /></p>
       </h1>
       <Link to='/what-to-expect' className='landing-cta'>
-        What To Expect &gt;
+        Begin Your Northwoods Adventure &gt;
       </Link>
       <Weather />
     </div>

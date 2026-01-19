@@ -33,7 +33,7 @@ const WhatToExpect = () => {
       </div>
       <center>
         <Flower />
-        <p>Nestled on 5.5 acres of private forest in Conover, Wisconsin, The Druids Den is a cozy 1BR + Loft cabin that serves as your basecamp for exploring the beautiful Northwoods. Whether you're seeking a peaceful retreat among the trees or an adventure-filled getaway, the cabin offers comfort and connection to nature year-round.</p>
+        <p>Nestled on 5½ secluded acres of private forest in Conover, Wisconsin, The Druids Den is your cozy woodland basecamp for exploring the beautiful Northwoods of Wisconsin and Michigan's Upper Peninsula. Whether you're seeking a peaceful retreat among the trees or an adventure-filled getaway, The Druids Den offers comfort and connection to nature year-round.</p>
         <Leaf />
       </center>
       
@@ -45,31 +45,32 @@ const WhatToExpect = () => {
           <h2>The Cabin</h2>
           <CaptionedImage 
             src='/assets/images/druids_den_welcome_sign.jpg' 
-            alt='The Druids Den cabin exterior' 
+            alt="The Druids Den's welcome sign at the driveway entrance" 
             className='cabin-exterior'
             style={{ objectPosition: 'center 45%' }}
           />
           <p>The Druids Den comfortably sleeps up to six guests (two in the primary bedroom, two in the loft, and up to two more on an air mattress in the living room). The cabin features:</p>
           <ul>
-            <li><strong>Full Kitchen:</strong> Everything you need to prepare meals during your stay</li>
-            <li><strong>Radiant In-Floor Heating:</strong> Stay cozy even on the coldest winter nights</li>
-            <li><strong>Indoor Gas Fireplace:</strong> Perfect for ambiance and extra warmth</li>
-            <li><strong>Washer & Dryer:</strong> Stackable unit for your convenience</li>
-            <li><strong>Wi-Fi:</strong> Stay connected (though cell reception can be spotty)</li>
-            <li><strong>Entertainment:</strong> Projector with DVD player for movie nights on the wall</li>
-            <li><strong>Outdoor Spaces:</strong> Back patio, covered porch, fire pit, and gas grill</li>
+            <li>Full Kitchen: Everything you need to prepare meals during your stay</li>
+            <li>Radiant In-Floor Heating: Stay cozy even on the coldest winter nights</li>
+            <li>Indoor Gas Fireplace: Perfect for ambiance and extra warmth</li>
+            <li>Washer & Dryer: Stackable unit for your convenience</li>
+            <li>Wi-Fi: Stay connected (though cell reception can be spotty)</li>
+            <li>Entertainment: Projector with DVD player for movie nights on the wall</li>
+            <li>Outdoor Spaces: Back patio, covered porch, fire pit, gas grill, and a sizeable back lot for exploring</li>
+            <li>Wildlife: Deer and turkeys will be your closest neighbors, and if you're lucky, you might be visited by the bonded pair of Barred Owls who live nearby!</li>
           </ul>
 
           <h3>House Guidelines</h3>
-          <p>To keep the cabin welcoming for all:</p>
+          <p>To keep the cabin welcoming for all, we ask that you respect the following:</p>
           <ul>
-            <li>No pets</li>
-            <li>No smoking or vaping indoors</li>
+            <li>No pets unless cleared with Ryan and Lacey in advance</li>
+            <li>No smoking or vaping indoors—no exceptions</li>
             <li>Please remove shoes/boots when inside</li>
           </ul>
 
           <h3>Parking</h3>
-          <p>Space available for up to four vehicles.</p>
+          <p>There is space available for up to four vehicles during spring, summer, and fall. Winter parking is more limited due to snow accumulations, though two vehicles should still fit comfortably.</p>
         </section>
 
         <section className='year-round-essentials' id='year-round-essentials'>
@@ -81,27 +82,28 @@ const WhatToExpect = () => {
             <li>Bath towels and bed linens</li>
             <li>Firewood for the outdoor fire pit</li>
             <li>Kitchen essentials and cookware</li>
+            <li>A variety of DVDs for use with the projector</li>
+            <li>A gas grill for outdoor cooking</li>
           </ul>
 
           <h3>What to Pack</h3>
           <ul>
-            <li><strong>Outdoor Boots:</strong> Hiking boots or sturdy outdoor footwear for trails, mud, or snow</li>
-            <li><strong>Layers:</strong> Weather can change quickly in the Northwoods</li>
-            <li><strong>Flashlight or Headlamp:</strong> Helpful for nighttime fire pit gatherings and stargazing</li>
-            <li><strong>Insect Repellent:</strong> Mosquitoes and ticks are common—perform tick checks after outdoor activities</li>
-            <li><strong>Sunscreen & Sunglasses:</strong> Year-round sun protection</li>
-            <li><strong>Reusable Water Bottles:</strong> Stay hydrated on hikes and adventures</li>
-            <li><strong>First Aid Kit:</strong> Basic supplies for minor scrapes and needs</li>
-            <li><strong>Your Favorite Beverages:</strong> Stock up in Eagle River before arriving</li>
+            <li>Outdoor Boots: Hiking boots or sturdy outdoor footwear for trails, mud, or snow</li>
+            <li>Layers: Weather can change quickly in the Northwoods</li>
+            <li>Insect Repellent: Mosquitoes and ticks are common—perform tick checks after outdoor activities</li>
+            <li>Sunscreen & Sunglasses: Year-round sun protection</li>
+            <li>Reusable Water Bottles: Stay hydrated on hikes and adventures</li>
+            <li>First Aid Kit: Basic supplies for minor scrapes and needs</li>
+            <li>Your Favorite Beverages: Stock up in Eagle River before arriving</li>
           </ul>
 
           <h3>Good to Know</h3>
           <ul>
-            <li><strong>Grocery Stores:</strong> Pick 'n Save and Trig's in Eagle River (15 minutes south) have everything you need. Energy Mart (5 minutes north) offers gas, alcohol, and limited essentials.</li>
-            <li><strong>Cell Reception:</strong> Available but can be spotty—embrace the disconnect!</li>
-            <li><strong>Private Road:</strong> The cabin is on a private road that is maintained and plowed in winter</li>
-            <li><strong>Wildlife:</strong> You're in the forest! Respect the wildlife and store food properly</li>
-            <li><strong>Hunting Season:</strong> During fall deer and turkey hunts, wear blaze orange when outdoors. You may hear gunshots from the public range several miles away year-round.</li>
+            <li>Grocery Stores: Pick 'n Save and Trig's in Eagle River (15 minutes south) have everything you need. Energy Mart (5 minutes north) offers gas, alcohol, an assortment of meats for grilling, and limited essentials.</li>
+            <li>Cell Reception: Available but can be spotty—embrace the disconnect!</li>
+            <li>Private Road: The cabin is on a private road that is maintained and plowed in winter</li>
+            <li>Wildlife: You're in the forest! Respect the wildlife and store food properly. Though we've not seen bears nearby, assume they are: don't leave scraps outdoors for them or other curious critters.</li>
+            <li>Hunting Season: During fall deer and turkey hunts, wear blaze orange when outdoors. Outside of hunting season, you may still hear gunshots from the public range several miles away.</li>
           </ul>
         </section>
 
@@ -116,7 +118,7 @@ const WhatToExpect = () => {
             />
             <div className='season-details'>
               <h3>What to Expect</h3>
-              <p>Spring in the Northwoods brings the forest back to life. Snow melts reveal fresh trails, temperatures warm gradually, and wildlife becomes more active. Early spring can still be chilly with occasional snow, while late spring offers pleasant hiking weather.</p>
+              <p>Spring in the Northwoods brings the forest back to life. The snow melts reveal fresh trails, temperatures warm gradually, and wildlife becomes more active. Early spring can still be chilly with occasional snow, while late spring offers more pleasant hiking weather.</p>
               
               <h3>What to Pack</h3>
               <ul>
@@ -134,8 +136,7 @@ const WhatToExpect = () => {
                 <li>Bird watching as migratory species return</li>
                 <li>Fishing (season typically opens in early May)</li>
                 <li>Exploring nearby waterfalls in Michigan's Upper Peninsula (20 minutes north)</li>
-                <li>Visit local maple syrup farms</li>
-                <li>Spring cleaning at the fire pit with s'mores</li>
+                <li>Springtime s'mores at the fire pit</li>
               </ul>
             </div>
           </div>
@@ -152,7 +153,7 @@ const WhatToExpect = () => {
             />
             <div className='season-details'>
               <h3>What to Expect</h3>
-              <p>Summer is peak season in the Northwoods. Warm, sunny days perfect for water activities, with temps typically in the 70s-80s°F. Long daylight hours mean more time for adventures. Mosquitoes are most active—come prepared!</p>
+              <p>The warm, sunny days of summer are perfect for water activities, and long daylight hours mean more time for adventures. Mosquitoes are most active in the summer—come prepared!</p>
               
               <h3>What to Pack</h3>
               <ul>
@@ -160,19 +161,19 @@ const WhatToExpect = () => {
                 <li>Lightweight, breathable clothing</li>
                 <li>Sun hat and UV-protective clothing</li>
                 <li>Plenty of insect repellent and after-bite treatment</li>
-                <li>Hiking sandals or water-friendly shoes</li>
+                <li>Hiking shoes, sandals, or water-friendly shoes</li>
                 <li>Fishing gear (if you're into it)</li>
-                <li>Kayaking/water sports gear or plan to rent</li>
+                <li>Kayaking/water sports gear or a plan to rent them, if necessary</li>
               </ul>
 
               <h3>Activities & Attractions</h3>
               <ul>
-                <li><strong>Water Sports:</strong> Boating, kayaking, paddleboarding, and swimming on the <a href='https://northwoodswisconsin.com/northern-wisconsin-recreation/eagle-river-chain-of-lakes/' target='_blank' rel='noopener noreferrer'>Eagle River Chain of 28(!) Lakes</a>, plus nearby Pioneer Lake, North Twin Lake, and South Twin Lake</li>
-                <li><strong>Boat Rentals:</strong> <a href='https://www.boatsport.com/' target='_blank' rel='noopener noreferrer'>Boat Sport Marina</a> offers affordable rentals—pick up on the chain or have them deliver to nearby lakes for a fee</li>
+                <li>Water Sports: Boating, kayaking, paddleboarding, and swimming on the <a href='https://northwoodswisconsin.com/northern-wisconsin-recreation/eagle-river-chain-of-lakes/' target='_blank' rel='noopener noreferrer'>Eagle River Chain of 28(!) Lakes</a>, plus nearby Pioneer Lake, North Twin Lake, and South Twin Lake</li>
+                <li>Boat Rentals: <a href='https://www.boatsport.com/' target='_blank' rel='noopener noreferrer'>Boat Sport Marina</a> offers affordable rentals—pick up on the chain or have them deliver to nearby lakes for a fee</li>
                 <li>ATV trails (former snowmobile trails)</li>
                 <li>Hiking and mountain biking</li>
-                <li>Minigolf and go-karts in nearby St. Germain</li>
-                <li><a href='https://www.eagleriver.org/events' target='_blank' rel='noopener noreferrer'>Eagle River events</a>: Cranberry Fest, concerts, farmers markets</li>
+                <li>Minigolf and go-karts in nearby <a href='https://elmersfunpark.com/' target='_blank' rel='noopener noreferrer'>St. Germain</a></li>
+                <li><a href='https://www.eagleriver.org/events' target='_blank' rel='noopener noreferrer'>Eagle River events</a>, including summer concerts and farmers markets</li>
                 <li>Friday Night Fish Fry tradition at local restaurants</li>
                 <li>Scenic drives and waterfall tours in Michigan's Upper Peninsula</li>
                 <li>Evening fire pit gatherings under the stars</li>
@@ -192,7 +193,7 @@ const WhatToExpect = () => {
             />
             <div className='season-details'>
               <h3>What to Expect</h3>
-              <p>Fall transforms the forest into a tapestry of reds, oranges, and golds. Cooler temperatures make for excellent hiking weather, and the reduced bug activity is a welcome relief. Peak foliage typically occurs late September through mid-October. Be aware of hunting season and wear blaze orange outdoors.</p>
+              <p>Fall transforms the forest into a tapestry of reds, oranges, and golds. Cooler temperatures make for excellent hiking weather, and the reduced bug activity is a welcome relief. Peak foliage typically occurs late September through early October. Be aware of hunting season and wear blaze orange outdoors.</p>
               
               <h3>What to Pack</h3>
               <ul>
@@ -232,11 +233,12 @@ const WhatToExpect = () => {
             />
             <div className='season-details'>
               <h3>What to Expect</h3>
-              <p>Winter in the Northwoods is a true winter wonderland. Heavy snowfall from Lake Superior lake-effect creates perfect conditions for winter sports. Temperatures regularly dip below freezing, and the private road, while plowed, can be challenging. <strong>AWD or 4WD vehicles are strongly recommended.</strong> The cabin's radiant heating and fireplace keep you warm and cozy.</p>
+              <p>Winter in the Northwoods is a true winter wonderland. Heavy lake-effect snowfall from Lake Superior creates perfect conditions for winter sports. Temperatures regularly dip below freezing, and the private road, while plowed, can be challenging. The cabin's radiant heating and fireplace keep you warm and cozy.</p>
+              <p>❄️ AWD or 4WD vehicles are strongly recommended at this time of year. ❄️</p>
               
               <h3>What to Pack</h3>
               <ul>
-                <li><strong>Vehicle Essentials:</strong> Snow tires or AWD/4WD, ice scraper, emergency kit</li>
+                <li>Vehicle Essentials: Snow tires or AWD/4WD, ice scraper, emergency kit</li>
                 <li>Heavy winter coat, insulated pants</li>
                 <li>Waterproof, insulated boots with good traction</li>
                 <li>Multiple layers: thermal underwear, fleeces, sweaters</li>
@@ -250,14 +252,13 @@ const WhatToExpect = () => {
 
               <h3>Activities & Attractions</h3>
               <ul>
-                <li><strong>Snowmobiling:</strong> Access extensive trail systems right from the area—rentals available locally</li>
+                <li>Snowmobiling: Access extensive trail systems right from the area—rentals available locally</li>
                 <li>Cross-country skiing and snowshoeing</li>
                 <li>Ice fishing on frozen lakes</li>
                 <li><a href='https://derbycomplex.com/' target='_blank' rel='noopener noreferrer'>World Championship Derby Complex</a> events in Eagle River</li>
                 <li>Scenic winter drives and photography</li>
-                <li>Visit UP Michigan waterfalls in winter (frozen waterfalls are spectacular)</li>
+                <li>Visit Upper Peninsula Michigan waterfalls in winter (frozen waterfalls are spectacular)</li>
                 <li>Cozy indoor activities: board games, movie marathons, reading by the fire</li>
-                <li>Snow tubing and sledding on the property</li>
                 <li>Stargazing (winter skies are exceptionally clear)</li>
                 <li>Friday Night Fish Fry at local establishments</li>
               </ul>
@@ -268,14 +269,14 @@ const WhatToExpect = () => {
         <section className='local-area' id='the-area'>
           <h2>The Area</h2>
           <h3>Conover, Eagle River, and the Northwoods</h3>
-          <p>The Druids Den sits in Conover, Wisconsin, with Eagle River serving as the local hub just 15 minutes south. Eagle River offers shopping, dining, seasonal events, and serves as "The Snowmobile Capital of the World," but don't let that fool you: there's plenty to do year-round in Vilas County and beyond!</p>
+          <p>The Druids Den is in Conover, Wisconsin, with Eagle River serving as the local hub just 15 minutes south. Eagle River offers shopping, dining, seasonal events, and serves as "The Snowmobile Capital of the World," but don't let that fool you: there's plenty to do year-round in Vilas County and beyond!</p>
 
           <h3>Dining Recommendations</h3>
           <ul>
             <li><a href='https://buckshotseagleriver.com/' target='_blank' rel='noopener noreferrer'>Buckshot's Saloon & Eatery</a> (Conover/Eagle River border) - Great food and atmosphere</li>
             <li><a href='https://www.thecraftsmanamericantavern.com/' target='_blank' rel='noopener noreferrer'>The Craftsman American Tavern</a> (Eagle River) - Upscale dining</li>
             <li><a href='https://www.facebook.com/brewspublando/' target='_blank' rel='noopener noreferrer'>Brew's Pub</a> (Land O' Lakes) - Worth the drive north</li>
-            <li>Local Friday Night Fish Fry tradition at any number of northwoods supper clubs</li>
+            <li>Local Friday Night Fish Fry tradition at any number of Northwoods supper clubs</li>
           </ul>
 
           <h3>Notable Attractions</h3>
@@ -295,7 +296,7 @@ const WhatToExpect = () => {
 
         <section className='final-notes'>
           <h2>Questions?</h2>
-          <p>If you have any questions about your stay at The Druids Den, what to bring, or what to explore in the area, don't hesitate to reach out. We want to ensure you have everything you need for a memorable stay in the Northwoods.</p>
+          <p>If you have any questions about your stay at The Druids Den, what to bring, or what to explore in the area, don't hesitate to contact either Ryan or Lacey. We want to ensure you have everything you need for a memorable stay in the Northwoods.</p>
           <p>Welcome to the woods. Welcome to The Druids Den.</p>
         </section>
       </main>
