@@ -59,54 +59,68 @@
 }
 
 /* Image Placeholders */
-.image-placeholder {
+.what-to-expect-image {
   width: 100%;
-  min-height: 300px;
   background: linear-gradient(135deg, #e8dcc8 0%, #c4b5a0 100%);
   border-radius: 8px;
   margin: 1.5rem 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   border: 2px dashed var(--color-iron-ore);
   opacity: 0.6;
   transition: opacity 0.3s ease;
+  overflow: hidden;
+  
+  img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center center; // Default: can be overridden per image
+    border-radius: 8px 8px 0 0;
+    display: block;
+  }
+  
+  figcaption {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    color: var(--color-iron-ore);
+    background: rgba(198, 181, 160, 0.1);
+    border-radius: 0 0 8px 8px;
+  }
+  
+  &:has(img) {
+    border: none;
+    opacity: 1;
+    background: none;
+    
+    &::after {
+      display: none;
+    }
+  }
 }
 
-.image-placeholder:hover {
+.what-to-expect-image:hover {
   opacity: 0.8;
 }
 
-.image-placeholder::after {
+.what-to-expect-image::after {
   content: '📷 Photo placeholder';
   font-size: 1.2rem;
   color: var(--color-iron-ore);
   font-family: sans-serif;
 }
 
-.image-placeholder.cabin-exterior::after {
-  content: '📷 Cabin exterior photo';
-}
 
-.image-placeholder.spring-photo::after {
-  content: '🌸 Spring photo';
-}
-
-.image-placeholder.summer-photo::after {
-  content: '☀️ Summer photo';
-}
-
-.image-placeholder.fall-photo::after {
-  content: '🍂 Fall photo';
-}
-
-.image-placeholder.winter-photo::after {
-  content: '❄️ Winter photo';
-}
-
-.image-placeholder.area-map::after {
-  content: '🗺️ Area map or local attractions';
+.what-to-expect-image.area-map::after {
+  content: '🗺️ Area map with local attractions coming soon!';
 }
 
 /* Seasonal Sections */
@@ -124,7 +138,6 @@
 .season-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
 .season-details ul {
@@ -141,7 +154,7 @@
     padding: 1rem;
   }
   
-  .image-placeholder {
+  .what-to-expect-image {
     min-height: 200px;
   }
   
@@ -149,3 +162,13 @@
     padding: 1rem;
   }
 }
+
+/* Image positioning utilities */
+.what-to-expect-image img.position-left { object-position: left center; }
+.what-to-expect-image img.position-right { object-position: right center; }
+.what-to-expect-image img.position-top { object-position: center top; }
+.what-to-expect-image img.position-bottom { object-position: center bottom; }
+.what-to-expect-image img.position-top-left { object-position: left top; }
+.what-to-expect-image img.position-top-right { object-position: right top; }
+.what-to-expect-image img.position-bottom-left { object-position: left bottom; }
+.what-to-expect-image img.position-bottom-right { object-position: right bottom; }
