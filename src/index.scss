@@ -5,6 +5,31 @@
   src: url('./assets/fonts/BabelStoneCoelbren.woff') format('woff');
 }
 
+/* CSS Custom Properties */
+:root {
+  /* Color variables */
+  --color-iron-ore: #464645;
+  --color-shiitake: hsl(35, 21%, 73%);
+  --color-shiitake-85: hsla(35, 21%, 73%, 0.85);
+  --color-shiitake-90: hsla(35, 21%, 73%, 0.9);
+  
+  /* Animation variables */
+  --transition-fade: opacity 3s ease;
+  
+  font-family: 'Coelbren', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--color-iron-ore);
+  background-color: var(--color-shiitake);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* COMMON STYLES - Shared page header styles */
 
 /* Page header styles - applied to all pages */
