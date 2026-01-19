@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import './PageNav.scss'
 
 const PageNav = ({ title = "Jump to Section:", items = [] }) => {
   const [expandedSections, setExpandedSections] = useState({})

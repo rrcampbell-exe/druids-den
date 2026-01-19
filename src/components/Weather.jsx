@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import './Weather.scss'
 
 const Weather = () => {
   const [weather, setWeather] = useState(null)

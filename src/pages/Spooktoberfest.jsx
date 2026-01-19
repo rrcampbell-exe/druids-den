@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import './Spooktoberfest.scss'
 import { Coelbren, Flower, Leaf, Awen } from '../components'
 
 const Spooktoberfest = () => {

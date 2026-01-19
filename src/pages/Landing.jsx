@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import '../App.css'
+import './Landing.scss'
 import { Coelbren, Awen, Weather } from '../components'
 
 const Landing = () => {

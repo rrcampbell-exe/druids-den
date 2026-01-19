@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import './WhatToExpect.scss'
 import { Coelbren, Flower, Leaf, Awen, PageNav } from '../components'
 
 const WhatToExpect = () => {

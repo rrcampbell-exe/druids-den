@@ -1,0 +1,28 @@
+// Breakpoint Variables
+$breakpoint-mobile: 600px;
+$breakpoint-tablet: 1000px;
+
+// CSS Custom Properties
+:root {
+  /* Color variables */
+  --color-iron-ore: #464645;
+  --color-shiitake: hsl(35, 21%, 73%);
+  --color-shiitake-85: hsla(35, 21%, 73%, 0.85);
+  --color-shiitake-90: hsla(35, 21%, 73%, 0.9);
+  
+  /* Animation variables */
+  --transition-fade: opacity 3s ease;
+  
+  font-family: 'Coelbren', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--color-iron-ore);
+  background-color: var(--color-shiitake);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

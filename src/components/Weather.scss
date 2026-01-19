@@ -1,0 +1,69 @@
+@use '../variables' as *;
+
+.weather-widget {
+  position: absolute;
+  font-family: sans-serif;
+  letter-spacing: 0.05rem;
+  bottom: 2rem;
+  left: 2rem;
+  background: var(--color-shiitake-90);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid hsla(0, 0%, 100%, 0.2);
+  z-index: 2;
+  min-width: 150px;
+  opacity: 0;
+  transition: var(--transition-fade);
+}
+
+.weather-widget.weather-loaded {
+  opacity: 1;
+}
+
+.weather-location h3 {
+  font-size: 0.8rem;
+  color: var(--color-iron-ore);
+  font-weight: 500;
+  margin: 0;
+}
+
+.weather-temp {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--color-iron-ore);
+  margin: 0.25rem 0;
+}
+
+.temperature-value {
+  font-size: inherit;
+}
+
+.temperature-unit {
+  font-size: 0.8rem;
+}
+
+.weather-condition {
+  font-size: 0.65rem;
+  color: var(--color-iron-ore);
+  margin: 0;
+}
+
+.weather-loading, .weather-error {
+  font-size: 0.9rem;
+  color: var(--color-iron-ore);
+  padding: 0.5rem;
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .weather-widget {
+    bottom: 1rem;
+    left: 1rem;
+    padding: 0.75rem;
+    min-width: 120px;
+  }
+  
+  .weather-temp {
+    font-size: 1.5rem;
+  }
+}
