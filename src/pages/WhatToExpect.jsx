@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import './WhatToExpect.scss'
-import { Coelbren, Flower, Leaf, Awen, PageNav } from '../components'
+import { Coelbren, Flower, Leaf, Awen, PageNav, CaptionedImage } from '../components'
 
 const WhatToExpect = () => {
   const navItems = [
@@ -43,9 +43,12 @@ const WhatToExpect = () => {
         <main>
         <section className='cabin-overview' id='the-cabin'>
           <h2>The Cabin</h2>
-          <div className='image-placeholder cabin-exterior'>
-            {/* Placeholder for cabin exterior photo */}
-          </div>
+          <CaptionedImage 
+            src='/assets/images/druids_den_welcome_sign.jpg' 
+            alt='The Druids Den cabin exterior' 
+            className='cabin-exterior'
+            style={{ objectPosition: 'center 45%' }}
+          />
           <p>The Druids Den comfortably sleeps up to six guests (two in the primary bedroom, two in the loft, and up to two more on an air mattress in the living room). The cabin features:</p>
           <ul>
             <li><strong>Full Kitchen:</strong> Everything you need to prepare meals during your stay</li>
@@ -103,11 +106,14 @@ const WhatToExpect = () => {
         </section>
 
         <section className='seasonal-guide spring' id='spring'>
-          <h2>Spring (March - May)</h2>
+          <h2>Spring</h2>
           <div className='season-content'>
-            <div className='image-placeholder spring-photo'>
-              {/* Placeholder for spring photo */}
-            </div>
+            <CaptionedImage 
+              src='/assets/images/druids_den_mushroom_on_tree.jpg' 
+              alt='A mushroom grows from a tree trunk at The Druids Den' 
+              className='spring-photo'
+              style={{ objectPosition: 'center 55%' }}
+            />
             <div className='season-details'>
               <h3>What to Expect</h3>
               <p>Spring in the Northwoods brings the forest back to life. Snow melts reveal fresh trails, temperatures warm gradually, and wildlife becomes more active. Early spring can still be chilly with occasional snow, while late spring offers pleasant hiking weather.</p>
@@ -136,11 +142,14 @@ const WhatToExpect = () => {
         </section>
 
         <section className='seasonal-guide summer' id='summer'>
-          <h2>Summer (June - August)</h2>
+          <h2>Summer</h2>
           <div className='season-content'>
-            <div className='image-placeholder summer-photo'>
-              {/* Placeholder for summer photo */}
-            </div>
+            <CaptionedImage 
+              src='/assets/images/druids_den_summer_sun_in_foliage.jpg' 
+              alt='Summer foliage on a trail behind The Druids Den' 
+              className='summer-photo'
+              style={{ objectPosition: 'center 58%' }}
+            />
             <div className='season-details'>
               <h3>What to Expect</h3>
               <p>Summer is peak season in the Northwoods. Warm, sunny days perfect for water activities, with temps typically in the 70s-80s°F. Long daylight hours mean more time for adventures. Mosquitoes are most active—come prepared!</p>
@@ -173,11 +182,14 @@ const WhatToExpect = () => {
         </section>
 
         <section className='seasonal-guide fall' id='fall'>
-          <h2>Fall (September - November)</h2>
+          <h2>Fall</h2>
           <div className='season-content'>
-            <div className='image-placeholder fall-photo'>
-              {/* Placeholder for fall photo */}
-            </div>
+            <CaptionedImage 
+              src='/assets/images/druids_den_fall_foliage.jpg' 
+              alt='Fall foliage above the fire pit at The Druids Den' 
+              className='fall-photo'
+              style={{ objectPosition: 'center 15%' }}
+            />
             <div className='season-details'>
               <h3>What to Expect</h3>
               <p>Fall transforms the forest into a tapestry of reds, oranges, and golds. Cooler temperatures make for excellent hiking weather, and the reduced bug activity is a welcome relief. Peak foliage typically occurs late September through mid-October. Be aware of hunting season and wear blaze orange outdoors.</p>
@@ -210,11 +222,14 @@ const WhatToExpect = () => {
         </section>
 
         <section className='seasonal-guide winter' id='winter'>
-          <h2>Winter (December - February)</h2>
+          <h2>Winter</h2>
           <div className='season-content'>
-            <div className='image-placeholder winter-photo'>
-              {/* Placeholder for winter photo */}
-            </div>
+            <CaptionedImage 
+              src='/assets/images/druids_den_winter_driveway.jpg' 
+              alt='The Druids Den covered in snow during winter' 
+              className='winter-photo'
+              style={{ objectPosition: 'center 60%' }}
+            />
             <div className='season-details'>
               <h3>What to Expect</h3>
               <p>Winter in the Northwoods is a true winter wonderland. Heavy snowfall from Lake Superior lake-effect creates perfect conditions for winter sports. Temperatures regularly dip below freezing, and the private road, while plowed, can be challenging. <strong>AWD or 4WD vehicles are strongly recommended.</strong> The cabin's radiant heating and fireplace keep you warm and cozy.</p>
@@ -273,7 +288,7 @@ const WhatToExpect = () => {
             <li>Seasonal events: <a href='https://eagleriver.org/events/cranberry-fest/' target='_blank' rel='noopener noreferrer'>Cranberry Fest</a>, <a href='https://www.eagleriverrevitalization.org/farmers-market/' target='_blank' rel='noopener noreferrer'>Farmers Market</a>, <a href='https://witravelbestbets.com/event/three-lakes-oktoberfest/' target='_blank' rel='noopener noreferrer'>Oktoberfest in Three Lakes</a>, concerts, markets</li>
           </ul>
 
-          <div className='image-placeholder area-map'>
+          <div className='what-to-expect-image area-map'>
             {/* Placeholder for area map or local attractions photo */}
           </div>
         </section>
