@@ -101,7 +101,7 @@ const WhatToExpect = () => {
           <ul>
             <li>Grocery Stores: Pick 'n Save and Trig's in Eagle River (15 minutes south) have everything you need. Energy Mart (5 minutes north) offers gas, alcohol, an assortment of meats for grilling, and limited essentials.</li>
             <li>Cell Reception: Available but can be spotty—embrace the disconnect!</li>
-            <li>Private Road: The cabin is on a private road that is maintained and plowed in winter</li>
+            <li>Private Road: The cabin is on a private road that is maintained and plowed in winter.</li>
             <li>Wildlife: You're in the forest! Respect the wildlife and store food properly. Though we've not seen bears nearby, assume they are: don't leave scraps outdoors for them or other curious critters.</li>
             <li>Hunting Season: During fall deer and turkey hunts, wear blaze orange when outdoors. Outside of hunting season, you may still hear gunshots from the public range several miles away.</li>
           </ul>
@@ -288,10 +288,6 @@ const WhatToExpect = () => {
             <li>Mini-golf, go-karts, and family activities in <a href='https://elmersfunpark.com/' target='_blank' rel='noopener noreferrer'>St. Germain</a></li>
             <li>Seasonal events: <a href='https://eagleriver.org/events/cranberry-fest/' target='_blank' rel='noopener noreferrer'>Cranberry Fest</a>, <a href='https://www.eagleriverrevitalization.org/farmers-market/' target='_blank' rel='noopener noreferrer'>Farmers Market</a>, <a href='https://witravelbestbets.com/event/three-lakes-oktoberfest/' target='_blank' rel='noopener noreferrer'>Oktoberfest in Three Lakes</a>, concerts, markets</li>
           </ul>
-
-          <div className='what-to-expect-image area-map'>
-            {/* Placeholder for area map or local attractions photo */}
-          </div>
         </section>
 
         <section className='final-notes'>
