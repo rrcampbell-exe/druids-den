@@ -6,6 +6,10 @@ import { Link } from 'react-router'
 const Landing = () => {
   const ref = useRef()
 
+  // Check if current date is April 2026 or later
+  const now = new Date()
+  const showSpooktoberfest = now >= new Date('2026-04-01')
+
   useEffect(() => {
     const img = new window.Image()
     img.src = '/assets/images/druids_den_winter_snowman.jpg'
@@ -26,6 +30,11 @@ const Landing = () => {
       <Link to='/what-to-expect' className='landing-cta'>
         Begin Your Northwoods Adventure &gt;
       </Link>
+      {showSpooktoberfest && (
+        <Link to='/spooktoberfest' className='landing-cta'>
+          Spooktoberfest 2026 &gt;
+        </Link>
+      )}
       <Weather />
     </div>
   )

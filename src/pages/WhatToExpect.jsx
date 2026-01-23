@@ -37,7 +37,7 @@ const WhatToExpect = () => {
         <Leaf />
       </center>
       
-      <div className='what-to-expect-content-wrapper'>
+      <div className='page-content-wrapper nav-left'>
         <PageNav items={navItems} />
         
         <main>

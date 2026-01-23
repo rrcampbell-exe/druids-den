@@ -83,6 +83,50 @@
   }
 }
 
+/* Shared page content wrapper with flexible nav positioning */
+.page-content-wrapper {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  
+  @media (max-width: $breakpoint-tablet) {
+    flex-direction: column;
+  }
+  
+  /* Nav on left (default) */
+  &.nav-left {
+    @media (min-width: calc($breakpoint-tablet + 1px)) {
+      nav {
+        order: 1;
+      }
+      main {
+        order: 2;
+      }
+    }
+  }
+  
+  /* Nav on right */
+  &.nav-right {
+    @media (min-width: calc($breakpoint-tablet + 1px)) {
+      nav {
+        order: 2;
+      }
+      main {
+        order: 1;
+      }
+    }
+  }
+  
+  main {
+    flex: 1;
+    min-width: 0;
+
+    @media (max-width: $breakpoint-tablet) {
+      max-width: 100%;
+    }
+  }
+}
+
 /* Global link and button styles */
 body a {
   font-weight: 500;

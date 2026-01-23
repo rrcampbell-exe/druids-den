@@ -1,5 +1,12 @@
 {
-  "rewrites":  [
-    {"source": "/(.*)", "destination": "/"}
-  ]
+  "rewrites": [
+    {"source": "/((?!api|src|node_modules|@vite|@react-refresh|assets).*)", "destination": "/"}
+  ],
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "devCommand": "vite --port $PORT"
 }
