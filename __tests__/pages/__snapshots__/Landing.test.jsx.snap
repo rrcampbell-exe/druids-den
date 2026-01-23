@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Landing Page > matches snapshot 1`] = `
+<div
+  class="landing-page"
+>
+  <h1
+    class="landing-title"
+  >
+    <p
+      class="the"
+      data-testid="coelbren"
+    >
+      The
+    </p>
+    <p
+      class="druids-den"
+      data-testid="coelbren"
+    >
+      Druids Den
+    </p>
+    <p
+      class="three-rays"
+    >
+      <span
+        data-testid="awen"
+      >
+        Awen
+      </span>
+    </p>
+  </h1>
+  <a
+    class="landing-cta"
+    data-discover="true"
+    href="/what-to-expect"
+  >
+    Begin Your Northwoods Adventure &gt;
+  </a>
+  <div
+    data-testid="weather"
+  >
+    Weather Widget
+  </div>
+</div>
+`;
