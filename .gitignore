@@ -28,3 +28,6 @@ dist-ssr
 *.sw?
 .vercel
 .env*.local
+
+# Test coverage
+coverage/
