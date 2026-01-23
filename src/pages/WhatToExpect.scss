@@ -16,25 +16,6 @@
   }
 }
 
-.what-to-expect-content-wrapper {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-  
-  @media (max-width: $breakpoint-tablet) {
-    flex-direction: column;
-  }
-}
-
-.what-to-expect-page main {
-  flex: 1;
-  min-width: 0;
-
-  @media (max-width: $breakpoint-tablet) {
-    max-width: 100%;
-  }
-}
-
 .what-to-expect-page section {
   margin: 4rem 0;
 }

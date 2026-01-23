@@ -16,10 +16,25 @@
   }
 }
 
-.spooktoberfest-page main {
-  max-width: 66%;
+.spooktoberfest-page section {
+  margin: 4rem 0;
+}
 
-  @media (max-width: $breakpoint-tablet) {
-    max-width: 100%;
-  }
+.spooktoberfest-page section:first-of-type {
+  margin-top: 0rem;
+}
+
+.spooktoberfest-page main h2 {
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-iron-ore);
+  padding-bottom: 0.5rem;
+}
+
+.spooktoberfest-page h3 {
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
 }
