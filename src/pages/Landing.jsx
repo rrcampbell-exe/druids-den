@@ -26,6 +26,9 @@ const Landing = () => {
       <Link to='/what-to-expect' className='landing-cta'>
         Begin Your Northwoods Adventure &gt;
       </Link>
+      <Link to='/spooktoberfest' className='landing-cta'>
+        Spooktoberfest 2026 &gt;
+      </Link>
       <Weather />
     </div>
   )
