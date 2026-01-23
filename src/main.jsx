@@ -4,6 +4,7 @@ import './index.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { Landing, WhatToExpect, Spooktoberfest } from './pages'
 import { Navigate } from 'react-router'
+import { ProtectedRoute } from './components'
 
 let router = createBrowserRouter([
   {
@@ -12,7 +13,11 @@ let router = createBrowserRouter([
   },
   {
     path: '/spooktoberfest',
-    Component: Spooktoberfest // seasonal redirect to main landing page
+    element: (
+      <ProtectedRoute>
+        <Spooktoberfest />
+      </ProtectedRoute>
+    )
   },
   {
     path: '/what-to-expect',
