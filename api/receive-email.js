@@ -65,39 +65,16 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Email service not configured' })
     }
 
-    // Fetch the full email content using the email_id
-    // Try the inbound emails endpoint instead of the regular emails endpoint
-    const emailResponse = await fetch(`https://api.resend.com/inbound/${emailMetadata.email_id}`, {
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-      },
-    })
-
-    if (!emailResponse.ok) {
-      const errorText = await emailResponse.text()
-      console.error('Failed to fetch email content:', errorText)
-      
-      // If inbound endpoint fails, try the regular endpoint
-      const fallbackResponse = await fetch(`https://api.resend.com/emails/${emailMetadata.email_id}`, {
-        headers: {
-          'Authorization': `Bearer ${RESEND_API_KEY}`,
-        },
-      })
-      
-      if (!fallbackResponse.ok) {
-        console.error('Fallback also failed:', await fallbackResponse.text())
-        return res.status(500).json({ error: 'Failed to fetch email content from both endpoints' })
-      }
-      
-      const fullEmail = await fallbackResponse.json()
-      console.log('Fetched from fallback endpoint:', { has_html: !!fullEmail.html, has_text: !!fullEmail.text })
-    } else {
-      const fullEmail = await emailResponse.json()
-      console.log('Fetched from inbound endpoint:', { has_html: !!fullEmail.html, has_text: !!fullEmail.text, keys: Object.keys(fullEmail) })
-    }
-
-    const fullEmail = await emailResponse.json()
-    console.log('Fetched full email:', { has_html: !!fullEmail.html, has_text: !!fullEmail.text })
+    // Check if the webhook includes html, text, or raw fields
+    console.log('Email metadata keys:', Object.keys(emailMetadata))
+    console.log('Has html?', 'html' in emailMetadata)
+    console.log('Has text?', 'text' in emailMetadata)
+    console.log('Has raw?', 'raw' in emailMetadata)
+    
+    // For now, forward with just the metadata we have
+    // The email body might not be available through Resend's inbound webhooks
+    const emailBody = emailMetadata.html || emailMetadata.text || emailMetadata.raw || 
+      '<p><em>Email body not available through webhook. Please reply to see full content.</em></p>'
 
     // Prepare forwarded email
     const forwardedEmail = {
@@ -113,7 +90,7 @@ export default async function handler(req, res) {
             <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(emailMetadata.created_at).toLocaleString()}</p>
           </div>
           <div style="padding: 15px; border: 1px solid #e0e0e0;">
-            ${fullEmail.html || `<p>${fullEmail.text || '(No content)'}</p>`}
+            ${emailBody}
           </div>
         </div>
       `,
@@ -126,7 +103,7 @@ Date: ${new Date(emailMetadata.created_at).toLocaleString()}
 
 ---
 
-${fullEmail.text || fullEmail.html || '(No content)'}
+${emailMetadata.text || emailBody.replace(/<[^>]*>/g, '') || '(Email body not available)'}
       `,
       reply_to: emailMetadata.from // Allow direct reply to original sender
     }
