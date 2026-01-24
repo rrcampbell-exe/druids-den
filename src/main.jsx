@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import { Landing, WhatToExpect, Spooktoberfest } from './pages'
+import { Landing, WhatToExpect, Spooktoberfest, Reservations } from './pages'
 import { Navigate } from 'react-router'
 import { ProtectedRoute } from './components'
 
@@ -14,8 +14,16 @@ let router = createBrowserRouter([
   {
     path: '/spooktoberfest',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute page='spooktoberfest'>
         <Spooktoberfest />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: '/reservations',
+    element: (
+      <ProtectedRoute page='reservations'>
+        <Reservations />
       </ProtectedRoute>
     )
   },

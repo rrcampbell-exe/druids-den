@@ -3,10 +3,18 @@ import { Link } from 'react-router'
 import './PasscodePrompt.scss'
 import { Flower, Leaf, Awen } from './'
 
-const PasscodePrompt = ({ onSuccess }) => {
+const PasscodePrompt = ({ onSuccess, page = 'spooktoberfest', storageKey }) => {
   const [passcode, setPasscode] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const pageTitle = page === 'reservations' ? 'Reservations' : 'Spooktoberfest'
+  const pageMessage = page === 'reservations' 
+    ? 'This page is for authorized guests only.'
+    : 'This page is for invited guests only.'
+  const promptMessage = page === 'reservations'
+    ? 'Please enter your reservation access code.'
+    : 'Please enter the code from the back of your invitation.'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -19,14 +27,14 @@ const PasscodePrompt = ({ onSuccess }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ passcode }),
+        body: JSON.stringify({ passcode, page }),
       })
 
       const data = await response.json()
 
       if (data.success && data.token) {
         // Store the token in localStorage
-        localStorage.setItem('spooktoberfest_auth', data.token)
+        localStorage.setItem(storageKey, data.token)
         onSuccess()
       } else {
         setError('Invalid passcode. Please try again.')
@@ -44,9 +52,9 @@ const PasscodePrompt = ({ onSuccess }) => {
     <div className='passcode-prompt-page'>
       <div className='passcode-container'>
         <Flower />
-        <h1>Spooktoberfest</h1>
-        <p>This page is for invited guests only.</p>
-        <p>Please enter the code from the back of your invitation.</p>
+        <h1>{pageTitle}</h1>
+        <p>{pageMessage}</p>
+        <p>{promptMessage}</p>
         
         <form onSubmit={handleSubmit}>
           <input

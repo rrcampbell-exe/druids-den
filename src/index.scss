@@ -49,38 +49,108 @@
 
 .spooktoberfest-page .page-header h1,
 .what-to-expect-page .page-header h1,
+.reservations-page .page-header h1,
 .spooktoberfest-page .page-header h2,
-.what-to-expect-page .page-header h2 {
+.what-to-expect-page .page-header h2,
+.reservations-page .page-header h2 {
   margin: 0;
   font-weight: 400;
 }
 
 .spooktoberfest-page .page-header .bottom-border,
-.what-to-expect-page .page-header .bottom-border {
+.what-to-expect-page .page-header .bottom-border,
+.reservations-page .page-header .bottom-border {
   border-bottom: 1px dashed var(--color-iron-ore);
   width: 20%;
   margin-top: 1rem;
 }
 
 .spooktoberfest-page .coelbren-subheading,
-.what-to-expect-page .coelbren-subheading {
+.what-to-expect-page .coelbren-subheading,
+.reservations-page .coelbren-subheading {
   margin-top: 0.5rem;
   font-size: 1rem;
 }
 
 .spooktoberfest-page .subheading,
-.what-to-expect-page .subheading {
+.what-to-expect-page .subheading,
+.reservations-page .subheading {
   font-size: 1.2rem;
 }
 
 .spooktoberfest-page .back-navigation,
-.what-to-expect-page .back-navigation {
+.what-to-expect-page .back-navigation,
+.reservations-page .back-navigation {
   margin-top: 1rem;
   white-space: nowrap;
   
   @media (max-width: $breakpoint-mobile) {
     margin-top: 0;
   }
+}
+
+/* Shared page wrapper styles */
+.spooktoberfest-page,
+.what-to-expect-page,
+.reservations-page {
+  padding: 2rem;
+}
+
+/* Shared page header structure */
+.spooktoberfest-page .page-header,
+.what-to-expect-page .page-header,
+.reservations-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.spooktoberfest-page h1,
+.what-to-expect-page h1,
+.reservations-page h1 {
+  margin-bottom: 0;
+}
+
+.spooktoberfest-page center,
+.what-to-expect-page center,
+.reservations-page center {
+  margin: 1rem 6rem;
+
+  @media (max-width: $breakpoint-mobile) {
+    margin: 1rem;
+  }
+}
+
+.spooktoberfest-page section,
+.what-to-expect-page section,
+.reservations-page section {
+  margin: 4rem 0;
+}
+
+.spooktoberfest-page section:first-of-type,
+.what-to-expect-page section:first-of-type,
+.reservations-page section:first-of-type {
+  margin-top: 0rem;
+}
+
+.spooktoberfest-page main h2,
+.what-to-expect-page main h2,
+.reservations-page main h2 {
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-iron-ore);
+  padding-bottom: 0.5rem;
+}
+
+.spooktoberfest-page h3,
+.what-to-expect-page h3,
+.reservations-page h3 {
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
 }
 
 /* Shared page content wrapper with flexible nav positioning */
