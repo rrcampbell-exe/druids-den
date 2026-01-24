@@ -1,6 +1,8 @@
 // Webhook endpoint for Resend inbound emails
 // Forwards all emails received at *@druidsdenwi.com to campbell.ryan.r@gmail.com
 
+import crypto from 'node:crypto'
+
 export default async function handler(req, res) {
   // Only accept POST requests
   if (req.method !== 'POST') {
@@ -12,7 +14,6 @@ export default async function handler(req, res) {
     const WEBHOOK_SECRET = process.env.RESEND_WEBHOOK_SECRET
     
     if (WEBHOOK_SECRET) {
-      const crypto = require('crypto')
       const signature = req.headers['resend-signature'] || req.headers['x-resend-signature']
       const timestamp = req.headers['resend-timestamp'] || req.headers['x-resend-timestamp']
       
