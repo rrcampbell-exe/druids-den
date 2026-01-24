@@ -7,5 +7,6 @@ import PageNav from './PageNav'
 import CaptionedImage from './CaptionedImage'
 import PasscodePrompt from './PasscodePrompt'
 import ProtectedRoute from './ProtectedRoute'
+import DatePicker from './DatePicker'
 
-export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute }
+export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute, DatePicker }

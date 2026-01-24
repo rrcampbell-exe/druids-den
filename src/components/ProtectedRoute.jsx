@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
 import PasscodePrompt from './PasscodePrompt'
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, page = 'spooktoberfest' }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
 
+  const storageKey = `${page}_auth`
+
   useEffect(() => {
     // Check if user has a valid authentication token
-    const token = localStorage.getItem('spooktoberfest_auth')
+    const token = localStorage.getItem(storageKey)
     
     if (token) {
       try {
@@ -21,12 +23,12 @@ const ProtectedRoute = ({ children }) => {
         }
       } catch (err) {
         // Invalid token, clear it
-        localStorage.removeItem('spooktoberfest_auth')
+        localStorage.removeItem(storageKey)
       }
     }
     
     setIsChecking(false)
-  }, [])
+  }, [storageKey])
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true)
@@ -39,7 +41,13 @@ const ProtectedRoute = ({ children }) => {
 
   // Show passcode prompt if not authenticated
   if (!isAuthenticated) {
-    return <PasscodePrompt onSuccess={handleAuthSuccess} />
+    return (
+      <PasscodePrompt 
+        onSuccess={handleAuthSuccess} 
+        page={page}
+        storageKey={storageKey}
+      />
+    )
   }
 
   // Show protected content if authenticated

@@ -1,0 +1,128 @@
+@use '../variables' as *;
+
+/* Page-specific styles for Reservations */
+
+.reservations-page .reservation-form {
+  max-width: 100%;
+
+  section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.75rem;
+      color: var(--color-iron-ore);
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    input,
+    textarea {
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--color-iron-ore);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: border-color 0.2s, background 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: var(--color-iron-ore);
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    small {
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .error-message {
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      color: #ff6b6b;
+      font-weight: 500;
+    }
+
+    .error-text {
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      color: #ff6b6b;
+    }
+  }
+
+  .form-actions {
+    margin-top: 2rem;
+    text-align: center;
+
+    .submit-button {
+      padding: 1rem 3rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--color-iron-ore), hsl(35, 3%, 23%));
+      color: var(--color-shiitake);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(70, 70, 69, 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    .disclaimer {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}

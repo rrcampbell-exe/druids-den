@@ -1,43 +1,6 @@
 @use '../variables' as *;
 
-.what-to-expect-page {
-  padding: 2rem;
-}
-
-.what-to-expect-page h1 {
-  margin-bottom: 0;
-}
-
-.what-to-expect-page center {
-  margin: 1rem 6rem;
-
-  @media (max-width: $breakpoint-mobile) {
-    margin: 1rem;
-  }
-}
-
-.what-to-expect-page section {
-  margin: 4rem 0;
-}
-
-.what-to-expect-page section:first-of-type {
-  margin-top: 0rem;
-}
-
-.what-to-expect-page main h2 {
-  font-size: 2rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--color-iron-ore);
-  padding-bottom: 0.5rem;
-}
-
-.what-to-expect-page h3 {
-  font-size: 1.4rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-  font-weight: 500;
-}
+/* Page-specific styles for What To Expect */
 
 /* Image Placeholders */
 .what-to-expect-image {
