@@ -41,13 +41,16 @@ export default async function handler(req, res) {
     }
     */
 
-    const inboundEmail = req.body
+    const webhookData = req.body
+    const emailMetadata = webhookData.data
 
     // Log the incoming email for debugging
-    console.log('Received inbound email:', {
-      from: inboundEmail.from,
-      to: inboundEmail.to,
-      subject: inboundEmail.subject,
+    console.log('Received inbound email webhook:', {
+      type: webhookData.type,
+      email_id: emailMetadata.email_id,
+      from: emailMetadata.from,
+      to: emailMetadata.to,
+      subject: emailMetadata.subject,
       receivedAt: new Date().toISOString()
     })
 
@@ -59,36 +62,51 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Email service not configured' })
     }
 
+    // Fetch the full email content using the email_id
+    const emailResponse = await fetch(`https://api.resend.com/emails/${emailMetadata.email_id}`, {
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+    })
+
+    if (!emailResponse.ok) {
+      console.error('Failed to fetch email content:', await emailResponse.text())
+      return res.status(500).json({ error: 'Failed to fetch email content' })
+    }
+
+    const fullEmail = await emailResponse.json()
+    console.log('Fetched full email:', { has_html: !!fullEmail.html, has_text: !!fullEmail.text })
+
     // Prepare forwarded email
     const forwardedEmail = {
       from: 'grovekeeper@druidsdenwi.com',
       to: 'campbell.ryan.r@gmail.com',
-      subject: `Fwd: ${inboundEmail.subject || '(No Subject)'}`,
+      subject: `Fwd: ${emailMetadata.subject || '(No Subject)'}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px;">
           <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #464645; margin-bottom: 20px;">
-            <p style="margin: 5px 0;"><strong>From:</strong> ${inboundEmail.from}</p>
-            <p style="margin: 5px 0;"><strong>To:</strong> ${inboundEmail.to}</p>
-            <p style="margin: 5px 0;"><strong>Subject:</strong> ${inboundEmail.subject || '(No Subject)'}</p>
-            <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(inboundEmail.date || Date.now()).toLocaleString()}</p>
+            <p style="margin: 5px 0;"><strong>From:</strong> ${emailMetadata.from}</p>
+            <p style="margin: 5px 0;"><strong>To:</strong> ${emailMetadata.to.join(', ')}</p>
+            <p style="margin: 5px 0;"><strong>Subject:</strong> ${emailMetadata.subject || '(No Subject)'}</p>
+            <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(emailMetadata.created_at).toLocaleString()}</p>
           </div>
           <div style="padding: 15px; border: 1px solid #e0e0e0;">
-            ${inboundEmail.html || `<p>${inboundEmail.text || '(No content)'}</p>`}
+            ${fullEmail.html || `<p>${fullEmail.text || '(No content)'}</p>`}
           </div>
         </div>
       `,
       text: `
 Forwarded Message:
-From: ${inboundEmail.from}
-To: ${inboundEmail.to}
-Subject: ${inboundEmail.subject || '(No Subject)'}
-Date: ${new Date(inboundEmail.date || Date.now()).toLocaleString()}
+From: ${emailMetadata.from}
+To: ${emailMetadata.to.join(', ')}
+Subject: ${emailMetadata.subject || '(No Subject)'}
+Date: ${new Date(emailMetadata.created_at).toLocaleString()}
 
 ---
 
-${inboundEmail.text || '(No content)'}
+${fullEmail.text || fullEmail.html || '(No content)'}
       `,
-      reply_to: inboundEmail.from // Allow direct reply to original sender
+      reply_to: emailMetadata.from // Allow direct reply to original sender
     }
 
     // Send via Resend API
