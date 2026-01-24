@@ -1,8 +1,4 @@
 {
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/" }
-  ],
   "functions": {
     "api/**/*.js": {
       "memory": 1024,
