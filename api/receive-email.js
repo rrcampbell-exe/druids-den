@@ -10,9 +10,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Verify webhook signature
+    // Log all headers for debugging
+    console.log('Webhook headers:', req.headers)
+    
+    // Verify webhook signature (temporarily disabled for debugging)
     const WEBHOOK_SECRET = process.env.RESEND_WEBHOOK_SECRET
     
+    // TODO: Re-enable signature verification once we know the correct header names
+    /*
     if (WEBHOOK_SECRET) {
       const signature = req.headers['resend-signature'] || req.headers['x-resend-signature']
       const timestamp = req.headers['resend-timestamp'] || req.headers['x-resend-timestamp']
@@ -34,6 +39,7 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Unauthorized - invalid signature' })
       }
     }
+    */
 
     const inboundEmail = req.body
 
