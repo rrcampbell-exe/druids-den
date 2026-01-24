@@ -44,6 +44,9 @@ export default async function handler(req, res) {
     const webhookData = req.body
     const emailMetadata = webhookData.data
 
+    // Log the FULL webhook payload for debugging
+    console.log('Full webhook payload:', JSON.stringify(webhookData, null, 2))
+
     // Log the incoming email for debugging
     console.log('Received inbound email webhook:', {
       type: webhookData.type,
