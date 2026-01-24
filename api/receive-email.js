@@ -66,15 +66,34 @@ export default async function handler(req, res) {
     }
 
     // Fetch the full email content using the email_id
-    const emailResponse = await fetch(`https://api.resend.com/emails/${emailMetadata.email_id}`, {
+    // Try the inbound emails endpoint instead of the regular emails endpoint
+    const emailResponse = await fetch(`https://api.resend.com/inbound/${emailMetadata.email_id}`, {
       headers: {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
     })
 
     if (!emailResponse.ok) {
-      console.error('Failed to fetch email content:', await emailResponse.text())
-      return res.status(500).json({ error: 'Failed to fetch email content' })
+      const errorText = await emailResponse.text()
+      console.error('Failed to fetch email content:', errorText)
+      
+      // If inbound endpoint fails, try the regular endpoint
+      const fallbackResponse = await fetch(`https://api.resend.com/emails/${emailMetadata.email_id}`, {
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+        },
+      })
+      
+      if (!fallbackResponse.ok) {
+        console.error('Fallback also failed:', await fallbackResponse.text())
+        return res.status(500).json({ error: 'Failed to fetch email content from both endpoints' })
+      }
+      
+      const fullEmail = await fallbackResponse.json()
+      console.log('Fetched from fallback endpoint:', { has_html: !!fullEmail.html, has_text: !!fullEmail.text })
+    } else {
+      const fullEmail = await emailResponse.json()
+      console.log('Fetched from inbound endpoint:', { has_html: !!fullEmail.html, has_text: !!fullEmail.text, keys: Object.keys(fullEmail) })
     }
 
     const fullEmail = await emailResponse.json()
