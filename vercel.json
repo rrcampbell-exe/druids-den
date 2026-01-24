@@ -1,6 +1,7 @@
 {
-  "rewrites": [
-    {"source": "/((?!api|src|node_modules|@vite|@react-refresh|assets|.*\\.json).*)", "destination": "/"}
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/" }
   ],
   "functions": {
     "api/**/*.js": {
