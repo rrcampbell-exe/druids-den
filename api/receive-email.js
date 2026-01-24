@@ -10,51 +10,45 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Log all headers for debugging
-    console.log('Webhook headers:', req.headers)
-    
-    // Verify webhook signature (temporarily disabled for debugging)
+    // Verify webhook signature using Svix
     const WEBHOOK_SECRET = process.env.RESEND_WEBHOOK_SECRET
     
-    // TODO: Re-enable signature verification once we know the correct header names
-    /*
     if (WEBHOOK_SECRET) {
-      const signature = req.headers['resend-signature'] || req.headers['x-resend-signature']
-      const timestamp = req.headers['resend-timestamp'] || req.headers['x-resend-timestamp']
+      const signature = req.headers['svix-signature']
+      const timestamp = req.headers['svix-timestamp']
+      const id = req.headers['svix-id']
       
-      if (!signature || !timestamp) {
-        console.error('Missing webhook signature or timestamp')
+      if (!signature || !timestamp || !id) {
+        console.error('Missing Svix webhook signature headers')
         return res.status(401).json({ error: 'Unauthorized - missing signature' })
       }
 
-      // Verify signature
-      const payload = `${timestamp}.${JSON.stringify(req.body)}`
+      // Verify Svix signature
+      const payload = `${id}.${timestamp}.${JSON.stringify(req.body)}`
       const expectedSignature = crypto
         .createHmac('sha256', WEBHOOK_SECRET)
         .update(payload)
-        .digest('hex')
+        .digest('base64')
       
-      if (signature !== expectedSignature) {
+      // Svix signature format: "v1,<signature>"
+      const signatureParts = signature.split(',')
+      const actualSignature = signatureParts[1]
+      
+      if (actualSignature !== expectedSignature) {
         console.error('Invalid webhook signature')
         return res.status(401).json({ error: 'Unauthorized - invalid signature' })
       }
     }
-    */
 
     const webhookData = req.body
     const emailMetadata = webhookData.data
 
-    // Log the FULL webhook payload for debugging
-    console.log('Full webhook payload:', JSON.stringify(webhookData, null, 2))
-
-    // Log the incoming email for debugging
-    console.log('Received inbound email webhook:', {
-      type: webhookData.type,
-      email_id: emailMetadata.email_id,
+    // Log the incoming email
+    console.log('Received inbound email:', {
       from: emailMetadata.from,
       to: emailMetadata.to,
       subject: emailMetadata.subject,
-      receivedAt: new Date().toISOString()
+      email_id: emailMetadata.email_id
     })
 
     // Forward the email using Resend
@@ -65,18 +59,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Email service not configured' })
     }
 
-    // Check if the webhook includes html, text, or raw fields
-    console.log('Email metadata keys:', Object.keys(emailMetadata))
-    console.log('Has html?', 'html' in emailMetadata)
-    console.log('Has text?', 'text' in emailMetadata)
-    console.log('Has raw?', 'raw' in emailMetadata)
-    
-    // For now, forward with just the metadata we have
-    // The email body might not be available through Resend's inbound webhooks
-    const emailBody = emailMetadata.html || emailMetadata.text || emailMetadata.raw || 
-      '<p><em>Email body not available through webhook. Please reply to see full content.</em></p>'
-
-    // Prepare forwarded email
+    // Note: Resend's webhook only provides metadata, not the email body
+    // For full content, users need to check the Resend dashboard
     const forwardedEmail = {
       from: 'grovekeeper@druidsdenwi.com',
       to: 'campbell.ryan.r@gmail.com',
@@ -90,25 +74,25 @@ export default async function handler(req, res) {
             <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(emailMetadata.created_at).toLocaleString()}</p>
           </div>
           <div style="padding: 15px; border: 1px solid #e0e0e0;">
-            ${emailBody}
+            <p><em>View full email content in your Resend dashboard.</em></p>
+            <p><strong>Email ID:</strong> ${emailMetadata.email_id}</p>
           </div>
         </div>
       `,
       text: `
-Forwarded Message:
+New email received at ${emailMetadata.to.join(', ')}
+
 From: ${emailMetadata.from}
-To: ${emailMetadata.to.join(', ')}
 Subject: ${emailMetadata.subject || '(No Subject)'}
 Date: ${new Date(emailMetadata.created_at).toLocaleString()}
 
----
-
-${emailMetadata.text || emailBody.replace(/<[^>]*>/g, '') || '(Email body not available)'}
+View full email content in your Resend dashboard.
+Email ID: ${emailMetadata.email_id}
       `,
-      reply_to: emailMetadata.from // Allow direct reply to original sender
+      reply_to: emailMetadata.from
     }
 
-    // Send via Resend API
+    // Send notification via Resend API
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -121,11 +105,11 @@ ${emailMetadata.text || emailBody.replace(/<[^>]*>/g, '') || '(Email body not av
     const data = await response.json()
 
     if (!response.ok) {
-      console.error('Failed to forward email:', data)
+      console.error('Failed to forward email notification:', data)
       return res.status(500).json({ error: 'Failed to forward email', details: data })
     }
 
-    console.log('Email forwarded successfully:', data.id)
+    console.log('Email notification forwarded successfully:', data.id)
     return res.status(200).json({ success: true, forwarded: true, emailId: data.id })
 
   } catch (error) {
