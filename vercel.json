@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    {"source": "/((?!api|src|node_modules|@vite|@react-refresh|assets|.*\\.json).*)", "destination": "/"}
+  ],
   "functions": {
     "api/**/*.js": {
       "memory": 1024,
