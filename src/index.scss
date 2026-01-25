@@ -34,7 +34,8 @@
 
 /* Page header styles - applied to all pages */
 .spooktoberfest-page .page-header,
-.what-to-expect-page .page-header {
+.what-to-expect-page .page-header,
+.reservations-page .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -96,13 +97,9 @@
   padding: 2rem;
 }
 
-/* Shared page header structure */
 .spooktoberfest-page .page-header,
 .what-to-expect-page .page-header,
 .reservations-page .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   margin-bottom: 2rem;
 }
 
