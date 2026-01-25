@@ -8,5 +8,6 @@ import CaptionedImage from './CaptionedImage'
 import PasscodePrompt from './PasscodePrompt'
 import ProtectedRoute from './ProtectedRoute'
 import DatePicker from './DatePicker'
+import Modal from './Modal'
 
-export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute, DatePicker }
+export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute, DatePicker, Modal }
