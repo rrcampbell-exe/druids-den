@@ -9,7 +9,8 @@ export default function handler(req, res) {
   // Determine which passcode to check based on the page
   const passcodeMap = {
     'spooktoberfest': process.env.SPOOKTOBERFEST_PASSCODE,
-    'reservations': process.env.RESERVATIONS_PASSCODE
+    'reservations': process.env.RESERVATIONS_PASSCODE,
+    'dashboard': process.env.DASHBOARD_PASSCODE
   }
   
   const correctPasscode = passcodeMap[page]
