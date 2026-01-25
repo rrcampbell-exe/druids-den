@@ -51,7 +51,7 @@ describe('verify-passcode API', () => {
 
     it('accepts POST requests', () => {
       req.method = 'POST'
-      req.body = { passcode: 'test-passcode-123' }
+      req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -63,6 +63,7 @@ describe('verify-passcode API', () => {
   describe('Environment Configuration', () => {
     it('returns 500 when SPOOKTOBERFEST_PASSCODE env var is not set', () => {
       vi.unstubAllEnvs()
+      req.body = { passcode: 'any-passcode', page: 'spooktoberfest' }
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       
       handler(req, res)
@@ -76,6 +77,7 @@ describe('verify-passcode API', () => {
 
     it('returns 500 when SPOOKTOBERFEST_PASSCODE env var is empty string', () => {
       vi.stubEnv('SPOOKTOBERFEST_PASSCODE', '')
+      req.body = { passcode: 'any-passcode', page: 'spooktoberfest' }
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       
       handler(req, res)
@@ -89,7 +91,7 @@ describe('verify-passcode API', () => {
 
   describe('Passcode Validation', () => {
     it('returns 200 with token for correct passcode', () => {
-      req.body = { passcode: 'test-passcode-123' }
+      req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -103,7 +105,7 @@ describe('verify-passcode API', () => {
     })
 
     it('returns 401 for incorrect passcode', () => {
-      req.body = { passcode: 'wrong-passcode' }
+      req.body = { passcode: 'wrong-passcode', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -115,7 +117,7 @@ describe('verify-passcode API', () => {
     })
 
     it('returns 401 for empty passcode', () => {
-      req.body = { passcode: '' }
+      req.body = { passcode: '', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -127,7 +129,7 @@ describe('verify-passcode API', () => {
     })
 
     it('returns 401 when passcode is missing from body', () => {
-      req.body = {}
+      req.body = { page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -139,7 +141,7 @@ describe('verify-passcode API', () => {
     })
 
     it('returns 401 for passcode with extra whitespace', () => {
-      req.body = { passcode: ' test-passcode-123 ' }
+      req.body = { passcode: ' test-passcode-123 ', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -147,7 +149,7 @@ describe('verify-passcode API', () => {
     })
 
     it('is case-sensitive for passcode validation', () => {
-      req.body = { passcode: 'TEST-PASSCODE-123' }
+      req.body = { passcode: 'TEST-PASSCODE-123', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -157,7 +159,7 @@ describe('verify-passcode API', () => {
 
   describe('Token Generation', () => {
     it('generates a valid base64 token', () => {
-      req.body = { passcode: 'test-passcode-123' }
+      req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -170,7 +172,7 @@ describe('verify-passcode API', () => {
     })
 
     it('token contains authenticated flag', () => {
-      req.body = { passcode: 'test-passcode-123' }
+      req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -182,7 +184,7 @@ describe('verify-passcode API', () => {
     })
 
     it('token contains timestamp', () => {
-      req.body = { passcode: 'test-passcode-123' }
+      req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -196,7 +198,7 @@ describe('verify-passcode API', () => {
     })
 
     it('generates different tokens for subsequent valid requests', () => {
-      req.body = { passcode: 'test-passcode-123' }
+      req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       
       handler(req, res)
       const firstToken = res.json.mock.calls[0][0].token
@@ -218,7 +220,7 @@ describe('verify-passcode API', () => {
 
   describe('Response Structure', () => {
     it('successful response has success and token properties', () => {
-      req.body = { passcode: 'test-passcode-123' }
+      req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -229,7 +231,7 @@ describe('verify-passcode API', () => {
     })
 
     it('failed response has success and error properties', () => {
-      req.body = { passcode: 'wrong' }
+      req.body = { passcode: 'wrong', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -252,7 +254,7 @@ describe('verify-passcode API', () => {
 
   describe('Security Considerations', () => {
     it('does not leak information about passcode format in error messages', () => {
-      req.body = { passcode: 'wrong' }
+      req.body = { passcode: 'wrong', page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -263,7 +265,7 @@ describe('verify-passcode API', () => {
     })
 
     it('treats null passcode as invalid', () => {
-      req.body = { passcode: null }
+      req.body = { passcode: null, page: 'spooktoberfest' }
       
       handler(req, res)
       
@@ -271,7 +273,7 @@ describe('verify-passcode API', () => {
     })
 
     it('treats undefined passcode as invalid', () => {
-      req.body = { passcode: undefined }
+      req.body = { passcode: undefined, page: 'spooktoberfest' }
       
       handler(req, res)
       

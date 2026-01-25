@@ -91,7 +91,7 @@ describe('PasscodePrompt', () => {
       }),
     })
     
-    renderWithRouter(<PasscodePrompt onSuccess={mockOnSuccess} />)
+    renderWithRouter(<PasscodePrompt onSuccess={mockOnSuccess} storageKey="spooktoberfest_auth" />)
     
     const input = screen.getByPlaceholderText('Enter passcode')
     const form = input.closest('form')
@@ -105,7 +105,7 @@ describe('PasscodePrompt', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ passcode: 'correct123' }),
+        body: JSON.stringify({ passcode: 'correct123', page: 'spooktoberfest' }),
       })
     })
     
