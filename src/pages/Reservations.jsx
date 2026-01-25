@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import './Reservations.scss'
-import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker } from '../components'
+import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal } from '../components'
 
 const Reservations = () => {
   const emailRef = useRef(null)
@@ -38,6 +38,10 @@ const Reservations = () => {
     email: false,
     phone: false
   })
+  
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const navItems = [
     { label: 'Your Information', href: '#your-information' },
@@ -80,6 +84,29 @@ const Reservations = () => {
     return false
   }
   
+  const hasBlackoutDatesInRange = (startDateString, endDateString) => {
+    const startDate = new Date(startDateString)
+    const endDate = new Date(endDateString)
+    const current = new Date(startDate)
+    const blackedOutDates = []
+    
+    // Check each date in the range (exclusive of check-in and check-out dates)
+    current.setDate(current.getDate() + 1)
+    while (current < endDate) {
+      const year = current.getFullYear()
+      const month = String(current.getMonth() + 1).padStart(2, '0')
+      const day = String(current.getDate()).padStart(2, '0')
+      const dateString = `${year}-${month}-${day}`
+      
+      if (blackoutDates.includes(dateString)) {
+        blackedOutDates.push(dateString)
+      }
+      current.setDate(current.getDate() + 1)
+    }
+    
+    return blackedOutDates
+  }
+  
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
@@ -111,17 +138,6 @@ const Reservations = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target
-    
-    // If it's a date input, check if the date is blacked out
-    if ((name === 'checkIn' || name === 'checkOut') && value && isDateBlackedOut(value)) {
-      // Show alert and clear the input
-      alert(`The date ${value} is not available. Please choose another date.`)
-      setFormData(prev => ({
-        ...prev,
-        [name]: ''
-      }))
-      return
-    }
     
     // Handle phone formatting
     if (name === 'phone') {
@@ -197,19 +213,30 @@ const Reservations = () => {
     
     // Validate check-in date
     if (isDateBlackedOut(formData.checkIn)) {
-      alert('The selected check-in date is not available. Please choose another date.')
+      setErrorMessage('The selected check-in date is not available. Please choose another date.')
+      setShowErrorModal(true)
       return
     }
     
     // Validate check-out date
     if (isDateBlackedOut(formData.checkOut)) {
-      alert('The selected check-out date is not available. Please choose another date.')
+      setErrorMessage('The selected check-out date is not available. Please choose another date.')
+      setShowErrorModal(true)
       return
     }
     
     // Validate check-out is after check-in
     if (new Date(formData.checkOut) <= new Date(formData.checkIn)) {
-      alert('Check-out date must be after check-in date.')
+      setErrorMessage('Check-out date must be after check-in date.')
+      setShowErrorModal(true)
+      return
+    }
+    
+    // Validate no blackout dates in range
+    const blackedOutInRange = hasBlackoutDatesInRange(formData.checkIn, formData.checkOut)
+    if (blackedOutInRange.length > 0) {
+      setErrorMessage(`Your selected dates conflict with other reservations. Please select a different date range.`)
+      setShowErrorModal(true)
       return
     }
     
@@ -229,7 +256,7 @@ const Reservations = () => {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        alert('Reservation request submitted successfully! You will receive a confirmation email shortly.')
+        setShowSuccessModal(true)
         // Reset form
         setFormData({
           firstName: '',
@@ -256,7 +283,8 @@ const Reservations = () => {
       }
     } catch (error) {
       console.error('Error submitting reservation:', error)
-      alert('There was an error submitting your reservation. Please try again or contact us directly.')
+      setErrorMessage('There was an error submitting your reservation. Please try again or contact us directly at grovekeeper@druidsdenwi.com.')
+      setShowErrorModal(true)
     }
   }
 
@@ -431,6 +459,42 @@ const Reservations = () => {
           </form>
         </main>
       </div>
+      
+      {/* Success Modal */}
+      <Modal 
+        isOpen={showSuccessModal} 
+        onClose={() => setShowSuccessModal(false)}
+        title="Reservation Request Received!"
+      >
+        <p><strong>Thank you for your reservation request!</strong></p>
+        
+        <ol>
+          <li>
+            <strong>Check your email</strong> - A confirmation email has been sent to the address you provided. 
+            Please check your inbox (and spam folder, just in case).
+          </li>
+          <li>
+            <strong>Complete your deposit</strong> - Click the secure payment link in the confirmation email 
+            to make your deposit <strong>within 24 hours</strong>. This holds your reservation.
+          </li>
+          <li>
+            <strong>Final confirmation</strong> - Once we receive your deposit, we'll review your request 
+            and send you final confirmation within <strong>24 hours</strong>. If for any reason we cannot 
+            honor your reservation, your deposit will be fully refunded.
+          </li>
+        </ol>
+        
+        <p>We look forward to hosting you at The Druids Den!</p>
+      </Modal>
+      
+      {/* Error Modal */}
+      <Modal 
+        isOpen={showErrorModal} 
+        onClose={() => setShowErrorModal(false)}
+        title="Unable to Complete Request"
+      >
+        <p>{errorMessage}</p>
+      </Modal>
     </div>
   )
 }

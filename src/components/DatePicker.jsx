@@ -8,11 +8,13 @@ const DatePicker = ({
   onCheckOutChange,
   label, 
   required, 
-  blackoutDates = []
+  blackoutDates = [],
+  onRangeError
 }) => {
   const [showCalendar, setShowCalendar] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectingCheckOut, setSelectingCheckOut] = useState(false)
+  const [rangeError, setRangeError] = useState('')
   
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -33,6 +35,24 @@ const DatePicker = ({
     if (!dateString) return null
     const [year, month, day] = dateString.split('-')
     return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+  }
+  
+  const hasBlackoutDatesInRange = (startDate, endDate) => {
+    const current = new Date(startDate)
+    const end = new Date(endDate)
+    const blackedOutDates = []
+    
+    // Check each date in the range (exclusive of check-in and check-out dates)
+    current.setDate(current.getDate() + 1)
+    while (current < end) {
+      const dateString = formatDate(current)
+      if (blackoutDates.includes(dateString)) {
+        blackedOutDates.push(dateString)
+      }
+      current.setDate(current.getDate() + 1)
+    }
+    
+    return blackedOutDates
   }
   
   const isDateDisabled = (date) => {
@@ -114,9 +134,24 @@ const DatePicker = ({
             onCheckOutChange({ target: { name: 'checkOut', value: '' } })
           }
         }
+        setRangeError('')
         setSelectingCheckOut(true)
       } else {
         // Second click: set check-out date
+        // Check for blackout dates in the range
+        const checkInDate = parseDate(checkInValue)
+        const blackedOutInRange = hasBlackoutDatesInRange(checkInDate, date)
+        
+        if (blackedOutInRange.length > 0) {
+          const errorMsg = `Your selected dates conflict with other reservations. Please select a different date range.`
+          setRangeError(errorMsg)
+          if (onRangeError) {
+            onRangeError(errorMsg)
+          }
+          return
+        }
+        
+        setRangeError('')
         onCheckOutChange({ target: { name: 'checkOut', value: dateString } })
         setShowCalendar(false)
         setSelectingCheckOut(false)
@@ -133,6 +168,7 @@ const DatePicker = ({
     onCheckInChange({ target: { name: 'checkIn', value: '' } })
     onCheckOutChange({ target: { name: 'checkOut', value: '' } })
     setSelectingCheckOut(false)
+    setRangeError('')
   }
   
   const handlePrevMonth = () => {
@@ -216,6 +252,12 @@ const DatePicker = ({
           📅
         </button>
       </div>
+      
+      {rangeError && (
+        <div className='date-range-error'>
+          {rangeError}
+        </div>
+      )}
       
       {showCalendar && (
         <div className='calendar-dropdown'>

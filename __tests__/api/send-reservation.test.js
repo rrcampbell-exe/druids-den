@@ -1,0 +1,255 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import handler from '../../api/send-reservation'
+
+describe('send-reservation API', () => {
+  let req, res, fetchSpy
+
+  beforeEach(() => {
+    // Mock request object
+    req = {
+      method: 'POST',
+      body: {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        phone: '(555) 123-4567',
+        checkIn: '2026-06-01',
+        checkOut: '2026-06-03',
+        adults: 2,
+        children: 0,
+        specialRequests: 'Early check-in please'
+      }
+    }
+
+    // Mock response object
+    res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn().mockReturnThis()
+    }
+
+    // Mock fetch globally
+    fetchSpy = vi.spyOn(global, 'fetch')
+    
+    // Set up environment variable
+    vi.stubEnv('RESEND_API_KEY', 'test-api-key-123')
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllEnvs()
+  })
+
+  describe('HTTP Method Validation', () => {
+    it('returns 405 for GET requests', async () => {
+      req.method = 'GET'
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(405)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+    })
+
+    it('returns 405 for PUT requests', async () => {
+      req.method = 'PUT'
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(405)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+    })
+
+    it('accepts POST requests', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      expect(res.status).not.toHaveBeenCalledWith(405)
+    })
+  })
+
+  describe('Request Validation', () => {
+    it('returns 400 when firstName is missing', async () => {
+      delete req.body.firstName
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+    })
+
+    it('returns 400 when email is missing', async () => {
+      delete req.body.email
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+    })
+
+    it('returns 400 when checkIn is missing', async () => {
+      delete req.body.checkIn
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+    })
+  })
+
+  describe('Email Sending with Resend', () => {
+    it('sends emails to admin and customer', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      // Should call fetch at least once (could be multiple for both emails)
+      expect(fetchSpy).toHaveBeenCalled()
+    })
+
+    it('sends admin notification email to grovekeeper', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      const firstCall = fetchSpy.mock.calls[0]
+      const body = JSON.parse(firstCall[1].body)
+      
+      expect(body.to).toBe('grovekeeper@druidsdenwi.com')
+      expect(body.from).toContain('The Druids Den')
+      expect(body.subject).toContain('New Reservation Request')
+      expect(body.subject).toContain('John Doe')
+    })
+
+    it('sends customer confirmation email', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      const secondCall = fetchSpy.mock.calls[1]
+      const body = JSON.parse(secondCall[1].body)
+      
+      expect(body.to).toBe('john@example.com')
+      expect(body.from).toContain('The Druids Den')
+      expect(body.subject).toContain('Reservation Request Received')
+    })
+
+    it('includes HTML content in emails', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      const firstCall = fetchSpy.mock.calls[0]
+      const body = JSON.parse(firstCall[1].body)
+      
+      expect(body.html).toBeTruthy()
+      expect(body.text).toBeTruthy()
+    })
+
+    it('returns 200 with success message when emails sent', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: true,
+          message: 'Reservation request sent successfully'
+        })
+      )
+    })
+  })
+
+  describe('Email Service Not Configured', () => {
+    it('returns 200 with note when RESEND_API_KEY is not set', async () => {
+      vi.unstubAllEnvs()
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: true,
+          message: 'Reservation logged (email service not configured)',
+          note: 'To send emails, set RESEND_API_KEY environment variable'
+        })
+      )
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('handles Resend API errors gracefully', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: async () => 'Server error'
+      })
+      
+      await handler(req, res)
+      
+      // Should return 207 (partial success) or 500 depending on failures
+      expect([207, 500]).toContain(res.status.mock.calls[0][0])
+    })
+
+    it('handles network errors', async () => {
+      fetchSpy.mockRejectedValue(new Error('Network error'))
+      
+      await handler(req, res)
+      
+      // Could be 207 (partial) or 500 (full failure)  
+      expect([207, 500]).toContain(res.status.mock.calls[0][0])
+    })
+  })
+
+  describe('Reservation Data Handling', () => {
+    it('includes all reservation details in emails', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      const firstCall = fetchSpy.mock.calls[0]
+      const body = JSON.parse(firstCall[1].body)
+      
+      expect(body.text).toContain('John')
+      expect(body.text).toContain('Doe')
+      expect(body.text).toContain('john@example.com')
+      expect(body.text).toContain('2026-06-01')
+      expect(body.text).toContain('2026-06-03')
+    })
+
+    it('handles optional fields correctly', async () => {
+      delete req.body.specialRequests
+      delete req.body.children
+      
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(200)
+    })
+  })
+})
