@@ -3,13 +3,14 @@ import './Dashboard.scss'
 import { Coelbren, Flower, Leaf, Awen } from '../components'
 import { Link } from 'react-router'
 import AtAGlance from './dashboard/AtAGlance'
+import Reports from './dashboard/Reports'
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('at-a-glance')
 
   const tabs = [
     { id: 'at-a-glance', label: 'At A Glance', icon: '📅' },
-    { id: 'reports', label: 'Reports', icon: '📊', disabled: true },
+    { id: 'reports', label: 'Reports', icon: '📊' },
     { id: 'insights', label: 'Insights', icon: '💡', disabled: true }
   ]
 
@@ -47,12 +48,7 @@ const Dashboard = () => {
 
       <div className='dashboard-content'>
         {activeTab === 'at-a-glance' && <AtAGlance />}
-        {activeTab === 'reports' && (
-          <div className='placeholder-tab'>
-            <h2>Reports</h2>
-            <p>Financial reports and analytics will be available here.</p>
-          </div>
-        )}
+        {activeTab === 'reports' && <Reports />}
         {activeTab === 'insights' && (
           <div className='placeholder-tab'>
             <h2>Insights</h2>
