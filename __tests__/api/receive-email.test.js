@@ -182,4 +182,76 @@ describe('receive-email API', () => {
       )
     })
   })
+
+  describe('Webhook Signature Verification', () => {
+    beforeEach(() => {
+      vi.stubEnv('RESEND_WEBHOOK_SECRET', 'test-webhook-secret')
+      vi.stubEnv('RESEND_API_KEY', 'test-api-key-123')
+    })
+
+    it('rejects requests missing svix-signature header', async () => {
+      req.headers['svix-timestamp'] = '1234567890'
+      req.headers['svix-id'] = 'msg_123'
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(401)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized - missing signature' })
+    })
+
+    it('rejects requests missing svix-timestamp header', async () => {
+      req.headers['svix-signature'] = 'v1,signature_here'
+      req.headers['svix-id'] = 'msg_123'
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(401)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized - missing signature' })
+    })
+
+    it('rejects requests missing svix-id header', async () => {
+      req.headers['svix-signature'] = 'v1,signature_here'
+      req.headers['svix-timestamp'] = '1234567890'
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(401)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized - missing signature' })
+    })
+
+    it('rejects requests with invalid signature', async () => {
+      req.headers['svix-signature'] = 'v1,invalid_signature'
+      req.headers['svix-timestamp'] = '1234567890'
+      req.headers['svix-id'] = 'msg_123'
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(401)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized - invalid signature' })
+    })
+
+    it('accepts requests with valid signature', async () => {
+      const crypto = await import('node:crypto')
+      const timestamp = '1234567890'
+      const id = 'msg_test_123'
+      const payload = `${id}.${timestamp}.${JSON.stringify(req.body)}`
+      const validSignature = crypto
+        .createHmac('sha256', 'test-webhook-secret')
+        .update(payload)
+        .digest('base64')
+      
+      req.headers['svix-signature'] = `v1,${validSignature}`
+      req.headers['svix-timestamp'] = timestamp
+      req.headers['svix-id'] = id
+
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email_forwarded_123' })
+      })
+      
+      await handler(req, res)
+      
+      expect(res.status).toHaveBeenCalledWith(200)
+    })
+  })
 })

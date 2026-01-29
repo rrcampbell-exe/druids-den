@@ -1,0 +1,106 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Dashboard > matches snapshot 1`] = `
+<div
+  class="dashboard-page"
+>
+  <div
+    class="page-header"
+  >
+    <div>
+      <h1>
+        Owner Dashboard
+      </h1>
+      <p
+        class="coelbren-subheading"
+      >
+        <span
+          data-testid="coelbren"
+        >
+          Tending to The Druids Den
+        </span>
+      </p>
+      <div
+        class="bottom-border"
+      />
+    </div>
+    <div
+      class="back-navigation"
+    >
+      <a
+        class="back-link"
+        data-discover="true"
+        href="/"
+      >
+        <span
+          data-testid="awen"
+        >
+          Awen
+        </span>
+         Log Out
+      </a>
+    </div>
+  </div>
+  <div
+    class="dashboard-tabs"
+  >
+    <button
+      class="tab-button active "
+    >
+      <span
+        class="tab-icon"
+      >
+        📅
+      </span>
+      <span
+        class="tab-label"
+      >
+        At A Glance
+      </span>
+    </button>
+    <button
+      class="tab-button  "
+    >
+      <span
+        class="tab-icon"
+      >
+        📊
+      </span>
+      <span
+        class="tab-label"
+      >
+        Reports
+      </span>
+    </button>
+    <button
+      class="tab-button  disabled"
+      disabled=""
+    >
+      <span
+        class="tab-icon"
+      >
+        💡
+      </span>
+      <span
+        class="tab-label"
+      >
+        Insights
+      </span>
+      <span
+        class="coming-soon"
+      >
+        Coming Soon
+      </span>
+    </button>
+  </div>
+  <div
+    class="dashboard-content"
+  >
+    <div
+      data-testid="at-a-glance"
+    >
+      At A Glance Component
+    </div>
+  </div>
+</div>
+`;
