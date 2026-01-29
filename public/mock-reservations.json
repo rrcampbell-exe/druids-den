@@ -33,12 +33,22 @@
     {
       "id": "res-003",
       "status": "approved",
+      "isOwnerReservation": true,
+      "checkIn": "2026-02-05",
+      "checkOut": "2026-02-08",
+      "ownerNote": "Personal getaway - Winter maintenance check",
+      "submittedAt": "2026-01-10T16:45:00Z",
+      "approvedAt": "2026-01-10T16:45:00Z"
+    },
+    {
+      "id": "res-004",
+      "status": "approved",
       "firstName": "Emily",
       "lastName": "Chen",
       "email": "emily.chen@email.com",
       "phone": "(555) 345-6789",
-      "checkIn": "2026-02-05",
-      "checkOut": "2026-02-08",
+      "checkIn": "2026-02-28",
+      "checkOut": "2026-03-02",
       "adults": 2,
       "children": 1,
       "specialRequests": "Looking forward to some peaceful time in the woods!",
@@ -47,7 +57,7 @@
       "estimatedTotal": 450
     },
     {
-      "id": "res-004",
+      "id": "res-005",
       "status": "approved",
       "firstName": "Michael",
       "lastName": "Rodriguez",
@@ -63,7 +73,7 @@
       "estimatedTotal": 600
     },
     {
-      "id": "res-005",
+      "id": "res-006",
       "status": "approved",
       "firstName": "Lisa",
       "lastName": "Thompson",

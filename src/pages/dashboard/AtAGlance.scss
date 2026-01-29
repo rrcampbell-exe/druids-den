@@ -10,6 +10,74 @@
   }
 
   .calendar-section {
+    .calendar-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h2 {
+        margin: 0;
+        font-weight: 400;
+      }
+
+      .header-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .block-dates-button,
+      .cancel-button,
+      .today-button {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--color-iron-ore);
+        background: var(--color-iron-ore);
+        color: var(--color-shiitake);
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #5a5a59;
+        }
+      }
+
+      .today-button {
+        background: transparent;
+        color: var(--color-iron-ore);
+
+        &:hover {
+          background: rgba(70, 70, 69, 0.1);
+        }
+      }
+
+      .cancel-button {
+        background: rgba(200, 100, 100, 0.8);
+        border-color: rgba(200, 100, 100, 0.8);
+
+        &:hover {
+          background: rgba(200, 100, 100, 1);
+        }
+      }
+    }
+
+    .selection-instructions {
+      background: rgba(70, 70, 69, 0.1);
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      text-align: center;
+
+      p {
+        margin: 0;
+        font-weight: 500;
+        color: var(--color-iron-ore);
+      }
+    }
+
     h2 {
       margin-top: 0;
       margin-bottom: 1.5rem;
@@ -114,6 +182,15 @@
             }
           }
 
+          &.has-owner {
+            background: #6b8e6f;
+            border-color: #4a6b4d;
+
+            .reservation-indicator {
+              color: #2d4a2f;
+            }
+          }
+
           &.has-approved {
             background: rgba(70, 70, 69, 0.3);
             border-color: var(--color-iron-ore);
@@ -121,6 +198,19 @@
             .reservation-indicator {
               color: var(--color-iron-ore);
             }
+          }
+
+          &.selected-check-in,
+          &.selected-check-out {
+            background: var(--color-iron-ore);
+            color: var(--color-shiitake);
+            border-color: var(--color-iron-ore);
+            font-weight: 700;
+          }
+
+          &.in-selection-range {
+            background: rgba(70, 70, 69, 0.2);
+            border-color: var(--color-iron-ore);
           }
 
           &.check-in-day,
@@ -156,6 +246,10 @@
             &.approved {
               background: rgba(70, 70, 69, 0.3);
             }
+
+            &.owner {
+              background: #6b8e6f;
+            }
           }
 
           .legend-today {
@@ -172,16 +266,75 @@
   .reservations-section {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
 
-    .pending-section,
-    .upcoming-section {
-      h2 {
-        margin-top: 0;
+    .reservations-header {
+      margin-bottom: 1.5rem;
+
+      .reservations-tabs {
+        display: flex;
+        gap: 0.5rem;
+        border-bottom: 2px solid rgba(70, 70, 69, 0.2);
         margin-bottom: 1rem;
-        font-weight: 400;
+
+        .reservation-tab {
+          flex: 1;
+          padding: 0.75rem 1rem;
+          background: none;
+          border: none;
+          border-bottom: 3px solid transparent;
+          border-radius: 0;
+          color: var(--color-iron-ore);
+          font-family: inherit;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          opacity: 0.6;
+          font-weight: 500;
+
+          &:hover {
+            opacity: 1;
+            background: rgba(70, 70, 69, 0.05);
+          }
+
+          &.active {
+            opacity: 1;
+            border-bottom-color: var(--color-iron-ore);
+            font-weight: 600;
+          }
+        }
       }
 
+      .reservation-filters {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+
+        .filter-button {
+          padding: 0.5rem 0.75rem;
+          background: rgba(70, 70, 69, 0.1);
+          border: 1px solid rgba(70, 70, 69, 0.2);
+          border-radius: 4px;
+          color: var(--color-iron-ore);
+          font-family: inherit;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            background: rgba(70, 70, 69, 0.2);
+          }
+
+          &.active {
+            background: var(--color-iron-ore);
+            color: var(--color-shiitake);
+            border-color: var(--color-iron-ore);
+            font-weight: 600;
+          }
+        }
+      }
+    }
+
+    .reservation-view {
       .no-reservations {
         padding: 2rem;
         text-align: center;
@@ -244,6 +397,101 @@
 
         &:hover {
           background: rgba(70, 70, 69, 0.1);
+        }
+      }
+
+      &.owner-reservation-modal {
+        padding: 2rem;
+
+        h2 {
+          margin-top: 0;
+          margin-bottom: 1.5rem;
+          color: var(--color-iron-ore);
+        }
+
+        .date-summary {
+          background: rgba(70, 70, 69, 0.1);
+          padding: 1rem;
+          border-radius: 4px;
+          margin-bottom: 1.5rem;
+
+          p {
+            margin: 0.5rem 0;
+            color: var(--color-iron-ore);
+          }
+        }
+
+        .form-field {
+          margin-bottom: 1.5rem;
+
+          label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--color-iron-ore);
+          }
+
+          textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid rgba(70, 70, 69, 0.3);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--color-iron-ore);
+            background: rgba(255, 255, 255, 0.5);
+            resize: vertical;
+
+            &:focus {
+              outline: none;
+              border-color: var(--color-iron-ore);
+            }
+
+            &::placeholder {
+              color: rgba(70, 70, 69, 0.4);
+            }
+          }
+        }
+
+        .modal-actions {
+          display: flex;
+          gap: 1rem;
+
+          .confirm-button {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-iron-ore);
+            color: var(--color-shiitake);
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+              background: #5a5a59;
+            }
+          }
+
+          .cancel-button {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            background: rgba(70, 70, 69, 0.2);
+            color: var(--color-iron-ore);
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+              background: rgba(70, 70, 69, 0.3);
+            }
+          }
         }
       }
     }
