@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateAdminNotificationEmail, generateCustomerConfirmationEmail } from '../../api/utils/emailTemplates'
+import { generateAdminNotificationEmail, generateCustomerConfirmationEmail, generateApprovalEmail } from '../../api/utils/emailTemplates'
 
 describe('emailTemplates', () => {
   const mockReservation = {
@@ -200,6 +200,91 @@ describe('emailTemplates', () => {
       
       // Should not have a special requests section
       expect(email.text).not.toContain('Special requests')
+    })
+  })
+
+  describe('generateApprovalEmail', () => {
+    const approvalReservation = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      checkIn: '2026-06-15',
+      checkOut: '2026-06-20',
+      adults: 2,
+      children: 1,
+      estimatedTotal: 1500
+    }
+
+    it('returns object with subject, text, and html', () => {
+      const result = generateApprovalEmail(approvalReservation)
+      
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+    })
+
+    it('includes confirmation message in subject', () => {
+      const result = generateApprovalEmail(approvalReservation)
+      
+      expect(result.subject).toContain('Confirmed')
+      expect(result.subject).toContain('🌲')
+    })
+
+    it('includes guest name and reservation details in text', () => {
+      const result = generateApprovalEmail(approvalReservation)
+      
+      expect(result.text).toContain('Jane Smith')
+      expect(result.text).toContain('approved')
+      expect(result.text).toContain('2 adults')
+      expect(result.text).toContain('1 child')
+      expect(result.text).toContain('$1500')
+    })
+
+    it('formats dates correctly in text', () => {
+      const result = generateApprovalEmail(approvalReservation)
+      
+      expect(result.text).toContain('June 14, 2026')
+      expect(result.text).toContain('June 19, 2026')
+    })
+
+    it('includes check-in and check-out times', () => {
+      const result = generateApprovalEmail(approvalReservation)
+      
+      expect(result.text).toContain('3:00 PM')
+      expect(result.text).toContain('11:00 AM')
+    })
+
+    it('includes HTML version with styling', () => {
+      const result = generateApprovalEmail(approvalReservation)
+      
+      expect(result.html).toContain('<!DOCTYPE html>')
+      expect(result.html).toContain('Jane Smith')
+      expect(result.html).toContain('approved')
+      expect(result.html).toContain('$1500')
+    })
+
+    it('handles singular adult correctly', () => {
+      const singleAdult = { ...approvalReservation, adults: 1, children: 0 }
+      const result = generateApprovalEmail(singleAdult)
+      
+      expect(result.text).toContain('1 adult')
+      expect(result.text).not.toContain('1 adults')
+      expect(result.html).toContain('1 adult')
+    })
+
+    it('handles multiple children correctly', () => {
+      const multiChild = { ...approvalReservation, children: 3 }
+      const result = generateApprovalEmail(multiChild)
+      
+      expect(result.text).toContain('3 children')
+      expect(result.html).toContain('3 children')
+    })
+
+    it('handles no children', () => {
+      const noChildren = { ...approvalReservation, children: 0 }
+      const result = generateApprovalEmail(noChildren)
+      
+      expect(result.text).toContain('2 adults')
+      expect(result.text).not.toContain('child')
     })
   })
 })
