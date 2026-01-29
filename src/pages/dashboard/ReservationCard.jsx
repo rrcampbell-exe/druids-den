@@ -1,6 +1,35 @@
 import { useState } from 'react'
 import './ReservationCard.scss'
 
+// Export helper functions for testing
+export const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    month: 'long', 
+    day: 'numeric', 
+    year: 'numeric',
+    timeZone: 'UTC'
+  })
+}
+
+export const formatDateTime = (dateTimeString) => {
+  const date = new Date(dateTimeString)
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  })
+}
+
+export const calculateNights = (checkIn, checkOut) => {
+  const checkInDate = new Date(checkIn)
+  const checkOutDate = new Date(checkOut)
+  const diffTime = Math.abs(checkOutDate - checkInDate)
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays
+}
+
 const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, isApproved = false, expanded = false }) => {
   const [showDenyForm, setShowDenyForm] = useState(false)
   const [denialMessage, setDenialMessage] = useState('')
@@ -12,33 +41,7 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
   const [messageContent, setMessageContent] = useState('')
   const [messageError, setMessageError] = useState('')
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric',
-      timeZone: 'UTC'
-    })
-  }
-
-  const formatDateTime = (dateTimeString) => {
-    const date = new Date(dateTimeString)
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    })
-  }
-
-  const calculateNights = () => {
-    const checkIn = new Date(reservation.checkIn)
-    const checkOut = new Date(reservation.checkOut)
-    const diffTime = Math.abs(checkOut - checkIn)
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays
-  }
+  const nights = calculateNights(reservation.checkIn, reservation.checkOut)
 
   const handleDenySubmit = () => {
     if (!denialMessage.trim()) {
@@ -92,7 +95,6 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
     setMessageError('')
   }
 
-  const nights = calculateNights()
   const isOwner = reservation.isOwnerReservation
 
   return (
