@@ -2,6 +2,126 @@ import { useState, useEffect } from 'react'
 import ReservationCard from './ReservationCard'
 import './AtAGlance.scss'
 
+// Export helper functions for testing
+export const getDaysInMonth = (date) => {
+  const year = date.getFullYear()
+  const month = date.getMonth()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const startingDayOfWeek = new Date(year, month, 1).getDay()
+  
+  const days = []
+  
+  // Add empty slots for days before the month starts
+  for (let i = 0; i < startingDayOfWeek; i++) {
+    days.push(null)
+  }
+  
+  // Add all days of the month
+  for (let day = 1; day <= daysInMonth; day++) {
+    days.push(new Date(year, month, day))
+  }
+  
+  return days
+}
+
+export const formatDateString = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export const getReservationsForDate = (date, reservations) => {
+  if (!date) return []
+  const dateString = formatDateString(date)
+  
+  return reservations.filter(res => {
+    // Exclude denied and cancelled reservations from calendar
+    if (res.status === 'denied' || res.status === 'cancelled') return false
+    
+    // Parse dates as local dates to avoid timezone issues
+    const [checkInYear, checkInMonth, checkInDay] = res.checkIn.split('-').map(Number)
+    const [checkOutYear, checkOutMonth, checkOutDay] = res.checkOut.split('-').map(Number)
+    
+    const checkIn = new Date(checkInYear, checkInMonth - 1, checkInDay)
+    const checkOut = new Date(checkOutYear, checkOutMonth - 1, checkOutDay)
+    const current = new Date(date)
+    
+    // Set all times to midnight for accurate comparison
+    checkIn.setHours(0, 0, 0, 0)
+    checkOut.setHours(0, 0, 0, 0)
+    current.setHours(0, 0, 0, 0)
+    
+    return current >= checkIn && current < checkOut
+  })
+}
+
+export const getDayClass = (date, reservations) => {
+  if (!date) return 'empty'
+  
+  const reservationsOnDate = getReservationsForDate(date, reservations)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const currentDate = new Date(date)
+  currentDate.setHours(0, 0, 0, 0)
+  
+  let classes = ['calendar-day']
+  
+  if (currentDate.getTime() === today.getTime()) {
+    classes.push('today')
+  }
+  
+  // Check if any reservations are pending
+  const hasPending = reservationsOnDate.some(res => res.status === 'pending')
+  if (hasPending) {
+    classes.push('has-pending')
+  }
+  
+  // Check if any reservations are approved
+  const hasApproved = reservationsOnDate.some(res => res.status === 'approved')
+  const hasOwnerReservation = reservationsOnDate.some(res => res.isOwnerReservation)
+  
+  if (hasOwnerReservation && !hasPending) {
+    classes.push('has-owner')
+  } else if (hasApproved && !hasPending) {
+    classes.push('has-approved')
+  }
+  
+  // Check if it's a check-in or check-out day
+  const dateString = formatDateString(date)
+  const isCheckIn = reservationsOnDate.some(res => res.checkIn === dateString)
+  const isCheckOut = reservationsOnDate.some(res => res.checkOut === dateString)
+  
+  if (isCheckIn) classes.push('check-in-day')
+  if (isCheckOut) classes.push('check-out-day')
+  
+  return classes.join(' ')
+}
+
+export const getPendingReservations = (reservations) => {
+  return reservations.filter(res => res.status === 'pending')
+}
+
+export const getUpcomingReservations = (reservations, filter = 'all') => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  
+  let filtered = reservations
+    .filter(res => {
+      const checkIn = new Date(res.checkIn)
+      checkIn.setHours(0, 0, 0, 0)
+      return res.status === 'approved' && checkIn >= today
+    })
+  
+  if (filter === 'owner') {
+    filtered = filtered.filter(res => res.isOwnerReservation)
+  } else if (filter === 'guest') {
+    filtered = filtered.filter(res => !res.isOwnerReservation)
+  }
+  
+  return filtered.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn))
+}
+
 const AtAGlance = () => {
   const [reservations, setReservations] = useState([])
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -22,127 +142,9 @@ const AtAGlance = () => {
     // Load mock reservations
     fetch('/mock-reservations.json')
       .then(response => response.json())
-      .then(data => setReservations(data.reservations))
+      .then(data => setReservations(data.reservations || []))
       .catch(err => console.error('Error loading reservations:', err))
   }, [])
-
-  const getDaysInMonth = (date) => {
-    const year = date.getFullYear()
-    const month = date.getMonth()
-    const firstDay = new Date(year, month, 1)
-    const lastDay = new Date(year, month + 1, 0)
-    const daysInMonth = lastDay.getDate()
-    const startingDayOfWeek = firstDay.getDay()
-    
-    const days = []
-    
-    // Add empty cells for days before the first of the month
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(null)
-    }
-    
-    // Add all days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(new Date(year, month, day))
-    }
-    
-    return days
-  }
-
-  const formatDateString = (date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
-  const getReservationsForDate = (date) => {
-    if (!date) return []
-    const dateString = formatDateString(date)
-    
-    return reservations.filter(res => {
-      // Exclude denied and cancelled reservations from calendar
-      if (res.status === 'denied' || res.status === 'cancelled') return false
-      
-      // Parse dates as local dates to avoid timezone issues
-      const [checkInYear, checkInMonth, checkInDay] = res.checkIn.split('-').map(Number)
-      const [checkOutYear, checkOutMonth, checkOutDay] = res.checkOut.split('-').map(Number)
-      
-      const checkIn = new Date(checkInYear, checkInMonth - 1, checkInDay)
-      const checkOut = new Date(checkOutYear, checkOutMonth - 1, checkOutDay)
-      const current = new Date(date)
-      
-      // Set all times to midnight for accurate comparison
-      checkIn.setHours(0, 0, 0, 0)
-      checkOut.setHours(0, 0, 0, 0)
-      current.setHours(0, 0, 0, 0)
-      
-      return current >= checkIn && current < checkOut
-    })
-  }
-
-  const getDayClass = (date) => {
-    if (!date) return 'empty'
-    
-    const reservationsOnDate = getReservationsForDate(date)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const currentDate = new Date(date)
-    currentDate.setHours(0, 0, 0, 0)
-    
-    let classes = ['calendar-day']
-    
-    if (currentDate.getTime() === today.getTime()) {
-      classes.push('today')
-    }
-    
-    // Check if any reservations are pending
-    const hasPending = reservationsOnDate.some(res => res.status === 'pending')
-    if (hasPending) {
-      classes.push('has-pending')
-    }
-    
-    // Check if any reservations are approved
-    const hasApproved = reservationsOnDate.some(res => res.status === 'approved')
-    const hasOwnerReservation = reservationsOnDate.some(res => res.isOwnerReservation)
-    
-    if (hasOwnerReservation && !hasPending) {
-      classes.push('has-owner')
-    } else if (hasApproved && !hasPending) {
-      classes.push('has-approved')
-    }
-    
-    // Check if it's a check-in or check-out day
-    const dateString = formatDateString(date)
-    const isCheckIn = reservationsOnDate.some(res => res.checkIn === dateString)
-    const isCheckOut = reservationsOnDate.some(res => res.checkOut === dateString)
-    
-    if (isCheckIn) classes.push('check-in-day')
-    if (isCheckOut) classes.push('check-out-day')
-    
-    // Add selection styling for owner reservation creation
-    if (isSelectingDates) {
-      if (selectedCheckIn && formatDateString(selectedCheckIn) === dateString) {
-        classes.push('selected-check-in')
-      }
-      if (selectedCheckOut && formatDateString(selectedCheckOut) === dateString) {
-        classes.push('selected-check-out')
-      }
-      if (selectedCheckIn && selectedCheckOut) {
-        const checkIn = new Date(selectedCheckIn)
-        const checkOut = new Date(selectedCheckOut)
-        const current = new Date(date)
-        checkIn.setHours(0, 0, 0, 0)
-        checkOut.setHours(0, 0, 0, 0)
-        current.setHours(0, 0, 0, 0)
-        if (current > checkIn && current < checkOut) {
-          classes.push('in-selection-range')
-        }
-      }
-    }
-    
-    return classes.join(' ')
-  }
 
   const handleDateClick = (date) => {
     if (!date) return
@@ -161,7 +163,7 @@ const AtAGlance = () => {
       if (!selectedCheckIn) {
         // First click: selecting check-in date
         // Check if this date is occupied (someone is already staying this night)
-        const reservationsOnDate = getReservationsForDate(date)
+        const reservationsOnDate = getReservationsForDate(date, reservations)
         if (reservationsOnDate.length > 0) {
           alert('This date is already occupied. Please select an available check-in date.')
           return
@@ -192,7 +194,7 @@ const AtAGlance = () => {
         const current = new Date(checkIn)
         
         while (current < checkOut) {
-          const reservationsOnDay = getReservationsForDate(current)
+          const reservationsOnDay = getReservationsForDate(current, reservations)
           if (reservationsOnDay.length > 0) {
             alert('Selected date range conflicts with existing reservations.')
             return
@@ -207,7 +209,7 @@ const AtAGlance = () => {
     }
     
     // Normal mode: show reservation details
-    const reservationsOnDate = getReservationsForDate(date)
+    const reservationsOnDate = getReservationsForDate(date, reservations)
     if (reservationsOnDate.length > 0) {
       setSelectedDate(date)
       setSelectedReservation(reservationsOnDate[0])
@@ -263,31 +265,6 @@ const AtAGlance = () => {
     setCurrentMonth(new Date())
   }
 
-  const getPendingReservations = () => {
-    return reservations.filter(res => res.status === 'pending')
-  }
-
-  const getUpcomingReservations = () => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    let filtered = reservations
-      .filter(res => {
-        const checkIn = new Date(res.checkIn)
-        checkIn.setHours(0, 0, 0, 0)
-        return res.status === 'approved' && checkIn >= today
-      })
-    
-    // Apply filter
-    if (upcomingFilter === 'owner') {
-      filtered = filtered.filter(res => res.isOwnerReservation)
-    } else if (upcomingFilter === 'guest') {
-      filtered = filtered.filter(res => !res.isOwnerReservation)
-    }
-    
-    return filtered.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn))
-  }
-
   const handleApprove = (reservationId) => {
     // In real implementation, this would call an API
     setReservations(prev => prev.map(res => 
@@ -329,8 +306,8 @@ const AtAGlance = () => {
 
   const days = getDaysInMonth(currentMonth)
   const monthYear = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-  const pendingReservations = getPendingReservations()
-  const upcomingReservations = getUpcomingReservations()
+  const pendingReservations = getPendingReservations(reservations)
+  const upcomingReservations = getUpcomingReservations(reservations, upcomingFilter)
 
   return (
     <div className='at-a-glance'>
@@ -385,13 +362,13 @@ const AtAGlance = () => {
             {days.map((date, index) => (
               <div
                 key={index}
-                className={getDayClass(date)}
-                onClick={() => handleDateClick(date)}
+                className={getDayClass(date, reservations)}
+                onClick={() => date && handleDateClick(date)}
               >
                 {date && (
                   <>
                     <span className='day-number'>{date.getDate()}</span>
-                    {getReservationsForDate(date).length > 0 && (
+                    {getReservationsForDate(date, reservations).length > 0 && (
                       <span className='reservation-indicator'>●</span>
                     )}
                   </>
