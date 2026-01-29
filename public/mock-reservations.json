@@ -1,7 +1,7 @@
 {
   "reservations": [
     {
-      "id": "res-001",
+      "id": "res-a7f3c8e9-4d2b-4c1a-9f5e-6b8a3c2d1e4f",
       "status": "pending",
       "firstName": "Sarah",
       "lastName": "Mitchell",
@@ -16,7 +16,7 @@
       "estimatedTotal": 450
     },
     {
-      "id": "res-002",
+      "id": "res-b8e4d9f0-5c3d-4b2e-8a6f-7c9b4d3e2f5a",
       "status": "pending",
       "firstName": "James",
       "lastName": "Anderson",
@@ -31,7 +31,7 @@
       "estimatedTotal": 525
     },
     {
-      "id": "res-003",
+      "id": "res-c9f5e0a1-6d4e-5c3f-9b7a-8d0c5e4f6b1c",
       "status": "approved",
       "isOwnerReservation": true,
       "checkIn": "2026-02-05",
@@ -41,7 +41,7 @@
       "approvedAt": "2026-01-10T16:45:00Z"
     },
     {
-      "id": "res-004",
+      "id": "res-d0a6f1b2-7e5f-6d4a-0c8b-9e1d6f5a7c2d",
       "status": "approved",
       "firstName": "Emily",
       "lastName": "Chen",
@@ -57,7 +57,7 @@
       "estimatedTotal": 450
     },
     {
-      "id": "res-005",
+      "id": "res-e1b7c2d3-8f6a-7e5b-1d9c-0f2e7a6b8d3e",
       "status": "approved",
       "firstName": "Michael",
       "lastName": "Rodriguez",
@@ -73,7 +73,7 @@
       "estimatedTotal": 600
     },
     {
-      "id": "res-006",
+      "id": "res-f2c8d3e4-9a7b-8f6c-2e0d-1a3f8b7c9e4f",
       "status": "approved",
       "firstName": "Lisa",
       "lastName": "Thompson",
@@ -89,7 +89,7 @@
       "estimatedTotal": 600
     },
     {
-      "id": "res-006",
+      "id": "res-a3d9e4f5-0b8c-9a7d-3f1e-2b4a9c8d0f5a",
       "status": "completed",
       "firstName": "Robert",
       "lastName": "Williams",
@@ -106,7 +106,7 @@
       "estimatedTotal": 450
     },
     {
-      "id": "res-007",
+      "id": "res-b4e0f5a6-1c9d-0b8e-4a2f-3c5b0d9e1a6b",
       "status": "completed",
       "firstName": "Jennifer",
       "lastName": "Davis",
@@ -123,7 +123,7 @@
       "estimatedTotal": 900
     },
     {
-      "id": "res-008",
+      "id": "res-c5f1a6b7-2d0e-1c9f-5b3a-4d6c1e0f2b7c",
       "status": "pending",
       "firstName": "David",
       "lastName": "Martinez",
