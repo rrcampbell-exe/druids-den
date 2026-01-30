@@ -51,7 +51,7 @@ describe('Feedback', () => {
   })
 
   it('shows error for invalid UUID format', async () => {
-    const { container } = render(
+    render(
       <MemoryRouter initialEntries={['/feedback/invalid-id']}>
         <Routes>
           <Route path="/feedback/:reservationId" element={<Feedback />} />
