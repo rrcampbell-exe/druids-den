@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import { Landing, WhatToExpect, Spooktoberfest, Reservations } from './pages'
+import { Landing, WhatToExpect, Spooktoberfest, Reservations, Dashboard, Feedback } from './pages'
 import { Navigate } from 'react-router'
 import { ProtectedRoute } from './components'
 
@@ -30,6 +30,18 @@ let router = createBrowserRouter([
   {
     path: '/what-to-expect',
     Component: WhatToExpect
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <ProtectedRoute page='dashboard'>
+        <Dashboard />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: '/feedback/:reservationId',
+    Component: Feedback
   },
   {
     path: '/*',

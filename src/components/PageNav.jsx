@@ -71,7 +71,9 @@ const PageNav = ({ title = "Jump to Section:", items = [] }) => {
     }
 
     const hrefs = getAllHrefs(items)
+    // Only query for anchor links (starting with #), not route paths
     const sections = hrefs
+      .filter(href => href && href.startsWith('#'))
       .map(href => document.querySelector(href))
       .filter(Boolean)
 

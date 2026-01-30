@@ -1,0 +1,142 @@
+@use '../variables' as *;
+
+.dashboard-page {
+  padding: 2rem;
+  min-height: 100vh;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    @media (max-width: $breakpoint-mobile) {
+      flex-direction: column;
+      align-items: start;
+      gap: 1.5rem;
+    }
+
+    h1, h2 {
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .bottom-border {
+      border-bottom: 1px dashed var(--color-iron-ore);
+      width: 20%;
+      margin-top: 1rem;
+    }
+
+    .coelbren-subheading {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .header-decorations {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      opacity: 0.7;
+
+      @media (max-width: $breakpoint-mobile) {
+        display: none;
+      }
+    }
+
+    .back-navigation {
+      margin-top: 1rem;
+      white-space: nowrap;
+
+      @media (max-width: $breakpoint-mobile) {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .dashboard-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid rgba(70, 70, 69, 0.2);
+    padding-bottom: 0;
+
+    @media (max-width: $breakpoint-mobile) {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .tab-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      color: var(--color-iron-ore);
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.6;
+
+      &:hover:not(.disabled) {
+        opacity: 1;
+        background: rgba(70, 70, 69, 0.05);
+      }
+
+      &.active {
+        opacity: 1;
+        border-bottom-color: var(--color-iron-ore);
+        font-weight: 600;
+      }
+
+      &.disabled {
+        cursor: not-allowed;
+        opacity: 0.3;
+
+        .coming-soon {
+          position: absolute;
+          top: 0.25rem;
+          right: 0.25rem;
+          font-size: 0.65rem;
+          background: rgba(70, 70, 69, 0.1);
+          padding: 0.125rem 0.375rem;
+          border-radius: 3px;
+        }
+      }
+
+      .tab-icon {
+        font-size: 1.2rem;
+      }
+
+      .tab-label {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .dashboard-content {
+    margin-top: 2rem;
+  }
+
+  .placeholder-tab {
+    padding: 3rem;
+    text-align: center;
+    background: rgba(70, 70, 69, 0.05);
+    border-radius: 8px;
+    border: 2px dashed rgba(70, 70, 69, 0.2);
+
+    h2 {
+      margin-top: 0;
+      color: var(--color-iron-ore);
+    }
+
+    p {
+      color: rgba(70, 70, 69, 0.6);
+    }
+  }
+}

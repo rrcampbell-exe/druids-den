@@ -1,0 +1,406 @@
+import { describe, it, expect } from 'vitest'
+import {
+  generatePreArrivalEmail,
+  generatePostCheckoutEmail,
+  generateDenialEmail,
+  generateCancellationEmail,
+  generateCustomMessageEmail
+} from '../../api/utils/dashboardEmailTemplates'
+
+describe('dashboardEmailTemplates', () => {
+  const mockReservation = {
+    id: 'res-123',
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john@example.com',
+    checkIn: '2026-03-01',
+    checkOut: '2026-03-03',
+    adults: 2,
+    children: 0
+  }
+
+  describe('generatePreArrivalEmail', () => {
+    it('generates email with required fields', () => {
+      const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
+      
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+    })
+
+    it('includes guest first name in email', () => {
+      const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
+      
+      expect(result.text).toContain('John')
+      expect(result.html).toContain('John')
+    })
+
+    it('includes door code in email', () => {
+      const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
+      
+      expect(result.text).toContain('1234')
+      expect(result.html).toContain('1234')
+    })
+
+    it('includes WiFi password in email', () => {
+      const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
+      
+      expect(result.text).toContain('MyWiFi123')
+      expect(result.html).toContain('MyWiFi123')
+    })
+
+    it('includes check-in date in email', () => {
+      const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
+      
+      // Date is formatted with America/Chicago timezone, so 2026-03-01 UTC becomes February 28, 2026
+      expect(result.text).toContain('February 28, 2026')
+      expect(result.html).toContain('February 28, 2026')
+    })
+
+    it('has welcoming subject line', () => {
+      const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
+      
+      expect(result.subject).toContain('Check-in Instructions')
+      expect(result.subject).toContain('Druids Den')
+    })
+  })
+
+  describe('generatePostCheckoutEmail', () => {
+    it('generates email with required fields', () => {
+      const result = generatePostCheckoutEmail(mockReservation)
+      
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+    })
+
+    it('includes guest first name', () => {
+      const result = generatePostCheckoutEmail(mockReservation)
+      
+      expect(result.text).toContain('John')
+      expect(result.html).toContain('John')
+    })
+
+    it('includes check-in and checkout dates', () => {
+      const result = generatePostCheckoutEmail(mockReservation)
+      
+      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
+      expect(result.text).toContain('February 28, 2026')
+      expect(result.text).toContain('March 2, 2026')
+    })
+
+    it('includes feedback link with reservation ID', () => {
+      const result = generatePostCheckoutEmail(mockReservation, 'https://example.com')
+      
+      expect(result.text).toContain('https://example.com/feedback/res-123')
+      expect(result.html).toContain('https://example.com/feedback/res-123')
+    })
+
+    it('uses default base URL if not provided', () => {
+      const result = generatePostCheckoutEmail(mockReservation)
+      
+      expect(result.text).toContain('https://druidsdencabin.com/feedback/res-123')
+    })
+
+    it('has thank you subject line', () => {
+      const result = generatePostCheckoutEmail(mockReservation)
+      
+      expect(result.subject).toContain('Thank You')
+      expect(result.subject).toContain('Druids Den')
+    })
+
+    it('does not include discount information', () => {
+      const result = generatePostCheckoutEmail(mockReservation)
+      
+      expect(result.text).not.toContain('10%')
+      expect(result.text).not.toContain('discount')
+      expect(result.html).not.toContain('10%')
+      expect(result.html).not.toContain('discount')
+    })
+  })
+
+  describe('generateDenialEmail', () => {
+    it('generates email with required fields', () => {
+      const result = generateDenialEmail(mockReservation, 'Dates unavailable')
+      
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+    })
+
+    it('includes guest first name', () => {
+      const result = generateDenialEmail(mockReservation, 'Dates unavailable')
+      
+      expect(result.text).toContain('John')
+      expect(result.html).toContain('John')
+    })
+
+    it('includes custom denial message', () => {
+      const customMessage = 'Unfortunately, those dates are already booked.'
+      const result = generateDenialEmail(mockReservation, customMessage)
+      
+      expect(result.text).toContain(customMessage)
+      expect(result.html).toContain(customMessage)
+    })
+
+    it('includes check-in and checkout dates', () => {
+      const result = generateDenialEmail(mockReservation, 'Dates unavailable')
+      
+      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
+      expect(result.text).toContain('February 28, 2026')
+      expect(result.text).toContain('March 2, 2026')
+    })
+
+    it('has apologetic subject line', () => {
+      const result = generateDenialEmail(mockReservation, 'Dates unavailable')
+      
+      expect(result.subject).toContain('Reservation Request')
+      expect(result.subject).toContain('Druids Den')
+    })
+
+    it('is polite and apologetic', () => {
+      const result = generateDenialEmail(mockReservation, 'Dates unavailable')
+      
+      expect(result.text).toContain('Thank you for your interest')
+      expect(result.html).toContain('Thank you for your interest')
+    })
+  })
+
+  describe('generateCancellationEmail', () => {
+    it('generates email with required fields', () => {
+      const result = generateCancellationEmail(mockReservation, 'Unexpected maintenance')
+      
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+    })
+
+    it('includes guest first name', () => {
+      const result = generateCancellationEmail(mockReservation, 'Unexpected maintenance')
+      
+      expect(result.text).toContain('John')
+      expect(result.html).toContain('John')
+    })
+
+    it('includes custom cancellation message', () => {
+      const customMessage = 'We need to cancel due to emergency repairs.'
+      const result = generateCancellationEmail(mockReservation, customMessage)
+      
+      expect(result.text).toContain(customMessage)
+      expect(result.html).toContain(customMessage)
+    })
+
+    it('includes check-in and checkout dates', () => {
+      const result = generateCancellationEmail(mockReservation, 'Unexpected maintenance')
+      
+      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
+      expect(result.text).toContain('February 28, 2026')
+      expect(result.text).toContain('March 2, 2026')
+    })
+
+    it('has cancellation in subject line', () => {
+      const result = generateCancellationEmail(mockReservation, 'Unexpected maintenance')
+      
+      expect(result.subject).toContain('Cancelled')
+      expect(result.subject).toContain('Druids Den')
+    })
+
+    it('is apologetic', () => {
+      const result = generateCancellationEmail(mockReservation, 'Unexpected maintenance')
+      
+      expect(result.text).toContain('apologize')
+      expect(result.html).toContain('apologize')
+    })
+  })
+
+  describe('generateCustomMessageEmail', () => {
+    it('generates email with required fields', () => {
+      const result = generateCustomMessageEmail(mockReservation, 'Looking forward to your visit!')
+      
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+    })
+
+    it('includes guest first name', () => {
+      const result = generateCustomMessageEmail(mockReservation, 'Looking forward to your visit!')
+      
+      expect(result.text).toContain('John')
+      expect(result.html).toContain('John')
+    })
+
+    it('includes custom message', () => {
+      const customMessage = 'We received your special request for early check-in.'
+      const result = generateCustomMessageEmail(mockReservation, customMessage)
+      
+      expect(result.text).toContain(customMessage)
+      expect(result.html).toContain(customMessage)
+    })
+
+    it('has generic subject line', () => {
+      const result = generateCustomMessageEmail(mockReservation, 'Test message')
+      
+      expect(result.subject).toContain('Message')
+      expect(result.subject).toContain('Druid\'s Den')
+    })
+
+    it('is signed by owners', () => {
+      const result = generateCustomMessageEmail(mockReservation, 'Test message')
+      
+      expect(result.text).toContain('Ryan and Lacey')
+      expect(result.html).toContain('Ryan and Lacey')
+    })
+  })
+  describe('HTML email structure', () => {
+    it('all HTML emails have proper structure with meta tags', () => {
+      const emails = [
+        generatePreArrivalEmail(mockReservation, '1234', 'wifi'),
+        generatePostCheckoutEmail(mockReservation),
+        generateDenialEmail(mockReservation, 'test'),
+        generateCancellationEmail(mockReservation, 'test'),
+        generateCustomMessageEmail(mockReservation, 'test')
+      ]
+
+      emails.forEach(email => {
+        expect(email.html).toContain('<meta charset="utf-8">')
+        expect(email.html).toContain('<meta name="viewport"')
+        expect(email.html).toContain('</html>')
+      })
+    })
+
+    it('all HTML emails have styled body containers', () => {
+      const emails = [
+        generatePreArrivalEmail(mockReservation, '1234', 'wifi'),
+        generatePostCheckoutEmail(mockReservation),
+        generateDenialEmail(mockReservation, 'test'),
+        generateCancellationEmail(mockReservation, 'test'),
+        generateCustomMessageEmail(mockReservation, 'test')
+      ]
+
+      emails.forEach(email => {
+        expect(email.html).toContain('font-family')
+        expect(email.html).toContain('background')
+        expect(email.html).toContain('<body')
+      })
+    })
+
+    it('pre-arrival email contains access information styling', () => {
+      const result = generatePreArrivalEmail(mockReservation, '1234', 'wifi')
+      
+      expect(result.html).toContain('Access Information')
+      expect(result.html).toContain('Door Code: 1234')
+      expect(result.html).toContain('WiFi: wifi')
+      expect(result.html).toContain('🌲')
+    })
+
+    it('post-checkout email contains feedback link styling', () => {
+      const result = generatePostCheckoutEmail(mockReservation, 'https://test.com')
+      
+      expect(result.html).toContain('Share Your Feedback')
+      expect(result.html).toContain('https://test.com/feedback/res-123')
+      expect(result.html).toContain('<a href=')
+    })
+
+    it('denial email contains apologetic messaging', () => {
+      const result = generateDenialEmail(mockReservation, 'Dates unavailable')
+      
+      expect(result.html).toContain('Reservation Update')
+      expect(result.html).toContain('Dates unavailable')
+      expect(result.html).toContain('We hope to host you in the future')
+    })
+
+    it('cancellation email contains cancellation header', () => {
+      const result = generateCancellationEmail(mockReservation, 'Emergency maintenance')
+      
+      expect(result.html).toContain('Reservation Cancelled')
+      expect(result.html).toContain('Emergency maintenance')
+      expect(result.html).toContain('We apologize')
+    })
+
+    it('custom message email wraps message properly', () => {
+      const message = 'Your early check-in has been approved!'
+      const result = generateCustomMessageEmail(mockReservation, message)
+      
+      expect(result.html).toContain('Message from The Druids Den')
+      expect(result.html).toContain(message)
+      expect(result.html).toContain('white-space: pre-wrap')
+    })
+
+    // Snapshot tests specifically for HTML template structure
+    // These ensure template literals are properly formatted and don't break during refactoring
+    describe('HTML template snapshots', () => {
+      it('pre-arrival HTML structure matches snapshot', () => {
+        const result = generatePreArrivalEmail(mockReservation, 'CODE123', 'WiFiPass')
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('post-checkout HTML structure matches snapshot', () => {
+        const result = generatePostCheckoutEmail(mockReservation)
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('denial HTML structure matches snapshot', () => {
+        const result = generateDenialEmail(mockReservation, 'Test reason')
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('cancellation HTML structure matches snapshot', () => {
+        const result = generateCancellationEmail(mockReservation, 'Test reason')
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('custom message HTML structure matches snapshot', () => {
+        const result = generateCustomMessageEmail(mockReservation, 'Test message')
+        expect(result.html).toMatchSnapshot()
+      })
+    })
+  })
+
+  describe('Email format consistency', () => {
+    it('all emails have text and HTML versions', () => {
+      const emails = [
+        generatePreArrivalEmail(mockReservation, '1234', 'wifi'),
+        generatePostCheckoutEmail(mockReservation),
+        generateDenialEmail(mockReservation, 'test'),
+        generateCancellationEmail(mockReservation, 'test'),
+        generateCustomMessageEmail(mockReservation, 'test')
+      ]
+
+      emails.forEach(email => {
+        expect(email.text).toBeTruthy()
+        expect(email.html).toBeTruthy()
+        expect(email.text.length).toBeGreaterThan(0)
+        expect(email.html.length).toBeGreaterThan(0)
+      })
+    })
+
+    it('all HTML emails contain proper DOCTYPE', () => {
+      const emails = [
+        generatePreArrivalEmail(mockReservation, '1234', 'wifi'),
+        generatePostCheckoutEmail(mockReservation),
+        generateDenialEmail(mockReservation, 'test'),
+        generateCancellationEmail(mockReservation, 'test'),
+        generateCustomMessageEmail(mockReservation, 'test')
+      ]
+
+      emails.forEach(email => {
+        expect(email.html).toContain('<!DOCTYPE html>')
+      })
+    })
+
+    it('all emails include property name in subject', () => {
+      const emails = [
+        generatePreArrivalEmail(mockReservation, '1234', 'wifi'),
+        generatePostCheckoutEmail(mockReservation),
+        generateDenialEmail(mockReservation, 'test'),
+        generateCancellationEmail(mockReservation, 'test'),
+        generateCustomMessageEmail(mockReservation, 'test')
+      ]
+
+      emails.forEach(email => {
+        // Property name appears as "Druids Den" or "Druid's Den"
+        expect(email.subject.toLowerCase()).toMatch(/druid'?s den/)
+      })
+    })
+  })
+})

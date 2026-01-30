@@ -35,7 +35,8 @@
 /* Page header styles - applied to all pages */
 .spooktoberfest-page .page-header,
 .what-to-expect-page .page-header,
-.reservations-page .page-header {
+.reservations-page .page-header,
+.dashboard-page .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -51,16 +52,19 @@
 .spooktoberfest-page .page-header h1,
 .what-to-expect-page .page-header h1,
 .reservations-page .page-header h1,
+.dashboard-page .page-header h1,
 .spooktoberfest-page .page-header h2,
 .what-to-expect-page .page-header h2,
-.reservations-page .page-header h2 {
+.reservations-page .page-header h2,
+.dashboard-page .page-header h2 {
   margin: 0;
   font-weight: 400;
 }
 
 .spooktoberfest-page .page-header .bottom-border,
 .what-to-expect-page .page-header .bottom-border,
-.reservations-page .page-header .bottom-border {
+.reservations-page .page-header .bottom-border,
+.dashboard-page .page-header .bottom-border {
   border-bottom: 1px dashed var(--color-iron-ore);
   width: 20%;
   margin-top: 1rem;
@@ -68,20 +72,23 @@
 
 .spooktoberfest-page .coelbren-subheading,
 .what-to-expect-page .coelbren-subheading,
-.reservations-page .coelbren-subheading {
+.reservations-page .coelbren-subheading,
+.dashboard-page .coelbren-subheading {
   margin-top: 0.5rem;
   font-size: 1rem;
 }
 
 .spooktoberfest-page .subheading,
 .what-to-expect-page .subheading,
-.reservations-page .subheading {
+.reservations-page .subheading,
+.dashboard-page .subheading {
   font-size: 1.2rem;
 }
 
 .spooktoberfest-page .back-navigation,
 .what-to-expect-page .back-navigation,
-.reservations-page .back-navigation {
+.reservations-page .back-navigation,
+.dashboard-page .back-navigation {
   margin-top: 1rem;
   white-space: nowrap;
   
@@ -93,7 +100,8 @@
 /* Shared page wrapper styles */
 .spooktoberfest-page,
 .what-to-expect-page,
-.reservations-page {
+.reservations-page,
+.dashboard-page {
   padding: 2rem;
 }
 

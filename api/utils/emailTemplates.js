@@ -238,3 +238,91 @@ This is an automated confirmation. Please do not reply to this email. For questi
 
   return { subject, text, html }
 }
+
+/**
+ * Generate approval confirmation email for guests
+ * @param {Object} reservation - The reservation details
+ * @returns {Object} Email content with subject, text, and html
+ */
+export function generateApprovalEmail(reservation) {
+  const { firstName, lastName, checkIn, checkOut, adults, children, estimatedTotal } = reservation
+  
+  const subject = `Your Druids Den Reservation is Confirmed! 🌲`
+  
+  const text = `
+Reservation Confirmed!
+
+Dear ${firstName} ${lastName},
+
+Great news! Your reservation at The Druids Den has been approved. We're excited to host you!
+
+RESERVATION DETAILS:
+Check-in: ${formatDateForEmail(checkIn)} (3:00 PM)
+Check-out: ${formatDateForEmail(checkOut)} (11:00 AM)
+Guests: ${adults} adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} child${children !== 1 ? 'ren' : ''}` : ''}
+Total: $${estimatedTotal}
+
+You'll receive detailed check-in instructions 24-48 hours before your arrival.
+
+If you have any questions before your stay, feel free to reply to this email.
+
+We look forward to welcoming you to The Druids Den!
+
+Best regards,
+Ryan and Lacey at The Druids Den
+grovekeeper@druidsdenwi.com
+  `.trim()
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #464645; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #BAB6A2;">
+  <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="background: linear-gradient(135deg, rgba(107, 142, 111, 0.9) 0%, rgba(107, 142, 111, 0.85) 100%); padding: 40px 30px; text-align: center; border-bottom: 3px solid #4a6b4d;">
+      <h1 style="margin: 0 0 10px 0; font-size: 32px; font-weight: 600; color: white; letter-spacing: 1px;">🌲 Confirmed! 🌲</h1>
+    </div>
+    
+    <div style="padding: 40px 30px; background-color: #fff;">
+      <p style="margin: 0 0 20px 0; font-size: 16px;">Dear ${firstName} ${lastName},</p>
+      
+      <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.8;">
+        <strong>Great news!</strong> Your reservation at <strong>The Druids Den</strong> has been approved.
+      </p>
+      
+      <div style="background: rgba(107, 142, 111, 0.15); border-left: 4px solid #4a6b4d; padding: 25px; border-radius: 8px; margin: 30px 0;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 10px 0; font-weight: 600; color: #666;">Check-in:</td>
+            <td style="padding: 10px 0; color: #333;">${formatDateForEmail(checkIn)} (3:00 PM)</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-weight: 600; color: #666;">Check-out:</td>
+            <td style="padding: 10px 0; color: #333;">${formatDateForEmail(checkOut)} (11:00 AM)</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-weight: 600; color: #666;">Guests:</td>
+            <td style="padding: 10px 0; color: #333;">${adults} adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} child${children !== 1 ? 'ren' : ''}` : ''}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-weight: 600; color: #666;">Total:</td>
+            <td style="padding: 10px 0; color: #333; font-size: 18px; font-weight: 600;">$${estimatedTotal}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <p style="margin: 20px 0 0 0; font-size: 16px;">
+        Best regards,<br>
+        <strong>Ryan and Lacey at The Druids Den</strong>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim()
+  
+  return { subject, text, html }
+}
