@@ -5,6 +5,7 @@ import './Reports.scss'
 
 const Reports = () => {
   const [reservations, setReservations] = useState([])
+  const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState('ytd') // ytd, year, custom
   const [customStart, setCustomStart] = useState('')
   const [customEnd, setCustomEnd] = useState('')
@@ -12,11 +13,18 @@ const Reports = () => {
   const [includeOwnerInBookings, setIncludeOwnerInBookings] = useState(true)
 
   useEffect(() => {
-    // Load reservations
-    fetch('/mock-reservations.json')
+    // Fetch reservations from database
+    setLoading(true)
+    fetch('/api/reservations')
       .then(res => res.json())
-      .then(data => setReservations(data.reservations || data))
-      .catch(err => console.error('Error loading reservations:', err))
+      .then(data => {
+        setReservations(data.reservations || data)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('Error loading reservations:', err)
+        setLoading(false)
+      })
   }, [])
 
   // Filter reservations by time range and completed/approved status
@@ -210,6 +218,27 @@ const Reports = () => {
 
   // Get today's date in YYYY-MM-DD format for max date constraint
   const today = new Date().toISOString().split('T')[0]
+
+  // Show loading skeleton
+  if (loading) {
+    return (
+      <div className='reports-container'>
+        <div className='reports-header'>
+          <div className='skeleton-text' style={{ width: '200px', height: '32px', marginBottom: '20px' }}></div>
+          <div className='skeleton-button' style={{ width: '300px', height: '40px' }}></div>
+        </div>
+        <div className='metrics-grid'>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className='metric-card skeleton-card'></div>
+          ))}
+        </div>
+        <div className='charts-section'>
+          <div className='skeleton-card' style={{ height: '400px', marginBottom: '30px' }}></div>
+          <div className='skeleton-card' style={{ height: '400px' }}></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className='reports-container'>

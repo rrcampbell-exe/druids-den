@@ -153,6 +153,7 @@ export const getUpcomingReservations = (reservations, filter = 'all') => {
 
 const AtAGlance = () => {
   const [reservations, setReservations] = useState([])
+  const [loading, setLoading] = useState(true)
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [showModal, setShowModal] = useState(false)
   const [selectedReservation, setSelectedReservation] = useState(null)
@@ -167,11 +168,18 @@ const AtAGlance = () => {
   const [ownerNote, setOwnerNote] = useState('')
 
   useEffect(() => {
-    // Load mock reservations
-    fetch('/mock-reservations.json')
+    // Fetch reservations from database
+    setLoading(true)
+    fetch('/api/reservations')
       .then(response => response.json())
-      .then(data => setReservations(data.reservations || []))
-      .catch(err => console.error('Error loading reservations:', err))
+      .then(data => {
+        setReservations(data.reservations || [])
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('Error loading reservations:', err)
+        setLoading(false)
+      })
   }, [])
 
   const handleDateClick = (date) => {
@@ -334,6 +342,39 @@ const AtAGlance = () => {
   const monthYear = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   const pendingReservations = getPendingReservations(reservations)
   const upcomingReservations = getUpcomingReservations(reservations, upcomingFilter)
+
+  // Show loading skeleton
+  if (loading) {
+    return (
+      <div className='at-a-glance'>
+        <div className='calendar-section'>
+          <div className='calendar-section-header'>
+            <h2>Reservation Calendar</h2>
+            <div className='header-buttons'>
+              <div className='skeleton-button' style={{ width: '120px', height: '40px' }}></div>
+              <div className='skeleton-button' style={{ width: '120px', height: '40px' }}></div>
+            </div>
+          </div>
+          <div className='calendar-container'>
+            <div className='calendar-header'>
+              <div className='skeleton-text' style={{ width: '150px', height: '24px', margin: '0 auto' }}></div>
+            </div>
+            <div className='skeleton-calendar'>
+              {[...Array(35)].map((_, i) => (
+                <div key={i} className='skeleton-day'></div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className='reservations-section'>
+          <div className='skeleton-text' style={{ width: '200px', height: '32px', marginBottom: '20px' }}></div>
+          {[1, 2, 3].map(i => (
+            <div key={i} className='skeleton-card'></div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className='at-a-glance'>
