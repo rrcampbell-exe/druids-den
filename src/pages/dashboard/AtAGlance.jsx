@@ -56,7 +56,7 @@ export const getReservationsForDate = (date, reservations) => {
   })
 }
 
-export const getDayClass = (date, reservations) => {
+export const getDayClass = (date, reservations, selectedCheckIn = null, selectedCheckOut = null) => {
   if (!date) return 'empty'
   
   const reservationsOnDate = getReservationsForDate(date, reservations)
@@ -69,6 +69,34 @@ export const getDayClass = (date, reservations) => {
   
   if (currentDate.getTime() === today.getTime()) {
     classes.push('today')
+  }
+  
+  // Check if this date is the selected check-in or check-out during owner reservation flow
+  if (selectedCheckIn) {
+    const checkInDate = new Date(selectedCheckIn)
+    checkInDate.setHours(0, 0, 0, 0)
+    if (currentDate.getTime() === checkInDate.getTime()) {
+      classes.push('selected-check-in')
+    }
+  }
+  
+  if (selectedCheckOut) {
+    const checkOutDate = new Date(selectedCheckOut)
+    checkOutDate.setHours(0, 0, 0, 0)
+    if (currentDate.getTime() === checkOutDate.getTime()) {
+      classes.push('selected-check-out')
+    }
+  }
+  
+  // Check if date is in the range between selected check-in and check-out
+  if (selectedCheckIn && selectedCheckOut) {
+    const checkIn = new Date(selectedCheckIn)
+    const checkOut = new Date(selectedCheckOut)
+    checkIn.setHours(0, 0, 0, 0)
+    checkOut.setHours(0, 0, 0, 0)
+    if (currentDate > checkIn && currentDate < checkOut) {
+      classes.push('in-selection-range')
+    }
   }
   
   // Check if any reservations are pending
@@ -125,7 +153,6 @@ export const getUpcomingReservations = (reservations, filter = 'all') => {
 const AtAGlance = () => {
   const [reservations, setReservations] = useState([])
   const [currentMonth, setCurrentMonth] = useState(new Date())
-  const [selectedDate, setSelectedDate] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [selectedReservation, setSelectedReservation] = useState(null)
   const [reservationView, setReservationView] = useState('pending') // 'pending' or 'upcoming'
@@ -210,7 +237,6 @@ const AtAGlance = () => {
     // Normal mode: show reservation details
     const reservationsOnDate = getReservationsForDate(date, reservations)
     if (reservationsOnDate.length > 0) {
-      setSelectedDate(date)
       setSelectedReservation(reservationsOnDate[0])
       setShowModal(true)
     }
@@ -361,7 +387,7 @@ const AtAGlance = () => {
             {days.map((date, index) => (
               <div
                 key={index}
-                className={getDayClass(date, reservations)}
+                className={getDayClass(date, reservations, selectedCheckIn, selectedCheckOut)}
                 onClick={() => date && handleDateClick(date)}
               >
                 {date && (
