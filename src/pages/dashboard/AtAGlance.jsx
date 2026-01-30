@@ -33,7 +33,6 @@ export const formatDateString = (date) => {
 
 export const getReservationsForDate = (date, reservations) => {
   if (!date) return []
-  const dateString = formatDateString(date)
   
   return reservations.filter(res => {
     // Exclude denied and cancelled reservations from calendar
