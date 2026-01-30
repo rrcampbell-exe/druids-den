@@ -213,9 +213,20 @@
             border-color: var(--color-iron-ore);
           }
 
-          &.check-in-day,
+          &.check-in-day {
+            border-top: 3px solid var(--color-iron-ore);
+            
+            .day-number {
+              margin-top: -2px; // Compensate for thicker border
+            }
+          }
+          
           &.check-out-day {
-            font-weight: 700;
+            border-bottom: 3px solid rgba(70, 70, 69, 0.5);
+            
+            .day-number {
+              margin-bottom: -2px; // Compensate for thicker border
+            }
           }
         }
       }
@@ -227,6 +238,11 @@
         border-top: 1px solid rgba(70, 70, 69, 0.2);
         font-size: 0.85rem;
         flex-wrap: wrap;
+        justify-content: space-evenly;
+
+        @media (max-width: $breakpoint-mobile) {
+          justify-content: flex-start;
+        }
 
         .legend-item {
           display: flex;
@@ -256,6 +272,24 @@
             width: 1rem;
             height: 1rem;
             border: 2px solid var(--color-iron-ore);
+            border-radius: 3px;
+          }
+
+          .legend-check-in {
+            width: 1rem;
+            height: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(70, 70, 69, 0.2);
+            border-top: 3px solid var(--color-iron-ore);
+            border-radius: 3px;
+          }
+
+          .legend-check-out {
+            width: 1rem;
+            height: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(70, 70, 69, 0.2);
+            border-bottom: 3px solid rgba(70, 70, 69, 0.5);
             border-radius: 3px;
           }
         }

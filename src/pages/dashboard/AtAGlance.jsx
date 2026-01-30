@@ -116,9 +116,11 @@ export const getDayClass = (date, reservations, selectedCheckIn = null, selected
   }
   
   // Check if it's a check-in or check-out day
+  // Note: Check against ALL reservations since check-out days aren't in reservationsOnDate
+  // (they're excluded by the < checkOut comparison to allow same-day turnover)
   const dateString = formatDateString(date)
-  const isCheckIn = reservationsOnDate.some(res => res.checkIn === dateString)
-  const isCheckOut = reservationsOnDate.some(res => res.checkOut === dateString)
+  const isCheckIn = reservations.some(res => res.checkIn === dateString)
+  const isCheckOut = reservations.some(res => res.checkOut === dateString)
   
   if (isCheckIn) classes.push('check-in-day')
   if (isCheckOut) classes.push('check-out-day')
@@ -418,6 +420,14 @@ const AtAGlance = () => {
             <div className='legend-item'>
               <span className='legend-today'></span>
               <span>Today</span>
+            </div>
+            <div className='legend-item'>
+              <span className='legend-check-in'></span>
+              <span>Check-in Day</span>
+            </div>
+            <div className='legend-item'>
+              <span className='legend-check-out'></span>
+              <span>Check-out Day</span>
             </div>
           </div>
         </div>
