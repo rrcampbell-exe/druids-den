@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './Dashboard.scss'
-import { Coelbren, Flower, Leaf, Awen } from '../components'
+import { Coelbren, Awen } from '../components'
 import { Link } from 'react-router'
 import AtAGlance from './dashboard/AtAGlance'
 import Reports from './dashboard/Reports'

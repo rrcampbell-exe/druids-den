@@ -278,7 +278,6 @@ describe('Reservations', () => {
 
   describe('Guest count validation', () => {
     it('limits adults to maximum', async () => {
-      const user = userEvent.setup()
       render(<BrowserRouter><Reservations /></BrowserRouter>)
       
       const adultsInput = screen.getByLabelText('Adults *')
