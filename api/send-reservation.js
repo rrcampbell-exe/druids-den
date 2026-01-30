@@ -1,3 +1,4 @@
+import { prisma } from './utils/db.js'
 import { sendBulkEmails } from './utils/emailService.js'
 import { 
   generateAdminNotificationEmail, 
@@ -18,6 +19,26 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Create reservation in database with pending status
+    // Convert YYYY-MM-DD dates to ISO-8601 DateTime for Prisma
+    const checkInDate = new Date(reservationData.checkIn + 'T00:00:00.000Z')
+    const checkOutDate = new Date(reservationData.checkOut + 'T00:00:00.000Z')
+    
+    const reservation = await prisma.reservation.create({
+      data: {
+        checkIn: checkInDate.toISOString(),
+        checkOut: checkOutDate.toISOString(),
+        adults: reservationData.adults || 1,
+        children: reservationData.children || 0,
+        specialRequests: reservationData.specialRequests || null,
+        status: 'PENDING',
+        guestFirstName: reservationData.firstName,
+        guestLastName: reservationData.lastName,
+        guestEmail: reservationData.email,
+        guestPhone: reservationData.phone
+      }
+    })
+
     // Generate email templates
     const adminEmail = generateAdminNotificationEmail(reservationData)
     const customerEmail = generateCustomerConfirmationEmail(reservationData)
