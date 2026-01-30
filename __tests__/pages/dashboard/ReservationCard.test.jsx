@@ -37,7 +37,8 @@ describe('ReservationCard', () => {
     onApprove: vi.fn(),
     onDeny: vi.fn(),
     onCancel: vi.fn(),
-    onMessage: vi.fn()
+    onMessage: vi.fn(),
+    onEdit: vi.fn()
   }
 
   beforeEach(() => {
@@ -392,6 +393,135 @@ describe('ReservationCard', () => {
       expect(calculateNights('2026-03-01', '2026-03-03')).toBe(2)
       expect(calculateNights('2026-06-15', '2026-06-20')).toBe(5)
       expect(calculateNights('2026-01-01', '2026-01-02')).toBe(1)
+    })
+  })
+
+  describe('Edit functionality', () => {
+    it('shows edit form when edit button clicked', () => {
+      const editableReservation = { ...mockApprovedReservation }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      expect(screen.getByText('Save Changes')).toBeInTheDocument()
+    })
+
+    it('validates check-in and check-out dates are required', () => {
+      const editableReservation = { ...mockApprovedReservation }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      const checkInInput = screen.getByLabelText(/Check-in:/)
+      fireEvent.change(checkInInput, { target: { value: '' } })
+      
+      const updateButton = screen.getByText('Save Changes')
+      fireEvent.click(updateButton)
+      
+      expect(screen.getByText('Check-in and check-out dates are required')).toBeInTheDocument()
+    })
+
+    it('validates check-out date must be after check-in', () => {
+      const editableReservation = { ...mockApprovedReservation }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      const checkInInput = screen.getByLabelText(/Check-in:/)
+      const checkOutInput = screen.getByLabelText(/Check-out:/)
+      
+      fireEvent.change(checkInInput, { target: { value: '2026-06-10' } })
+      fireEvent.change(checkOutInput, { target: { value: '2026-06-09' } })
+      
+      const updateButton = screen.getByText('Save Changes')
+      fireEvent.click(updateButton)
+      
+      expect(screen.getByText('Check-out date must be after check-in date')).toBeInTheDocument()
+    })
+
+    it('validates at least 1 adult is required', () => {
+      const editableReservation = { ...mockApprovedReservation }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      const adultsInput = screen.getByLabelText(/Adults/)
+      fireEvent.change(adultsInput, { target: { value: '0' } })
+      
+      const updateButton = screen.getByText('Save Changes')
+      fireEvent.click(updateButton)
+      
+      expect(screen.getByText('At least 1 adult is required')).toBeInTheDocument()
+    })
+
+    it('validates maximum 10 guests allowed', () => {
+      const editableReservation = { ...mockApprovedReservation }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      const adultsInput = screen.getByLabelText(/Adults/)
+      const childrenInput = screen.getByLabelText(/Children/)
+      
+      fireEvent.change(adultsInput, { target: { value: '6' } })
+      fireEvent.change(childrenInput, { target: { value: '5' } })
+      
+      const updateButton = screen.getByText('Save Changes')
+      fireEvent.click(updateButton)
+      
+      expect(screen.getByText('Maximum 10 guests allowed')).toBeInTheDocument()
+    })
+
+    it('calls onEdit when valid edit is submitted', () => {
+      const editableReservation = { ...mockApprovedReservation }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      const adultsInput = screen.getByLabelText(/Adults/)
+      fireEvent.change(adultsInput, { target: { value: '3' } })
+      
+      const updateButton = screen.getByText('Save Changes')
+      fireEvent.click(updateButton)
+      
+      expect(mockHandlers.onEdit).toHaveBeenCalled()
+    })
+
+    it('cancels edit form when Cancel clicked', () => {
+      const editableReservation = { ...mockApprovedReservation }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      expect(screen.getByText('Save Changes')).toBeInTheDocument()
+      
+      const cancelButton = screen.getByText('Cancel')
+      fireEvent.click(cancelButton)
+      
+      expect(screen.queryByText('Save Changes')).not.toBeInTheDocument()
+      expect(screen.getByText('✎ Edit Reservation')).toBeInTheDocument()
+    })
+
+    it('pre-fills edit form with current reservation data', () => {
+      const editableReservation = { 
+        ...mockApprovedReservation,
+        specialRequests: 'Bring extra towels',
+        ownerNote: 'VIP guest'
+      }
+      render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
+      
+      const editButton = screen.getByText('✎ Edit Reservation')
+      fireEvent.click(editButton)
+      
+      const adultsInput = screen.getByLabelText(/Adults/)
+      expect(adultsInput.value).toBe('2')
     })
   })
 })

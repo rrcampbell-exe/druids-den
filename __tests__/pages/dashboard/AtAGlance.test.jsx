@@ -2,6 +2,14 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import AtAGlance, { getDaysInMonth, formatDateString, getReservationsForDate, getDayClass, getPendingReservations, getUpcomingReservations } from '../../../src/pages/dashboard/AtAGlance'
 
+// Mock the reservation cache utility
+vi.mock('../../../src/utils/reservationCache', () => ({
+  reservationCache: {
+    fetch: vi.fn(),
+    invalidate: vi.fn()
+  }
+}))
+
 // Mock ReservationCard
 vi.mock('../../../src/pages/dashboard/ReservationCard', () => ({
   default: ({ reservation, onApprove, onDeny, onCancel, onMessage }) => (
@@ -50,6 +58,9 @@ const mockReservations = {
   ]
 }
 
+// Import the mock after setting it up
+import { reservationCache } from '../../../src/utils/reservationCache'
+
 describe('AtAGlance', () => {
   beforeEach(() => {
     // Mock the current date to January 29, 2026 for consistent test results
@@ -59,6 +70,9 @@ describe('AtAGlance', () => {
     fetch.mockResolvedValue({
       json: async () => mockReservations
     })
+    
+    // Mock cache.fetch to return mockReservations
+    reservationCache.fetch.mockResolvedValue(mockReservations.reservations)
   })
 
   afterEach(() => {
@@ -77,7 +91,7 @@ describe('AtAGlance', () => {
     render(<AtAGlance />)
     
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/mock-reservations.json')
+      expect(reservationCache.fetch).toHaveBeenCalled()
     })
   })
 
@@ -284,9 +298,7 @@ describe('AtAGlance', () => {
   })
 
   it('displays no reservations message when list is empty', async () => {
-    fetch.mockResolvedValueOnce({
-      json: async () => ({ reservations: [] })
-    })
+    reservationCache.fetch.mockResolvedValueOnce([])
     
     render(<AtAGlance />)
     
@@ -435,7 +447,7 @@ describe('AtAGlance', () => {
     it('handles fetch errors gracefully', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       
-      fetch.mockRejectedValueOnce(new Error('Network error'))
+      reservationCache.fetch.mockRejectedValueOnce(new Error('Network error'))
       
       render(<AtAGlance />)
       

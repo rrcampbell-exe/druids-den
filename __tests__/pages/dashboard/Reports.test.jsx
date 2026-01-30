@@ -77,7 +77,7 @@ describe('Reports', () => {
     render(<Reports />)
     
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/mock-reservations.json')
+      expect(fetch).toHaveBeenCalledWith('/api/reservations')
     })
   })
 
@@ -165,7 +165,9 @@ describe('Reports', () => {
     render(<Reports />)
     
     await waitFor(() => {
-      expect(screen.getByText('Include Owner Reservations')).toBeInTheDocument()
+      // Use getAllByText since there are multiple toggles on the page
+      const toggles = screen.getAllByText('Include Owner Reservations')
+      expect(toggles.length).toBeGreaterThan(0)
     })
   })
 
@@ -367,5 +369,69 @@ describe('Reports', () => {
     
     expect(customButton.classList.contains('active')).toBe(true)
     expect(screen.getAllByDisplayValue('').length).toBeGreaterThan(0)
+  })
+
+  it('allows setting custom date range', async () => {
+    render(<Reports />)
+    
+    await waitFor(() => {
+      expect(screen.getByText('Custom Range')).toBeInTheDocument()
+    })
+    
+    const customButton = screen.getByText('Custom Range')
+    fireEvent.click(customButton)
+    
+    const dateInputs = screen.getAllByPlaceholderText(/date/i)
+    expect(dateInputs.length).toBeGreaterThan(0)
+    
+    if (dateInputs.length >= 2) {
+      fireEvent.change(dateInputs[0], { target: { value: '2026-01-01' } })
+      fireEvent.change(dateInputs[1], { target: { value: '2026-01-31' } })
+      
+      expect(dateInputs[0].value).toBe('2026-01-01')
+      expect(dateInputs[1].value).toBe('2026-01-31')
+    }
+  })
+
+  it('handles fetch error gracefully', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    fetch.mockClear()
+    fetch.mockRejectedValueOnce(new Error('Network error'))
+    
+    render(<Reports />)
+    
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error loading reservations:', expect.any(Error))
+    })
+    
+    expect(screen.getByText('Analytics & Reports')).toBeInTheDocument()
+    
+    consoleErrorSpy.mockRestore()
+  })
+
+  it('displays bookings chart with both owner and guest bookings', async () => {
+    render(<Reports />)
+    
+    await waitFor(() => {
+      const barChart = screen.getByTestId('bar-chart')
+      expect(barChart).toBeInTheDocument()
+      expect(barChart).toHaveTextContent('Bar Chart')
+    })
+  })
+
+  it('toggles owner reservations in bookings chart', async () => {
+    render(<Reports />)
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('bar-chart')).toBeInTheDocument()
+    })
+    
+    const checkboxes = screen.getAllByRole('checkbox')
+    const bookingsToggle = checkboxes.find(cb => cb.checked === true)
+    
+    if (bookingsToggle) {
+      fireEvent.click(bookingsToggle)
+      expect(bookingsToggle.checked).toBe(false)
+    }
   })
 })

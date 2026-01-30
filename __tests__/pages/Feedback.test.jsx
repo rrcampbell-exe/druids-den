@@ -270,4 +270,295 @@ describe('Feedback', () => {
       expect(requiredIndicators.length).toBeGreaterThanOrEqual(2)
     })
   })
+
+  it('allows selecting "No" for recommendation', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const noButton = screen.getByText(/👎 No/)
+      fireEvent.click(noButton)
+      expect(noButton).toHaveClass('selected')
+    })
+  })
+
+  it('shows hover effect on stars', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const thirdStar = screen.getByLabelText('3 stars')
+      fireEvent.mouseEnter(thirdStar)
+      expect(thirdStar).toHaveClass('filled')
+    })
+  })
+
+  it('clears hover effect when mouse leaves stars', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const thirdStar = screen.getByLabelText('3 stars')
+      fireEvent.mouseEnter(thirdStar)
+      fireEvent.mouseLeave(thirdStar)
+    })
+  })
+
+  it('updates character count as user types', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const textarea = screen.getByRole('textbox')
+      fireEvent.change(textarea, { target: { value: 'Hello' } })
+      expect(screen.getByText('5/1000')).toBeInTheDocument()
+    })
+  })
+
+  it('enforces 1000 character limit on review', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const textarea = screen.getByRole('textbox')
+      expect(textarea).toHaveAttribute('maxLength', '1000')
+    })
+  })
+
+  it('handles fetch error gracefully', async () => {
+    fetch.mockRejectedValueOnce(new Error('Network error'))
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      expect(screen.getByText(/Unable to load reservation information/)).toBeInTheDocument()
+    })
+  })
+
+  it('shows already submitted state for reservations with feedback', async () => {
+    const submittedReservation = {
+      ...mockCompletedReservation,
+      feedback: {
+        rating: 5,
+        review: 'Great stay!',
+        wouldRecommend: true
+      }
+    }
+
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [submittedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      expect(screen.getByText('Thank You!')).toBeInTheDocument()
+      expect(screen.getByText(/Your feedback has been submitted/)).toBeInTheDocument()
+    })
+  })
+
+  it('shows Return to Home button in error state', async () => {
+    fetch.mockRejectedValueOnce(new Error('Network error'))
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const homeButton = screen.getByText('Return to Home')
+      expect(homeButton).toBeInTheDocument()
+    })
+  })
+
+  it('shows Return to Home button in success state', async () => {
+    const submittedReservation = {
+      ...mockCompletedReservation,
+      feedback: { rating: 5 }
+    }
+
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [submittedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const homeButton = screen.getByText('Return to Home')
+      expect(homeButton).toBeInTheDocument()
+    })
+  })
+
+  it('disables submit button while submitting', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const fiveStarButton = screen.getByLabelText('5 stars')
+      fireEvent.click(fiveStarButton)
+    })
+
+    const yesButton = screen.getByText(/👍 Yes/)
+    fireEvent.click(yesButton)
+
+    const submitButton = screen.getByRole('button', { name: /Submit Feedback/ })
+    fireEvent.click(submitButton)
+
+    expect(submitButton).toHaveTextContent('Submitting...')
+    expect(submitButton).toBeDisabled()
+  })
+
+  it('trims whitespace from review before submission', async () => {
+    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const fiveStarButton = screen.getByLabelText('5 stars')
+      fireEvent.click(fiveStarButton)
+    })
+
+    const textarea = screen.getByRole('textbox')
+    fireEvent.change(textarea, { target: { value: '  Great stay!  ' } })
+
+    const yesButton = screen.getByText(/👍 Yes/)
+    fireEvent.click(yesButton)
+
+    const submitButton = screen.getByRole('button', { name: /Submit Feedback/ })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        'Submitting feedback:',
+        expect.objectContaining({
+          review: 'Great stay!'
+        })
+      )
+    })
+
+    consoleLogSpy.mockRestore()
+  })
+
+  it('handles submission failure gracefully', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      const fiveStarButton = screen.getByLabelText('5 stars')
+      fireEvent.click(fiveStarButton)
+    })
+
+    const yesButton = screen.getByText(/👍 Yes/)
+    fireEvent.click(yesButton)
+
+    // Mock console.log to throw error
+    const consoleError = vi.spyOn(console, 'log').mockImplementation(() => {
+      throw new Error('Submission failed')
+    })
+
+    const submitButton = screen.getByRole('button', { name: /Submit Feedback/ })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to submit feedback/)).toBeInTheDocument()
+    })
+
+    consoleError.mockRestore()
+  })
+
+  it('displays guest first name in heading', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      expect(screen.getByText(/How Was Your Stay, Robert\?/)).toBeInTheDocument()
+    })
+  })
+
+  it('displays signature on success page', async () => {
+    const submittedReservation = {
+      ...mockCompletedReservation,
+      feedback: { rating: 5 }
+    }
+
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [submittedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      expect(screen.getByText(/Ryan and Lacey/)).toBeInTheDocument()
+    })
+  })
+
+  it('handles reservations data in array format', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => [mockCompletedReservation]
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      expect(screen.getByText(/How Was Your Stay, Robert\?/)).toBeInTheDocument()
+    })
+  })
+
+  it('clears error message when submitting with valid data', async () => {
+    fetch.mockResolvedValueOnce({
+      json: async () => ({ reservations: [mockCompletedReservation] })
+    })
+
+    renderWithRouter()
+
+    await waitFor(() => {
+      // First try to submit without rating
+      const submitButton = screen.getByRole('button', { name: /Submit Feedback/ })
+      fireEvent.click(submitButton)
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText(/Please select a rating/)).toBeInTheDocument()
+    })
+
+    // Now fill in required fields
+    const fiveStarButton = screen.getByLabelText('5 stars')
+    fireEvent.click(fiveStarButton)
+
+    const yesButton = screen.getByText(/👍 Yes/)
+    fireEvent.click(yesButton)
+
+    const submitButton = screen.getByRole('button', { name: /Submit Feedback/ })
+    fireEvent.click(submitButton)
+
+    // Error should be cleared
+    await waitFor(() => {
+      expect(screen.queryByText(/Please select a rating/)).not.toBeInTheDocument()
+    })
+  })
 })

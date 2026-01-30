@@ -1,6 +1,29 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/send-reservation'
 
+// Mock the database utility
+vi.mock('../../api/utils/db.js', () => ({
+  prisma: {
+    reservation: {
+      create: vi.fn().mockResolvedValue({
+        id: 1,
+        checkIn: new Date('2026-06-01T00:00:00.000Z'),
+        checkOut: new Date('2026-06-03T00:00:00.000Z'),
+        adults: 2,
+        children: 0,
+        specialRequests: 'Early check-in please',
+        status: 'PENDING',
+        guestFirstName: 'John',
+        guestLastName: 'Doe',
+        guestEmail: 'john@example.com',
+        guestPhone: '(555) 123-4567',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+    }
+  }
+}))
+
 describe('send-reservation API', () => {
   let req, res, fetchSpy
 
