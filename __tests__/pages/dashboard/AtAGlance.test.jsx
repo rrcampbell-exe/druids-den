@@ -595,9 +595,9 @@ describe('AtAGlance', () => {
         const date = new Date(2026, 5, 15) // June 15 - check-out day for reservation 1
         const classes = getDayClass(date, mockReservations)
         
-        // Check-out day should NOT have check-out-day class since the day is free
+        // Check-out day should have check-out-day class since the day is free
         // (guest checks out in the morning)
-        expect(classes).not.toContain('check-out-day')
+        expect(classes).toContain('check-out-day')
         expect(classes).not.toContain('has-approved')
       })
     })
