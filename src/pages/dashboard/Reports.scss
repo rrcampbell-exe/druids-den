@@ -124,51 +124,6 @@
     }
   }
 
-  .metrics-section {
-    margin-bottom: 1rem;
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-
-      h3 {
-        margin: 0;
-        font-size: 1.3rem;
-        color: var(--color-iron-ore);
-        font-weight: 500;
-      }
-    }
-  }
-
-  .toggle-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    user-select: none;
-    font-size: 0.95rem;
-    color: rgba(70, 70, 69, 0.8);
-
-    input[type='checkbox'] {
-      cursor: pointer;
-      width: 18px;
-      height: 18px;
-      accent-color: #6b8e6f;
-    }
-
-    span {
-      font-weight: 500;
-    }
-
-    &:hover {
-      color: var(--color-iron-ore);
-    }
-  }
-
   .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
