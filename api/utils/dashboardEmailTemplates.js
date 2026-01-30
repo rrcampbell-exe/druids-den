@@ -94,10 +94,10 @@ Ryan and Lacey at The Druids Den
 /**
  * Generate post-checkout feedback request email
  * @param {Object} reservation - The reservation details
- * @param {string} baseUrl - The base URL of your site (e.g., 'https://druidsdencabin.com')
+ * @param {string} baseUrl - The base URL of your site (e.g., 'https://druidsdenwi.com')
  * @returns {Object} Email content with subject, text, and html
  */
-export function generatePostCheckoutEmail(reservation, baseUrl = 'https://druidsdencabin.com') {
+export function generatePostCheckoutEmail(reservation, baseUrl = 'https://druidsdenwi.com') {
   const { firstName, checkIn, checkOut, id: reservationId } = reservation
   
   const feedbackUrl = `${baseUrl}/feedback/${reservationId}`
@@ -265,6 +265,80 @@ Ryan and Lacey
       </div>
       
       <p>We apologize for any inconvenience.</p>
+      
+      <p style="margin: 20px 0 0 0;">
+        Best regards,<br>
+        <strong>Ryan and Lacey</strong>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim()
+  
+  return { subject, text, html }
+}
+
+/**
+ * Generate reservation modification email
+ * @param {Object} reservation - The updated reservation details
+ * @param {Object} changes - Object describing what changed
+ * @returns {Object} Email content with subject, text, and html
+ */
+export function generateReservationModificationEmail(reservation, changes) {
+  const { firstName, checkIn, checkOut } = reservation
+  
+  const subject = `Your Druids Den Reservation Has Been Updated`
+  
+  let changesText = ''
+  if (changes.dates) {
+    changesText += `New Dates: ${formatDateForEmail(checkIn)} to ${formatDateForEmail(checkOut)}\n`
+  }
+  if (changes.guests) {
+    changesText += `Guests: ${reservation.adults} adult(s)`
+    if (reservation.children > 0) changesText += `, ${reservation.children} child(ren)`
+    changesText += '\n'
+  }
+  
+  const text = `
+Dear ${firstName},
+
+Your reservation at The Druids Den has been updated with the following changes:
+
+${changesText}
+${changes.note ? `Note: ${changes.note}\n` : ''}
+If you have any questions about these changes, please don't hesitate to reach out.
+
+Best regards,
+Ryan and Lacey
+  `.trim()
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #464645; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #BAB6A2;">
+  <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="background: linear-gradient(135deg, rgba(212, 185, 66, 0.9) 0%, rgba(212, 185, 66, 0.85) 100%); padding: 40px 30px; text-align: center; border-bottom: 3px solid #6b5a0f;">
+      <h1 style="margin: 0; font-size: 28px; color: #464645;">Reservation Updated</h1>
+    </div>
+    
+    <div style="padding: 40px 30px; background-color: #fff;">
+      <p>Dear ${firstName},</p>
+      
+      <p>Your reservation at The Druids Den has been updated with the following changes:</p>
+      
+      <div style="background: rgba(212, 185, 66, 0.1); border-left: 4px solid #d4b942; padding: 20px; border-radius: 8px; margin: 30px 0;">
+        ${changes.dates ? `<p style="margin: 0 0 10px 0;"><strong>New Dates:</strong><br>${formatDateForEmail(checkIn)} to ${formatDateForEmail(checkOut)}</p>` : ''}
+        ${changes.guests ? `<p style="margin: 0;"><strong>Guests:</strong><br>${reservation.adults} adult(s)${reservation.children > 0 ? `, ${reservation.children} child(ren)` : ''}</p>` : ''}
+      </div>
+      
+      ${changes.note ? `<p style="background: rgba(186, 182, 162, 0.1); padding: 15px; border-radius: 8px; margin: 20px 0;"><strong>Note:</strong> ${changes.note}</p>` : ''}
+      
+      <p>If you have any questions about these changes, please don't hesitate to reach out.</p>
       
       <p style="margin: 20px 0 0 0;">
         Best regards,<br>
