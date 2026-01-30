@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ReservationCard from './ReservationCard'
+import { reservationCache } from '../../utils/reservationCache'
 import './AtAGlance.scss'
 
 // Export helper functions for testing
@@ -115,11 +116,13 @@ export const getDayClass = (date, reservations, selectedCheckIn = null, selected
   }
   
   // Check if it's a check-in or check-out day
-  // Note: Check against ALL reservations since check-out days aren't in reservationsOnDate
-  // (they're excluded by the < checkOut comparison to allow same-day turnover)
+  // Filter out denied and cancelled reservations
   const dateString = formatDateString(date)
-  const isCheckIn = reservations.some(res => res.checkIn === dateString)
-  const isCheckOut = reservations.some(res => res.checkOut === dateString)
+  const activeReservations = reservations.filter(res => 
+    res.status !== 'denied' && res.status !== 'cancelled'
+  )
+  const isCheckIn = activeReservations.some(res => res.checkIn === dateString)
+  const isCheckOut = activeReservations.some(res => res.checkOut === dateString)
   
   if (isCheckIn) classes.push('check-in-day')
   if (isCheckOut) classes.push('check-out-day')
@@ -160,6 +163,12 @@ const AtAGlance = () => {
   const [reservationView, setReservationView] = useState('pending') // 'pending' or 'upcoming'
   const [upcomingFilter, setUpcomingFilter] = useState('all') // 'all', 'owner', 'guest'
   
+  // Notification state
+  const [notification, setNotification] = useState({ show: false, type: '', message: '' })
+  
+  // Loading states for async operations
+  const [actionLoading, setActionLoading] = useState(false)
+  
   // Owner reservation creation states
   const [isSelectingDates, setIsSelectingDates] = useState(false)
   const [selectedCheckIn, setSelectedCheckIn] = useState(null)
@@ -167,13 +176,19 @@ const AtAGlance = () => {
   const [showOwnerModal, setShowOwnerModal] = useState(false)
   const [ownerNote, setOwnerNote] = useState('')
 
+  const showNotification = (type, message) => {
+    setNotification({ show: true, type, message })
+    setTimeout(() => {
+      setNotification({ show: false, type: '', message: '' })
+    }, 4000)
+  }
+
   useEffect(() => {
-    // Fetch reservations from database
+    // Fetch reservations from database with caching
     setLoading(true)
-    fetch('/api/reservations')
-      .then(response => response.json())
+    reservationCache.fetch()
       .then(data => {
-        setReservations(data.reservations || [])
+        setReservations(data)
         setLoading(false)
       })
       .catch(err => {
@@ -181,6 +196,16 @@ const AtAGlance = () => {
         setLoading(false)
       })
   }, [])
+
+  // Update selectedReservation when reservations change
+  useEffect(() => {
+    if (selectedReservation && showModal) {
+      const updatedReservation = reservations.find(r => r.id === selectedReservation.id)
+      if (updatedReservation) {
+        setSelectedReservation(updatedReservation)
+      }
+    }
+  }, [reservations, showModal])
 
   const handleDateClick = (date) => {
     if (!date) return
@@ -200,7 +225,7 @@ const AtAGlance = () => {
         // Check if this date is occupied (someone is already staying this night)
         const reservationsOnDate = getReservationsForDate(date, reservations)
         if (reservationsOnDate.length > 0) {
-          alert('This date is already occupied. Please select an available check-in date.')
+          showNotification('error', 'This date is already occupied. Please select an available check-in date.')
           return
         }
         setSelectedCheckIn(date)
@@ -209,7 +234,7 @@ const AtAGlance = () => {
         // Check-out dates don't need to be "unoccupied" since guest leaves in morning
         // Just validate it's after check-in
         if (date <= selectedCheckIn) {
-          alert('Check-out must be after check-in date.')
+          showNotification('error', 'Check-out must be after check-in date.')
           return
         }
         
@@ -217,7 +242,7 @@ const AtAGlance = () => {
         const diffTime = date - selectedCheckIn
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
         if (diffDays < 2) {
-          alert('Minimum 2-night stay required.')
+          showNotification('error', 'Minimum 2-night stay required.')
           return
         }
         
@@ -231,7 +256,7 @@ const AtAGlance = () => {
         while (current < checkOut) {
           const reservationsOnDay = getReservationsForDate(current, reservations)
           if (reservationsOnDay.length > 0) {
-            alert('Selected date range conflicts with existing reservations.')
+            showNotification('error', 'Selected date range conflicts with existing reservations.')
             return
           }
           current.setDate(current.getDate() + 1)
@@ -264,27 +289,44 @@ const AtAGlance = () => {
     setOwnerNote('')
   }
 
-  const handleCreateOwnerReservation = () => {
+  const handleCreateOwnerReservation = async () => {
     if (!selectedCheckIn || !selectedCheckOut) return
     
-    const newReservation = {
-      id: `res-owner-${Date.now()}`,
-      status: 'approved',
-      isOwnerReservation: true,
-      checkIn: formatDateString(selectedCheckIn),
-      checkOut: formatDateString(selectedCheckOut),
-      ownerNote: ownerNote || 'Owner blocked dates',
-      submittedAt: new Date().toISOString(),
-      approvedAt: new Date().toISOString()
+    setActionLoading(true)
+    try {
+      const response = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          checkIn: formatDateString(selectedCheckIn),
+          checkOut: formatDateString(selectedCheckOut),
+          ownerNote: ownerNote || 'Owner blocked dates',
+          ownerEmail: 'owner@druidsdenwi.com' // TODO: Replace with actual owner email from auth
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to create owner reservation')
+      
+      const newReservation = await response.json()
+      
+      // Invalidate cache after mutation
+      reservationCache.invalidate()
+      
+      // Update local state
+      setReservations(prev => [...prev, newReservation])
+      setShowOwnerModal(false)
+      setIsSelectingDates(false)
+      setSelectedCheckIn(null)
+      setSelectedCheckOut(null)
+      setOwnerNote('')
+      
+      showNotification('success', 'Owner reservation created successfully!')
+    } catch (error) {
+      console.error('Error creating owner reservation:', error)
+      showNotification('error', 'Failed to create owner reservation. Please try again.')
+    } finally {
+      setActionLoading(false)
     }
-    
-    setReservations(prev => [...prev, newReservation])
-    setShowOwnerModal(false)
-    setIsSelectingDates(false)
-    setSelectedCheckIn(null)
-    setSelectedCheckOut(null)
-    setOwnerNote('')
-    // TODO: API call to save to database
   }
 
   const handlePreviousMonth = () => {
@@ -299,36 +341,108 @@ const AtAGlance = () => {
     setCurrentMonth(new Date())
   }
 
-  const handleApprove = (reservationId) => {
-    // In real implementation, this would call an API
-    setReservations(prev => prev.map(res => 
-      res.id === reservationId 
-        ? { ...res, status: 'approved', approvedAt: new Date().toISOString() }
-        : res
-    ))
-    setShowModal(false)
-    // TODO: Send approval email to guest
+const handleApprove = async (reservationId) => {
+    setActionLoading(true)
+    try {
+      const response = await fetch(`/api/reservations/${reservationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          status: 'approved',
+          statusChangedById: null // TODO: Replace with actual owner user ID from auth
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to approve reservation')
+      
+      const updatedReservation = await response.json()
+            // Invalidate cache after mutation
+      reservationCache.invalidate()
+            // Invalidate cache after mutation
+      reservationCache.invalidate()
+      
+      // Update local state
+      setReservations(prev => prev.map(res =>
+        res.id === reservationId ? updatedReservation : res
+      ))
+      
+      setShowModal(false)
+      showNotification('success', 'Reservation approved and guest notified via email!')
+    } catch (error) {
+      console.error('Error approving reservation:', error)
+      showNotification('error', 'Failed to approve reservation. Please try again.')
+    } finally {
+      setActionLoading(false)
+    }
   }
 
-  const handleDeny = (reservationId, message) => {
-    // In real implementation, this would call an API
-    setReservations(prev => prev.map(res =>
-      res.id === reservationId
-        ? { ...res, status: 'denied', deniedAt: new Date().toISOString(), denialMessage: message }
-        : res
-    ))
-    setShowModal(false)
-    // TODO: Send denial email to guest with custom message
+  const handleDeny = async (reservationId, message) => {
+    setActionLoading(true)
+    try {
+      const response = await fetch(`/api/reservations/${reservationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          status: 'denied',
+          denialMessage: message,
+          statusChangedById: null // TODO: Replace with actual owner user ID from auth
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to deny reservation')
+      
+      const updatedReservation = await response.json()
+      
+      // Invalidate cache after mutation
+      reservationCache.invalidate()
+      
+      // Update local state
+      setReservations(prev => prev.map(res =>
+        res.id === reservationId ? updatedReservation : res
+      ))
+      
+      setShowModal(false)
+      showNotification('success', 'Reservation denied and guest notified via email.')
+    } catch (error) {
+      console.error('Error denying reservation:', error)
+      showNotification('error', 'Failed to deny reservation. Please try again.')
+    } finally {
+      setActionLoading(false)
+    }
   }
 
-  const handleCancel = (reservationId, message) => {
-    // In real implementation, this would call an API
-    setReservations(prev => prev.map(res =>
-      res.id === reservationId
-        ? { ...res, status: 'cancelled', cancelledAt: new Date().toISOString(), cancellationMessage: message }
-        : res
-    ))
-    // TODO: Send cancellation email to guest if not owner reservation
+  const handleCancel = async (reservationId, message) => {
+    setActionLoading(true)
+    try {
+      const response = await fetch(`/api/reservations/${reservationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          status: 'cancelled',
+          cancellationMessage: message,
+          statusChangedById: null // TODO: Replace with actual owner user ID from auth
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to cancel reservation')
+      
+      const updatedReservation = await response.json()
+      
+      // Invalidate cache after mutation
+      reservationCache.invalidate()
+      
+      // Update local state
+      setReservations(prev => prev.map(res =>
+        res.id === reservationId ? updatedReservation : res
+      ))
+      
+      showNotification('success', message ? 'Reservation cancelled and guest notified via email.' : 'Owner reservation cancelled successfully.')
+    } catch (error) {
+      console.error('Error cancelling reservation:', error)
+      showNotification('error', 'Failed to cancel reservation. Please try again.')
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const handleMessage = (reservationId, message) => {
@@ -336,6 +450,62 @@ const AtAGlance = () => {
     console.log('Sending message to reservation:', reservationId, message)
     // TODO: Send custom email to guest
     alert('Message sent to guest!')
+  }
+
+  const handleEdit = async (reservationId, editData) => {
+    setActionLoading(true)
+    try {
+      const updatePayload = {
+        checkIn: editData.checkIn,
+        checkOut: editData.checkOut,
+        adults: editData.adults,
+        children: editData.children
+      }
+
+      // Add special requests or owner note based on reservation type
+      const reservation = reservations.find(r => r.id === reservationId)
+      if (reservation?.isOwnerReservation) {
+        updatePayload.ownerNote = editData.ownerNote
+      } else {
+        updatePayload.specialRequests = editData.specialRequests
+      }
+
+      const response = await fetch(`/api/reservations/${reservationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatePayload)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        if (errorData.error === 'Date conflict') {
+          const conflictDates = errorData.conflicts.map(c => 
+            `${c.checkIn} to ${c.checkOut}`
+          ).join(', ')
+          showNotification('error', `Cannot update: These dates conflict with existing reservations (${conflictDates}). Please choose different dates.`)
+        } else {
+          showNotification('error', errorData.message || 'Failed to update reservation')
+        }
+        return
+      }
+      
+      const updatedReservation = await response.json()
+      
+      // Invalidate cache after mutation
+      reservationCache.invalidate()
+      
+      // Update local state
+      setReservations(prev => prev.map(res =>
+        res.id === reservationId ? updatedReservation : res
+      ))
+      
+      showNotification('success', 'Reservation updated successfully! Guest has been notified via email.')
+    } catch (error) {
+      console.error('Error updating reservation:', error)
+      showNotification('error', 'Failed to update reservation. Please try again.')
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const days = getDaysInMonth(currentMonth)
@@ -527,6 +697,8 @@ const AtAGlance = () => {
                     onApprove={handleApprove}
                     onDeny={handleDeny}
                     onMessage={handleMessage}
+                    onEdit={handleEdit}
+                    loading={actionLoading}
                   />
                 ))}
               </div>
@@ -546,6 +718,8 @@ const AtAGlance = () => {
                     reservation={reservation}
                     onCancel={handleCancel}
                     onMessage={handleMessage}
+                    onEdit={handleEdit}
+                    loading={actionLoading}
                     isApproved={true}
                   />
                 ))}
@@ -565,6 +739,9 @@ const AtAGlance = () => {
               onDeny={handleDeny}
               onCancel={handleCancel}
               onMessage={handleMessage}
+              onEdit={handleEdit}
+              loading={actionLoading}
+              isApproved={selectedReservation?.status === 'approved'}
               expanded={true}
             />
           </div>
@@ -595,14 +772,35 @@ const AtAGlance = () => {
             </div>
             
             <div className='modal-actions'>
-              <button className='confirm-button' onClick={handleCreateOwnerReservation}>
-                Reserve for Owners
+              <button 
+                className='confirm-button' 
+                onClick={handleCreateOwnerReservation}
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Creating...' : 'Reserve for Owners'}
               </button>
-              <button className='cancel-button' onClick={() => setShowOwnerModal(false)}>
+              <button 
+                className='cancel-button' 
+                onClick={() => setShowOwnerModal(false)}
+                disabled={actionLoading}
+              >
                 Cancel
               </button>
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* Notification Toast */}
+      {notification.show && (
+        <div className={`notification ${notification.type}`}>
+          <span>{notification.message}</span>
+          <button 
+            className='notification-close' 
+            onClick={() => setNotification({ show: false, type: '', message: '' })}
+          >
+            ×
+          </button>
         </div>
       )}
     </div>

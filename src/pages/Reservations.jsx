@@ -7,7 +7,8 @@ const Reservations = () => {
   const emailRef = useRef(null)
   const phoneRef = useRef(null)
   
-  const [blackoutDates, setBlackoutDates] = useState([])
+  const [reservations, setReservations] = useState([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     // Personal Information
     firstName: '',
@@ -42,6 +43,7 @@ const Reservations = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const navItems = [
     { label: 'Your Information', href: '#your-information' },
@@ -49,23 +51,38 @@ const Reservations = () => {
     { label: 'Additional Notes', href: '#additional-notes' }
   ]
 
+  // Parse date string as local date (America/Chicago) to avoid timezone issues
+  const parseLocalDate = (dateString) => {
+    const [year, month, day] = dateString.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
+    date.setHours(0, 0, 0, 0)
+    return date
+  }
+
   useEffect(() => {
-    // Fetch blackout dates
-    fetch('/blackout-dates.json')
-      .then(response => {
+    // Fetch reservations from database (always fresh, no caching)
+    const fetchReservations = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/reservations')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        return response.json()
-      })
-      .then(data => {
-        setBlackoutDates(data.blackoutDates)
-      })
-      .catch(err => console.error('Error loading blackout dates:', err))
+        const data = await response.json()
+        setReservations(data.reservations || [])
+      } catch (err) {
+        console.error('Error loading reservations:', err)
+        setReservations([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchReservations()
   }, [])
 
   const isDateBlackedOut = (dateString) => {
-    const date = new Date(dateString)
+    const date = parseLocalDate(dateString)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
@@ -78,15 +95,27 @@ const Reservations = () => {
     // Check if date is outside current calendar year
     if (dateYear !== currentYear) return true
     
-    // Check if date is in blackout list
-    if (blackoutDates.includes(dateString)) return true
+    // Check if date falls within any approved or pending reservation
+    // (including owner reservations)
+    for (const reservation of reservations) {
+      // Skip cancelled or denied reservations
+      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
+      
+      const checkIn = parseLocalDate(reservation.checkIn)
+      const checkOut = parseLocalDate(reservation.checkOut)
+      
+      // Date is blacked out if it falls within the reservation range (inclusive of check-in, exclusive of check-out)
+      if (date >= checkIn && date < checkOut) {
+        return true
+      }
+    }
     
     return false
   }
   
   const hasBlackoutDatesInRange = (startDateString, endDateString) => {
-    const startDate = new Date(startDateString)
-    const endDate = new Date(endDateString)
+    const startDate = parseLocalDate(startDateString)
+    const endDate = parseLocalDate(endDateString)
     const current = new Date(startDate)
     const blackedOutDates = []
     
@@ -98,13 +127,55 @@ const Reservations = () => {
       const day = String(current.getDate()).padStart(2, '0')
       const dateString = `${year}-${month}-${day}`
       
-      if (blackoutDates.includes(dateString)) {
-        blackedOutDates.push(dateString)
+      // Check if date falls within any approved or pending reservation
+      for (const reservation of reservations) {
+        // Skip cancelled or denied reservations
+        if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
+        
+        const checkIn = parseLocalDate(reservation.checkIn)
+        const checkOut = parseLocalDate(reservation.checkOut)
+        const checkDate = parseLocalDate(dateString)
+        
+        // Date is blacked out if it falls within the reservation range (inclusive of check-in, exclusive of check-out)
+        if (checkDate >= checkIn && checkDate < checkOut) {
+          blackedOutDates.push(dateString)
+          break
+        }
       }
+      
       current.setDate(current.getDate() + 1)
     }
     
     return blackedOutDates
+  }
+  
+  // Convert reservations to blackout dates array for DatePicker
+  const getBlackoutDates = () => {
+    const blackoutDates = []
+    
+    for (const reservation of reservations) {
+      // Skip cancelled or denied reservations
+      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
+      
+      const checkIn = parseLocalDate(reservation.checkIn)
+      const checkOut = parseLocalDate(reservation.checkOut)
+      const current = new Date(checkIn)
+      
+      // Start the day AFTER check-in (guests can check out on someone else's check-in date)
+      current.setDate(current.getDate() + 1)
+      
+      // Add all dates in the reservation range (exclusive of check-in, exclusive of check-out)
+      while (current < checkOut) {
+        const year = current.getFullYear()
+        const month = String(current.getMonth() + 1).padStart(2, '0')
+        const day = String(current.getDate()).padStart(2, '0')
+        const dateString = `${year}-${month}-${day}`
+        blackoutDates.push(dateString)
+        current.setDate(current.getDate() + 1)
+      }
+    }
+    
+    return blackoutDates
   }
   
   const validateEmail = (email) => {
@@ -197,6 +268,8 @@ const Reservations = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    if (submitting) return
+    
     // Validate email
     if (!validateEmail(formData.email)) {
       setTouchedFields(prev => ({ ...prev, email: true }))
@@ -218,13 +291,6 @@ const Reservations = () => {
       return
     }
     
-    // Validate check-out date
-    if (isDateBlackedOut(formData.checkOut)) {
-      setErrorMessage('The selected check-out date is not available. Please choose another date.')
-      setShowErrorModal(true)
-      return
-    }
-    
     // Validate check-out is after check-in
     if (new Date(formData.checkOut) <= new Date(formData.checkIn)) {
       setErrorMessage('Check-out date must be after check-in date.')
@@ -232,13 +298,15 @@ const Reservations = () => {
       return
     }
     
-    // Validate no blackout dates in range
+    // Validate no blackout dates in range (excluding check-in and check-out dates)
     const blackedOutInRange = hasBlackoutDatesInRange(formData.checkIn, formData.checkOut)
     if (blackedOutInRange.length > 0) {
       setErrorMessage(`Your selected dates conflict with other reservations. Please select a different date range.`)
       setShowErrorModal(true)
       return
     }
+    
+    setSubmitting(true)
     
     try {
       // Send reservation email
@@ -285,6 +353,8 @@ const Reservations = () => {
       console.error('Error submitting reservation:', error)
       setErrorMessage('There was an error submitting your reservation. Please try again or contact us directly at grovekeeper@druidsdenwi.com.')
       setShowErrorModal(true)
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -395,8 +465,10 @@ const Reservations = () => {
                 checkOutValue={formData.checkOut}
                 onCheckInChange={handleInputChange}
                 onCheckOutChange={handleInputChange}
-                blackoutDates={blackoutDates}
+                blackoutDates={loading ? [] : getBlackoutDates()}
                 required
+                loading={loading}
+                loadingMessage='Loading available dates...'
               />
               
               <div className='form-row'>
@@ -448,8 +520,8 @@ const Reservations = () => {
             </section>
             
             <div className='form-actions'>
-              <button type='submit' className='submit-button'>
-                Submit Reservation Request and Make Deposit
+              <button type='submit' className='submit-button' disabled={submitting || loading}>
+                {submitting ? 'Submitting Reservation...' : 'Submit Reservation Request and Make Deposit'}
               </button>
               <p className='disclaimer'>
                 * By submitting this form, you are requesting a reservation. 

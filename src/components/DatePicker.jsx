@@ -9,7 +9,9 @@ const DatePicker = ({
   label, 
   required, 
   blackoutDates = [],
-  onRangeError
+  onRangeError,
+  loading = false,
+  loadingMessage = 'Loading availability...'
 }) => {
   const [showCalendar, setShowCalendar] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -222,18 +224,19 @@ const DatePicker = ({
   }, [showCalendar])
   
   return (
-    <div className='date-picker date-range-picker'>
+    <div className={`date-picker date-range-picker ${loading ? 'loading' : ''}`}>
       <label>{label} {required && '*'}</label>
       <div className='date-input-wrapper'>
         <input
           type='text'
-          value={getDisplayValue()}
-          onClick={handleOpenCalendar}
+          value={loading ? loadingMessage : getDisplayValue()}
+          onClick={loading ? undefined : handleOpenCalendar}
           readOnly
-          placeholder='Select check-in and check-out dates'
+          placeholder={loading ? loadingMessage : 'Select check-in and check-out dates'}
           required={required}
+          disabled={loading}
         />
-        {(checkInValue || checkOutValue) && (
+        {(checkInValue || checkOutValue) && !loading && (
           <button 
             type='button' 
             className='clear-btn'
@@ -246,8 +249,9 @@ const DatePicker = ({
         <button 
           type='button' 
           className='calendar-icon-btn'
-          onClick={handleOpenCalendar}
+          onClick={loading ? undefined : handleOpenCalendar}
           aria-label='Open calendar'
+          disabled={loading}
         >
           📅
         </button>
