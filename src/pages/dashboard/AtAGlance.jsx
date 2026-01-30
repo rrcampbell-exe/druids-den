@@ -151,7 +151,6 @@ const AtAGlance = () => {
     
     // If in date selection mode, handle owner reservation date selection
     if (isSelectingDates) {
-      const dateString = formatDateString(date)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       const currentDate = new Date(date)
