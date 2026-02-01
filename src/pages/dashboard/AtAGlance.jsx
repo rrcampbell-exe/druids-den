@@ -484,7 +484,7 @@ const handleApprove = async (reservationId) => {
         } else {
           showNotification('error', errorData.message || 'Failed to update reservation')
         }
-        return
+        throw new Error(errorData.message || 'Failed to update reservation')
       }
       
       const updatedReservation = await response.json()
@@ -501,6 +501,7 @@ const handleApprove = async (reservationId) => {
     } catch (error) {
       console.error('Error updating reservation:', error)
       showNotification('error', 'Failed to update reservation. Please try again.')
+      throw error
     } finally {
       setActionLoading(false)
     }

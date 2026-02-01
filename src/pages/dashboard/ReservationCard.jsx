@@ -117,7 +117,7 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
     setShowEditForm(true)
   }
 
-  const handleEditSubmit = () => {
+  const handleEditSubmit = async () => {
     // Validate dates
     if (!editData.checkIn || !editData.checkOut) {
       setEditError('Check-in and check-out dates are required')
@@ -143,10 +143,16 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
       return
     }
 
-    // Call the onEdit callback
-    onEdit(reservation.id, editData)
-    setShowEditForm(false)
-    setEditError('')
+    // Call the onEdit callback and await it
+    try {
+      await onEdit(reservation.id, editData)
+      // Only close form and clear error on success
+      setShowEditForm(false)
+      setEditError('')
+    } catch (error) {
+      // Keep the form open and show error if edit fails
+      setEditError(error.message || 'Failed to update reservation. Please try again.')
+    }
   }
 
   const handleEditCancel = () => {
