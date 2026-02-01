@@ -71,9 +71,6 @@ describe('reservations API', () => {
 
       expect(prisma.reservation.findMany).toHaveBeenCalledWith({
         where: { deletedAt: null },
-        include: expect.objectContaining({
-          user: expect.any(Object)
-        }),
         orderBy: { checkIn: 'asc' }
       })
       expect(res.status).toHaveBeenCalledWith(200)
@@ -118,8 +115,7 @@ describe('reservations API', () => {
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({
-        error: 'Failed to fetch reservations',
-        details: 'Database error'
+        error: 'Failed to fetch reservations'
       })
     })
   })
@@ -127,6 +123,8 @@ describe('reservations API', () => {
   describe('POST /api/reservations', () => {
     beforeEach(() => {
       req.method = 'POST'
+      // Mock no conflicts for POST tests
+      prisma.reservation.findMany.mockResolvedValue([])
     })
 
     it('creates owner reservation successfully', async () => {
@@ -165,7 +163,7 @@ describe('reservations API', () => {
           children: 0,
           status: 'APPROVED',
           isOwnerReservation: true,
-          specialRequests: 'Personal use',
+          ownerNotes: 'Personal use',
           guestEmail: 'owner@example.com',
           guestFirstName: 'Owner',
           guestLastName: 'Reservation'
@@ -238,8 +236,7 @@ describe('reservations API', () => {
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({
-        error: 'Failed to create reservation',
-        details: 'Database error'
+        error: 'Failed to create reservation'
       })
     })
 

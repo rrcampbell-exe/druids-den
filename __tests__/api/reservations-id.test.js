@@ -241,8 +241,7 @@ describe('reservations/[id] API', () => {
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({ 
-        error: 'Failed to update reservation',
-        details: 'Record not found'
+        error: 'Failed to update reservation'
       })
     })
 
@@ -317,14 +316,14 @@ describe('reservations/[id] API', () => {
     })
 
     it('returns error when deletion fails', async () => {
+      prisma.reservation.findUnique.mockResolvedValue({ id: '1' })
       prisma.reservation.update.mockRejectedValue(new Error('Record not found'))
 
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({ 
-        error: 'Failed to delete reservation',
-        details: 'Record not found'
+        error: 'Failed to delete reservation'
       })
     })
   })

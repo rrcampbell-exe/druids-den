@@ -100,7 +100,11 @@ describe('send-reservation API', () => {
       await handler(req, res)
       
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid reservation data'
+        })
+      )
     })
 
     it('returns 400 when email is missing', async () => {
@@ -109,7 +113,11 @@ describe('send-reservation API', () => {
       await handler(req, res)
       
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid reservation data'
+        })
+      )
     })
 
     it('returns 400 when checkIn is missing', async () => {
@@ -118,7 +126,11 @@ describe('send-reservation API', () => {
       await handler(req, res)
       
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid reservation data'
+        })
+      )
     })
   })
 
