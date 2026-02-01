@@ -219,7 +219,7 @@ export default async function handler(req, res) {
           ? updatedReservation.statusChangedAt.toISOString() 
           : null,
         estimatedTotal: nights * 150,
-        ownerNote: updatedReservation.isOwnerReservation ? updatedReservation.specialRequests : null,
+        ownerNote: updatedReservation.isOwnerReservation ? updatedReservation.ownerNotes : null,
         denialMessage: updatedReservation.denialMessage,
         cancellationMessage: updatedReservation.cancellationMessage,
       })
