@@ -53,9 +53,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in date in email', () => {
       const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
       
-      // Date is formatted with America/Chicago timezone, so 2026-03-01 UTC becomes February 28, 2026
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.html).toContain('February 28, 2026')
+      // Date should display exactly as submitted: 2026-03-01 -> March 1, 2026
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.html).toContain('March 1, 2026')
     })
 
     it('has welcoming subject line', () => {
@@ -85,9 +85,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in and checkout dates', () => {
       const result = generatePostCheckoutEmail(mockReservation)
       
-      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.text).toContain('March 2, 2026')
+      // Dates should display exactly as submitted: 2026-03-01 -> March 1, 2026-03-03 -> March 3
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.text).toContain('March 3, 2026')
     })
 
     it('includes feedback link with reservation ID', () => {
@@ -147,9 +147,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in and checkout dates', () => {
       const result = generateDenialEmail(mockReservation, 'Dates unavailable')
       
-      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.text).toContain('March 2, 2026')
+      // Dates should display exactly as submitted: 2026-03-01 -> March 1, 2026-03-03 -> March 3
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.text).toContain('March 3, 2026')
     })
 
     it('has apologetic subject line', () => {
@@ -194,9 +194,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in and checkout dates', () => {
       const result = generateCancellationEmail(mockReservation, 'Unexpected maintenance')
       
-      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.text).toContain('March 2, 2026')
+      // Dates should display exactly as submitted: 2026-03-01 -> March 1, 2026-03-03 -> March 3
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.text).toContain('March 3, 2026')
     })
 
     it('has cancellation in subject line', () => {

@@ -5,16 +5,18 @@
 
 /**
  * Format date string to "Month Day, Year" format
- * @param {string} dateString - Date string in any format
+ * @param {string} dateString - Date string in YYYY-MM-DD format
  * @returns {string} Formatted date (e.g., "January 25, 2026")
  */
 function formatDateForEmail(dateString) {
-  const date = new Date(dateString)
+  // Parse YYYY-MM-DD as UTC to avoid timezone shifts
+  // Split the date string and create date using year, month-1, day
+  const [year, month, day] = dateString.split('T')[0].split('-').map(Number)
+  const date = new Date(year, month - 1, day)
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
-    timeZone: 'America/Chicago'
+    day: 'numeric'
   })
 }
 

@@ -155,8 +155,8 @@ export const sanitizeDate = (dateString) => {
     return { valid: false, sanitized: '' }
   }
   
-  // Validate it's a real date
-  const date = new Date(trimmed + 'T00:00:00.000Z')
+  // Validate it's a real date using noon UTC to avoid timezone boundary issues
+  const date = new Date(trimmed + 'T12:00:00.000Z')
   if (isNaN(date.getTime())) {
     return { valid: false, sanitized: '' }
   }
@@ -261,6 +261,14 @@ export const sanitizeReservationData = (reservationData) => {
     sanitized.children = children.sanitized
   }
   
+  // Validate total guest count
+  if (sanitized.adults !== undefined && sanitized.children !== undefined) {
+    const totalGuests = sanitized.adults + sanitized.children
+    if (totalGuests > 10) {
+      errors.adults = 'Maximum 10 guests total allowed'
+    }
+  }
+  
   // specialRequests (optional)
   if (reservationData.specialRequests) {
     const specialRequests = sanitizeLongText(reservationData.specialRequests, 500)
@@ -272,6 +280,18 @@ export const sanitizeReservationData = (reservationData) => {
     }
   } else {
     sanitized.specialRequests = null
+  }
+  
+  // estimatedTotal (optional, frontend sends it)
+  if (reservationData.estimatedTotal !== undefined) {
+    const estimatedTotal = sanitizeInteger(reservationData.estimatedTotal, { min: 0, max: 10000 })
+    if (estimatedTotal.valid) {
+      sanitized.estimatedTotal = estimatedTotal.sanitized
+    } else {
+      sanitized.estimatedTotal = 0
+    }
+  } else {
+    sanitized.estimatedTotal = 0
   }
   
   return { sanitized, errors }
