@@ -62,6 +62,7 @@ describe('Reports', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     fetch.mockResolvedValue({
+      ok: true,
       json: async () => mockReservations
     })
   })
@@ -265,6 +266,7 @@ describe('Reports', () => {
 
   it('shows no data message when no reservations', async () => {
     fetch.mockResolvedValueOnce({
+      ok: true,
       json: async () => ({ reservations: [] })
     })
     
@@ -277,6 +279,7 @@ describe('Reports', () => {
 
   it('filters out pending reservations from metrics', async () => {
     fetch.mockResolvedValueOnce({
+      ok: true,
       json: async () => ({
         reservations: [
           ...mockReservations.reservations,
