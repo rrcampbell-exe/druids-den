@@ -16,7 +16,10 @@ const Reports = () => {
     // Fetch reservations from database
     setLoading(true)
     fetch('/api/reservations')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`Failed to fetch reservations: ${res.status}`)
+        return res.json()
+      })
       .then(data => {
         setReservations(data.reservations || data)
         setLoading(false)
