@@ -5,6 +5,8 @@ import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal } from '../com
 import { validateReservationForm } from '../utils/formValidation'
 
 const Reservations = () => {
+  const firstNameRef = useRef(null)
+  const lastNameRef = useRef(null)
   const emailRef = useRef(null)
   const phoneRef = useRef(null)
   
@@ -265,11 +267,16 @@ const Reservations = () => {
       
       // Scroll to first error
       const firstErrorField = Object.keys(validation.errors)[0]
-      if (firstErrorField === 'firstName' || firstErrorField === 'lastName' || 
-          firstErrorField === 'email' || firstErrorField === 'phone') {
-        if (emailRef.current) {
-          emailRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        }
+      const fieldRefs = {
+        firstName: firstNameRef,
+        lastName: lastNameRef,
+        email: emailRef,
+        phone: phoneRef
+      }
+      
+      const ref = fieldRefs[firstErrorField]
+      if (ref?.current) {
+        ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
       return
     }
@@ -396,6 +403,7 @@ const Reservations = () => {
                 <div className='form-group'>
                   <label htmlFor='firstName'>First Name *</label>
                   <input
+                    ref={firstNameRef}
                     type='text'
                     id='firstName'
                     name='firstName'
@@ -412,6 +420,7 @@ const Reservations = () => {
                 <div className='form-group'>
                   <label htmlFor='lastName'>Last Name *</label>
                   <input
+                    ref={lastNameRef}
                     type='text'
                     id='lastName'
                     name='lastName'
