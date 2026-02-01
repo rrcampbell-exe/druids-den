@@ -21,17 +21,12 @@ if (!process.env.DATABASE_URL) {
   process.exit(1)
 }
 
-console.log('Using DATABASE_URL:', process.env.DATABASE_URL.substring(0, 30) + '...')
+console.log('Using DATABASE_URL from environment (value redacted)')
 
 // Prisma 7 with Accelerate requires accelerateUrl in constructor
 const prisma = new PrismaClient({
   accelerateUrl: process.env.PRISMA_DATABASE_URL || process.env.DEV_PRISMA_DATABASE_URL
 })
-
-// Helper to format date as YYYY-MM-DD
-function formatDate(date) {
-  return date.toISOString().split('T')[0]
-}
 
 // Helper to add days to a date
 function addDays(date, days) {
