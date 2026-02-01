@@ -1,4 +1,5 @@
 import { prisma } from './utils/db.js'
+import { calculateEstimatedTotal } from './utils/pricing.js'
 
 export default async function handler(req, res) {
   // POST - Create new reservation (owner reservations)
@@ -109,7 +110,10 @@ export default async function handler(req, res) {
         submittedAt: reservation.submittedAt.toISOString(),
         statusChangedAt: reservation.statusChangedAt.toISOString(),
         approvedAt: reservation.statusChangedAt.toISOString(),
-        estimatedTotal: nights * 150,
+        estimatedTotal: calculateEstimatedTotal(
+          reservation.checkIn.toISOString().split('T')[0],
+          reservation.checkOut.toISOString().split('T')[0]
+        ),
         ownerNote: reservation.ownerNotes,
       })
     } catch (error) {
@@ -136,11 +140,9 @@ export default async function handler(req, res) {
 
     // Transform to match the format expected by the frontend
     const formattedReservations = reservations.map(res => {
-      // Calculate nights for estimatedTotal
-      const checkInDate = new Date(res.checkIn)
-      const checkOutDate = new Date(res.checkOut)
-      const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
-      const estimatedTotal = nights * 150 // $150 per night
+      const checkInStr = res.checkIn.toISOString().split('T')[0]
+      const checkOutStr = res.checkOut.toISOString().split('T')[0]
+      const estimatedTotal = calculateEstimatedTotal(checkInStr, checkOutStr)
       
       return {
         id: res.id,

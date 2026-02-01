@@ -5,6 +5,7 @@ import {
   generateCustomerConfirmationEmail 
 } from './utils/emailTemplates.js'
 import { sanitizeReservationData } from './utils/sanitize.js'
+import { calculateEstimatedTotal } from './utils/pricing.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -32,8 +33,13 @@ export default async function handler(req, res) {
 
   try {
     // Convert YYYY-MM-DD dates to ISO-8601 DateTime for Prisma
-    const checkInDate = new Date(sanitized.checkIn + 'T00:00:00.000Z')
-    const checkOutDate = new Date(sanitized.checkOut + 'T00:00:00.000Z')
+    // Using noon UTC (12:00) instead of midnight to avoid timezone boundary issues
+    // This ensures the date part stays consistent when converted to any timezone
+    const checkInDate = new Date(sanitized.checkIn + 'T12:00:00.000Z')
+    const checkOutDate = new Date(sanitized.checkOut + 'T12:00:00.000Z')
+    
+    // Calculate estimated total for this reservation
+    const estimatedTotal = calculateEstimatedTotal(sanitized.checkIn, sanitized.checkOut)
     
     // Check for conflicts with existing APPROVED/PENDING reservations
     const conflictingReservations = await prisma.reservation.findMany({
@@ -91,8 +97,12 @@ export default async function handler(req, res) {
     })
 
     // Generate email templates
-    const adminEmail = generateAdminNotificationEmail(sanitized)
-    const customerEmail = generateCustomerConfirmationEmail(sanitized)
+    const reservationDataWithTotal = {
+      ...sanitized,
+      estimatedTotal
+    }
+    const adminEmail = generateAdminNotificationEmail(reservationDataWithTotal)
+    const customerEmail = generateCustomerConfirmationEmail(reservationDataWithTotal)
 
     // Prepare emails to send
     const emails = [

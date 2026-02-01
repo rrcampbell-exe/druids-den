@@ -3,6 +3,7 @@ import { sendEmail } from '../utils/emailService.js'
 import { generateApprovalEmail } from '../utils/emailTemplates.js'
 import { generateDenialEmail, generateCancellationEmail, generateReservationModificationEmail } from '../utils/dashboardEmailTemplates.js'
 import { sanitizeDate } from '../utils/sanitize.js'
+import { calculateEstimatedTotal } from '../utils/pricing.js'
 
 export default async function handler(req, res) {
   const { id } = req.query
@@ -71,8 +72,9 @@ export default async function handler(req, res) {
           }
         }
         
-        const newCheckIn = checkIn ? new Date(checkIn + 'T00:00:00.000Z') : null
-        const newCheckOut = checkOut ? new Date(checkOut + 'T00:00:00.000Z') : null
+        // Convert YYYY-MM-DD to DateTime using noon UTC to avoid timezone issues
+        const newCheckIn = checkIn ? new Date(checkIn + 'T12:00:00.000Z') : null
+        const newCheckOut = checkOut ? new Date(checkOut + 'T12:00:00.000Z') : null
         
         const checkInDate = newCheckIn || currentReservation.checkIn
         const checkOutDate = newCheckOut || currentReservation.checkOut
@@ -166,12 +168,16 @@ export default async function handler(req, res) {
       if (!updatedReservation.isOwnerReservation) {
         try {
           let emailContent
+          const checkInStr = updatedReservation.checkIn.toISOString().split('T')[0]
+          const checkOutStr = updatedReservation.checkOut.toISOString().split('T')[0]
           const reservationData = {
             firstName: updatedReservation.guestFirstName,
-            checkIn: updatedReservation.checkIn,
-            checkOut: updatedReservation.checkOut,
+            lastName: updatedReservation.guestLastName,
+            checkIn: checkInStr,
+            checkOut: checkOutStr,
             adults: updatedReservation.adults,
             children: updatedReservation.children,
+            estimatedTotal: calculateEstimatedTotal(checkInStr, checkOutStr),
             specialRequests: updatedReservation.specialRequests
           }
 
@@ -210,14 +216,17 @@ export default async function handler(req, res) {
       const checkOutDate = new Date(updatedReservation.checkOut)
       const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
       
+      const checkInStr = updatedReservation.checkIn.toISOString().split('T')[0]
+      const checkOutStr = updatedReservation.checkOut.toISOString().split('T')[0]
+      
       return res.status(200).json({
         id: updatedReservation.id,
         firstName: updatedReservation.guestFirstName,
         lastName: updatedReservation.guestLastName,
         email: updatedReservation.guestEmail,
         phone: updatedReservation.guestPhone,
-        checkIn: updatedReservation.checkIn.toISOString().split('T')[0],
-        checkOut: updatedReservation.checkOut.toISOString().split('T')[0],
+        checkIn: checkInStr,
+        checkOut: checkOutStr,
         adults: updatedReservation.adults,
         children: updatedReservation.children,
         specialRequests: updatedReservation.specialRequests,
@@ -228,7 +237,7 @@ export default async function handler(req, res) {
         approvedAt: updatedReservation.status === 'APPROVED' && updatedReservation.statusChangedAt 
           ? updatedReservation.statusChangedAt.toISOString() 
           : null,
-        estimatedTotal: nights * 150,
+        estimatedTotal: calculateEstimatedTotal(checkInStr, checkOutStr),
         ownerNote: updatedReservation.isOwnerReservation ? updatedReservation.ownerNotes : null,
         denialMessage: updatedReservation.denialMessage,
         cancellationMessage: updatedReservation.cancellationMessage,
