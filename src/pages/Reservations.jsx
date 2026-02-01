@@ -502,6 +502,9 @@ const Reservations = () => {
                     required
                   />
                   <small>Age 13+</small>
+                  {touchedFields.adults && validationErrors.adults && (
+                    <span className='error-message'>{validationErrors.adults}</span>
+                  )}
                 </div>
                 
                 <div className='form-group'>

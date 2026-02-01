@@ -209,6 +209,12 @@ export const validateReservationForm = (formData) => {
     errors.children = childrenValidation.error
   }
   
+  // Validate total guest count (adults + children)
+  const totalGuests = (formData.adults || 0) + (formData.children || 0)
+  if (totalGuests > 10) {
+    errors.adults = 'Maximum 10 guests total allowed'
+  }
+  
   // Validate special requests if provided
   if (formData.specialRequests) {
     const requestsValidation = validateSpecialRequests(formData.specialRequests)

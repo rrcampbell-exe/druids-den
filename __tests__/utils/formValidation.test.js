@@ -573,6 +573,37 @@ describe('Form Validation Utilities', () => {
       expect(result.errors.specialRequests).toBeUndefined()
     })
 
+    it('rejects form with more than 10 total guests', () => {
+      const data = { ...validFormData, adults: 6, children: 5 }
+      const result = validateReservationForm(data)
+      expect(result.valid).toBe(false)
+      expect(result.errors.adults).toBe('Maximum 10 guests total allowed')
+    })
+
+    it('accepts form with exactly 10 total guests', () => {
+      const data = { ...validFormData, adults: 6, children: 4 }
+      const result = validateReservationForm(data)
+      expect(result.valid).toBe(true)
+      expect(result.errors.adults).toBeUndefined()
+    })
+
+    it('accepts various combinations under 10 guests', () => {
+      const combinations = [
+        { adults: 1, children: 0 },
+        { adults: 5, children: 5 },
+        { adults: 8, children: 2 },
+        { adults: 10, children: 0 },
+        { adults: 3, children: 7 }
+      ]
+      
+      combinations.forEach(combo => {
+        const data = { ...validFormData, ...combo }
+        const result = validateReservationForm(data)
+        expect(result.valid).toBe(true)
+        expect(result.errors.adults).toBeUndefined()
+      })
+    })
+
     it('returns multiple errors for multiple invalid fields', () => {
       const data = {
         ...validFormData,

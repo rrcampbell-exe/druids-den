@@ -453,5 +453,37 @@ describe('Sanitization Utilities', () => {
       const result = sanitizeReservationData(data)
       expect(result.sanitized.firstName).toBe('John')
     })
+
+    it('rejects reservations with more than 10 total guests', () => {
+      const data = { ...validData, adults: 6, children: 5 }
+      const result = sanitizeReservationData(data)
+      expect(result.errors.adults).toBe('Maximum 10 guests total allowed')
+    })
+
+    it('accepts reservations with exactly 10 total guests', () => {
+      const data = { ...validData, adults: 6, children: 4 }
+      const result = sanitizeReservationData(data)
+      expect(result.errors.adults).toBeUndefined()
+      expect(result.sanitized.adults).toBe(6)
+      expect(result.sanitized.children).toBe(4)
+    })
+
+    it('accepts various combinations under 10 guests', () => {
+      const combinations = [
+        { adults: 1, children: 0 },
+        { adults: 5, children: 5 },
+        { adults: 8, children: 2 },
+        { adults: 10, children: 0 },
+        { adults: 3, children: 7 }
+      ]
+      
+      combinations.forEach(combo => {
+        const data = { ...validData, ...combo }
+        const result = sanitizeReservationData(data)
+        expect(result.errors.adults).toBeUndefined()
+        expect(result.sanitized.adults).toBe(combo.adults)
+        expect(result.sanitized.children).toBe(combo.children)
+      })
+    })
   })
 })

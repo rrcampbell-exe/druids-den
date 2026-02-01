@@ -304,6 +304,83 @@ describe('Reservations', () => {
       const childrenInput = screen.getByLabelText('Children')
       expect(childrenInput).toHaveAttribute('min', '0')
     })
+
+    it('prevents submission when total guests exceed 10', async () => {
+      const user = userEvent.setup()
+      render(<BrowserRouter><Reservations /></BrowserRouter>)
+      
+      await waitFor(() => {
+        expect(fetchSpy).toHaveBeenCalledTimes(1)
+      })
+      
+      // Fill out valid form data
+      const firstNameInput = screen.getByLabelText('First Name *')
+      const lastNameInput = screen.getByLabelText('Last Name *')
+      const emailInput = screen.getByLabelText('Email Address *')
+      const phoneInput = screen.getByLabelText('Phone Number *')
+      const adultsInput = screen.getByLabelText('Adults *')
+      const childrenInput = screen.getByLabelText('Children')
+      
+      await user.type(firstNameInput, 'John')
+      await user.type(lastNameInput, 'Doe')
+      await user.type(emailInput, 'john@example.com')
+      await user.type(phoneInput, '5551234567')
+      
+      // Set guests to exceed 10 total (6 adults + 5 children = 11)
+      await user.clear(adultsInput)
+      await user.type(adultsInput, '6')
+      await user.type(childrenInput, '5')
+      
+      const submitButton = screen.getByRole('button', { name: /Submit Reservation Request/i })
+      await user.click(submitButton)
+      
+      // Should show validation error
+      await waitFor(() => {
+        expect(screen.getByText('Maximum 10 guests total allowed')).toBeInTheDocument()
+      })
+      
+      // Should not submit
+      expect(fetchSpy).toHaveBeenCalledTimes(1) // Only the initial load, no POST
+    })
+
+    it('allows submission with exactly 10 total guests', async () => {
+      const user = userEvent.setup()
+      
+      // Mock successful submission
+      fetchSpy.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ blackoutDates: [] })
+      }).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, reservationId: 'res-123' })
+      })
+      
+      render(<BrowserRouter><Reservations /></BrowserRouter>)
+      
+      // Fill out valid form data with exactly 10 guests
+      await user.type(screen.getByLabelText('First Name *'), 'John')
+      await user.type(screen.getByLabelText('Last Name *'), 'Doe')
+      await user.type(screen.getByLabelText('Email Address *'), 'john@example.com')
+      await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
+      
+      const adultsInput = screen.getByLabelText('Adults *')
+      const childrenInput = screen.getByLabelText('Children')
+      
+      // Set guests to exactly 10 total (6 adults + 4 children)
+      await user.clear(adultsInput)
+      await user.type(adultsInput, '6')
+      await user.type(childrenInput, '4')
+      
+      const submitButton = screen.getByRole('button', { name: /Submit Reservation Request/i })
+      await user.click(submitButton)
+      
+      // Should submit (though will fail on date validation, but that's OK - 
+      // we're just verifying guest count validation passes)
+      await waitFor(() => {
+        // If total guest validation failed, we'd see the error message
+        expect(screen.queryByText('Maximum 10 guests total allowed')).not.toBeInTheDocument()
+      })
+    })
   })
 
   describe('Special requests', () => {

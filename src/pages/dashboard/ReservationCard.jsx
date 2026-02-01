@@ -394,8 +394,16 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                     value={editData.adults}
                     onChange={(e) => {
                       const value = e.target.value === '' ? 1 : Number(e.target.value)
-                      setEditData({ ...editData, adults: Number.isFinite(value) ? value : 1 })
-                      setEditError('')
+                      const newAdults = Number.isFinite(value) ? value : 1
+                      setEditData({ ...editData, adults: newAdults })
+                      // Show proactive validation for total guests
+                      if (newAdults + editData.children > 10) {
+                        setEditError('Maximum 10 guests total allowed')
+                      } else if (newAdults < 1) {
+                        setEditError('At least 1 adult is required')
+                      } else {
+                        setEditError('')
+                      }
                     }}
                   />
                 </div>
@@ -409,8 +417,16 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                     value={editData.children}
                     onChange={(e) => {
                       const value = e.target.value === '' ? 0 : Number(e.target.value)
-                      setEditData({ ...editData, children: Number.isFinite(value) ? value : 0 })
-                      setEditError('')
+                      const newChildren = Number.isFinite(value) ? value : 0
+                      setEditData({ ...editData, children: newChildren })
+                      // Show proactive validation for total guests
+                      if (editData.adults + newChildren > 10) {
+                        setEditError('Maximum 10 guests total allowed')
+                      } else if (editData.adults < 1) {
+                        setEditError('At least 1 adult is required')
+                      } else {
+                        setEditError('')
+                      }
                     }}
                   />
                 </div>
