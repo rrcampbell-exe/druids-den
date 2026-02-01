@@ -45,5 +45,8 @@
     "sass": "^1.97.2",
     "vite": "^6.3.5",
     "vitest": "^4.0.18"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }
