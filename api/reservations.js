@@ -21,6 +21,53 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Owner email is required' })
       }
 
+      // Validate date order
+      const checkInDate = new Date(checkIn)
+      const checkOutDate = new Date(checkOut)
+      
+      if (checkOutDate <= checkInDate) {
+        return res.status(400).json({ error: 'Check-out date must be after check-in date' })
+      }
+
+      // Check for conflicts with existing APPROVED/PENDING reservations
+      const conflictingReservations = await prisma.reservation.findMany({
+        where: {
+          deletedAt: null,
+          status: { in: ['APPROVED', 'PENDING'] },
+          OR: [
+            {
+              AND: [
+                { checkIn: { lte: checkInDate } },
+                { checkOut: { gt: checkInDate } }
+              ]
+            },
+            {
+              AND: [
+                { checkIn: { lt: checkOutDate } },
+                { checkOut: { gte: checkOutDate } }
+              ]
+            },
+            {
+              AND: [
+                { checkIn: { gte: checkInDate } },
+                { checkOut: { lte: checkOutDate } }
+              ]
+            }
+          ]
+        }
+      })
+      
+      if (conflictingReservations.length > 0) {
+        return res.status(400).json({ 
+          error: 'Date conflict',
+          message: 'These dates overlap with an existing reservation',
+          conflicts: conflictingReservations.map(r => ({
+            checkIn: r.checkIn.toISOString().split('T')[0],
+            checkOut: r.checkOut.toISOString().split('T')[0]
+          }))
+        })
+      }
+
       // Create owner reservation without userId (will add when Clerk auth is implemented)
       const reservation = await prisma.reservation.create({
         data: {
@@ -28,11 +75,12 @@ export default async function handler(req, res) {
           guestLastName: 'Reservation',
           guestEmail: ownerEmail,
           guestPhone: '',
-          checkIn: new Date(checkIn),
-          checkOut: new Date(checkOut),
+          checkIn: checkInDate,
+          checkOut: checkOutDate,
           adults,
           children,
-          specialRequests: ownerNote,
+          specialRequests: null,
+          ownerNotes: ownerNote,
           status: 'APPROVED',
           isOwnerReservation: true,
           statusChangedAt: new Date(),
@@ -41,9 +89,9 @@ export default async function handler(req, res) {
       })
 
       // Format response
-      const checkInDate = new Date(reservation.checkIn)
-      const checkOutDate = new Date(reservation.checkOut)
-      const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
+      const responseCheckInDate = new Date(reservation.checkIn)
+      const responseCheckOutDate = new Date(reservation.checkOut)
+      const nights = Math.ceil((responseCheckOutDate - responseCheckInDate) / (1000 * 60 * 60 * 24))
 
       return res.status(201).json({
         id: reservation.id,
@@ -62,13 +110,12 @@ export default async function handler(req, res) {
         statusChangedAt: reservation.statusChangedAt.toISOString(),
         approvedAt: reservation.statusChangedAt.toISOString(),
         estimatedTotal: nights * 150,
-        ownerNote: reservation.specialRequests,
+        ownerNote: reservation.ownerNotes,
       })
     } catch (error) {
       console.error('Error creating reservation:', error)
       return res.status(500).json({ 
-        error: 'Failed to create reservation',
-        details: error.message 
+        error: 'Failed to create reservation' 
       })
     }
   }
@@ -81,17 +128,6 @@ export default async function handler(req, res) {
     const reservations = await prisma.reservation.findMany({
       where: {
         deletedAt: null
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true
-          }
-        }
       },
       orderBy: {
         checkIn: 'asc'
@@ -124,7 +160,7 @@ export default async function handler(req, res) {
         statusChangedAt: res.statusChangedAt ? res.statusChangedAt.toISOString() : null,
         approvedAt: res.status === 'APPROVED' && res.statusChangedAt ? res.statusChangedAt.toISOString() : null,
         estimatedTotal,
-        ownerNote: res.isOwnerReservation ? res.specialRequests : null // Owner notes stored in specialRequests
+        ownerNote: res.isOwnerReservation ? res.ownerNotes : null
       }
     })
 
@@ -134,8 +170,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error fetching reservations:', error)
     return res.status(500).json({ 
-      error: 'Failed to fetch reservations',
-      details: error.message 
+      error: 'Failed to fetch reservations'
     })
   }
   }

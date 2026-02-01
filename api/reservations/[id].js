@@ -32,15 +32,16 @@ export default async function handler(req, res) {
 
       // Status change
       if (status) {
-        if (!['approved', 'denied', 'cancelled', 'pending'].includes(status.toLowerCase())) {
+        const normalizedStatus = status.toLowerCase()
+        if (!['approved', 'denied', 'cancelled', 'pending'].includes(normalizedStatus)) {
           return res.status(400).json({ error: 'Invalid status' })
         }
-        updateData.status = status.toUpperCase()
+        updateData.status = normalizedStatus.toUpperCase()
         updateData.statusChangedAt = new Date()
         updateData.statusChangedById = statusChangedById || null
         
-        if (status === 'denied') updateData.denialMessage = denialMessage
-        if (status === 'cancelled') updateData.cancellationMessage = cancellationMessage
+        if (normalizedStatus === 'denied') updateData.denialMessage = denialMessage
+        if (normalizedStatus === 'cancelled') updateData.cancellationMessage = cancellationMessage
       }
 
       // Full reservation update with conflict checking
@@ -52,6 +53,10 @@ export default async function handler(req, res) {
         const currentReservation = await prisma.reservation.findUnique({
           where: { id }
         })
+        
+        if (!currentReservation) {
+          return res.status(404).json({ error: 'Reservation not found' })
+        }
         
         const checkInDate = newCheckIn || currentReservation.checkIn
         const checkOutDate = newCheckOut || currentReservation.checkOut
@@ -116,7 +121,7 @@ export default async function handler(req, res) {
       }
       if (specialRequests !== undefined) updateData.specialRequests = specialRequests
       if (ownerNote !== undefined) {
-        updateData.specialRequests = ownerNote
+        updateData.ownerNotes = ownerNote
         changes.note = ownerNote
       }
 
@@ -200,8 +205,7 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error('Error updating reservation:', error)
       return res.status(500).json({ 
-        error: 'Failed to update reservation',
-        details: error.message 
+        error: 'Failed to update reservation'
       })
     }
   }
@@ -209,6 +213,14 @@ export default async function handler(req, res) {
   // DELETE - Soft delete reservation
   if (req.method === 'DELETE') {
     try {
+      const existingReservation = await prisma.reservation.findUnique({
+        where: { id }
+      })
+
+      if (!existingReservation) {
+        return res.status(404).json({ error: 'Reservation not found' })
+      }
+
       const updatedReservation = await prisma.reservation.update({
         where: { id },
         data: {
@@ -223,8 +235,7 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error('Error deleting reservation:', error)
       return res.status(500).json({ 
-        error: 'Failed to delete reservation',
-        details: error.message 
+        error: 'Failed to delete reservation'
       })
     }
   }

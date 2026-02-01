@@ -4,6 +4,7 @@ import {
   generateAdminNotificationEmail, 
   generateCustomerConfirmationEmail 
 } from './utils/emailTemplates.js'
+import { sanitizeReservationData } from './utils/sanitize.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -11,37 +12,48 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const reservationData = req.body
+  const rawReservationData = req.body
 
-  // Basic validation
-  if (!reservationData.firstName || !reservationData.email || !reservationData.checkIn) {
+  // Validate and sanitize all input data
+  const { sanitized, errors } = sanitizeReservationData(rawReservationData)
+
+  // Check for any validation errors
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({ 
+      error: 'Invalid reservation data',
+      details: errors
+    })
+  }
+
+  // Ensure required fields passed validation
+  if (!sanitized.firstName || !sanitized.email || !sanitized.checkIn) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
   try {
     // Create reservation in database with pending status
     // Convert YYYY-MM-DD dates to ISO-8601 DateTime for Prisma
-    const checkInDate = new Date(reservationData.checkIn + 'T00:00:00.000Z')
-    const checkOutDate = new Date(reservationData.checkOut + 'T00:00:00.000Z')
+    const checkInDate = new Date(sanitized.checkIn + 'T00:00:00.000Z')
+    const checkOutDate = new Date(sanitized.checkOut + 'T00:00:00.000Z')
     
-    const reservation = await prisma.reservation.create({
+    await prisma.reservation.create({
       data: {
         checkIn: checkInDate.toISOString(),
         checkOut: checkOutDate.toISOString(),
-        adults: reservationData.adults || 1,
-        children: reservationData.children || 0,
-        specialRequests: reservationData.specialRequests || null,
+        adults: sanitized.adults || 1,
+        children: sanitized.children || 0,
+        specialRequests: sanitized.specialRequests,
         status: 'PENDING',
-        guestFirstName: reservationData.firstName,
-        guestLastName: reservationData.lastName,
-        guestEmail: reservationData.email,
-        guestPhone: reservationData.phone
+        guestFirstName: sanitized.firstName,
+        guestLastName: sanitized.lastName,
+        guestEmail: sanitized.email,
+        guestPhone: sanitized.phone
       }
     })
 
     // Generate email templates
-    const adminEmail = generateAdminNotificationEmail(reservationData)
-    const customerEmail = generateCustomerConfirmationEmail(reservationData)
+    const adminEmail = generateAdminNotificationEmail(sanitized)
+    const customerEmail = generateCustomerConfirmationEmail(sanitized)
 
     // Prepare emails to send
     const emails = [
@@ -56,7 +68,7 @@ export default async function handler(req, res) {
       // 2. Customer confirmation email
       {
         from: 'The Druids Den <grovekeeper@druidsdenwi.com>',
-        to: reservationData.email,
+        to: sanitized.email,
         subject: customerEmail.subject,
         text: customerEmail.text,
         html: customerEmail.html
@@ -108,8 +120,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error processing reservation:', error)
     return res.status(500).json({
-      error: 'Failed to process reservation request',
-      details: error.message
+      error: 'Failed to process reservation request'
     })
   }
 }

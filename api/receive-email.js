@@ -2,6 +2,7 @@
 // Forwards all emails received at *@druidsdenwi.com to campbell.ryan.r@gmail.com
 
 import crypto from 'node:crypto'
+import { sanitizeEmail, sanitizeText } from './utils/sanitize.js'
 
 export default async function handler(req, res) {
   // Only accept POST requests
@@ -43,11 +44,19 @@ export default async function handler(req, res) {
     const webhookData = req.body
     const emailMetadata = webhookData.data
 
+    // Sanitize email metadata to prevent injection attacks
+    const sanitizedFrom = sanitizeEmail(emailMetadata.from)
+    const sanitizedSubject = sanitizeText(emailMetadata.subject || '(No Subject)')
+    const sanitizedTo = Array.isArray(emailMetadata.to) 
+      ? emailMetadata.to.map(email => sanitizeEmail(email).sanitized).filter(e => e)
+      : []
+
     // Log the incoming email
     console.log('Received inbound email:', {
-      from: emailMetadata.from,
-      to: emailMetadata.to,
-      subject: emailMetadata.subject,
+      from: sanitizedFrom.sanitized,
+      to: sanitizedTo,
+      subject: sanitizedSubject,
+
       email_id: emailMetadata.email_id
     })
 
@@ -64,13 +73,13 @@ export default async function handler(req, res) {
     const forwardedEmail = {
       from: 'grovekeeper@druidsdenwi.com',
       to: 'campbell.ryan.r@gmail.com',
-      subject: `Fwd: ${emailMetadata.subject || '(No Subject)'}`,
+      subject: `Fwd: ${sanitizedSubject}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px;">
           <div style="background: #f5f5f5; padding: 15px; border-left: 4px solid #464645; margin-bottom: 20px;">
-            <p style="margin: 5px 0;"><strong>From:</strong> ${emailMetadata.from}</p>
-            <p style="margin: 5px 0;"><strong>To:</strong> ${emailMetadata.to.join(', ')}</p>
-            <p style="margin: 5px 0;"><strong>Subject:</strong> ${emailMetadata.subject || '(No Subject)'}</p>
+            <p style="margin: 5px 0;"><strong>From:</strong> ${sanitizedFrom.sanitized}</p>
+            <p style="margin: 5px 0;"><strong>To:</strong> ${sanitizedTo.join(', ')}</p>
+            <p style="margin: 5px 0;"><strong>Subject:</strong> ${sanitizedSubject}</p>
             <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(emailMetadata.created_at).toLocaleString()}</p>
           </div>
           <div style="padding: 15px; border: 1px solid #e0e0e0;">
@@ -80,16 +89,16 @@ export default async function handler(req, res) {
         </div>
       `,
       text: `
-New email received at ${emailMetadata.to.join(', ')}
+New email received at ${sanitizedTo.join(', ')}
 
-From: ${emailMetadata.from}
-Subject: ${emailMetadata.subject || '(No Subject)'}
+From: ${sanitizedFrom.sanitized}
+Subject: ${sanitizedSubject}
 Date: ${new Date(emailMetadata.created_at).toLocaleString()}
 
 View full email content in your Resend dashboard.
 Email ID: ${emailMetadata.email_id}
       `,
-      reply_to: emailMetadata.from
+      reply_to: sanitizedFrom.sanitized
     }
 
     // Send notification via Resend API
@@ -114,6 +123,6 @@ Email ID: ${emailMetadata.email_id}
 
   } catch (error) {
     console.error('Error processing inbound email:', error)
-    return res.status(500).json({ error: 'Internal server error', message: error.message })
+    return res.status(500).json({ error: 'Internal server error' })
   }
 }
