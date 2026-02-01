@@ -97,6 +97,7 @@ describe('reservations/[id] API', () => {
 
       const updatedReservation = { ...mockReservation, status: 'APPROVED' }
 
+      prisma.reservation.findUnique.mockResolvedValue(mockReservation)
       prisma.reservation.update.mockResolvedValue(updatedReservation)
 
       await handler(req, res)
@@ -135,6 +136,7 @@ describe('reservations/[id] API', () => {
         deletedAt: null
       }
 
+      prisma.reservation.findUnique.mockResolvedValue(mockReservation)
       prisma.reservation.update.mockResolvedValue({ ...mockReservation, status: 'DENIED', denialMessage: 'Not available' })
 
       await handler(req, res)

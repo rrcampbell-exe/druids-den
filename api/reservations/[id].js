@@ -31,6 +31,15 @@ export default async function handler(req, res) {
       const updateData = {}
       const changes = { dates: false, guests: false, note: null }
 
+      // Get current reservation first (needed for change detection)
+      const currentReservation = await prisma.reservation.findUnique({
+        where: { id }
+      })
+
+      if (!currentReservation) {
+        return res.status(404).json({ error: 'Reservation not found' })
+      }
+
       // Status change
       if (status) {
         const normalizedStatus = status.toLowerCase()
@@ -64,15 +73,6 @@ export default async function handler(req, res) {
         
         const newCheckIn = checkIn ? new Date(checkIn + 'T00:00:00.000Z') : null
         const newCheckOut = checkOut ? new Date(checkOut + 'T00:00:00.000Z') : null
-        
-        // Get current reservation to check against
-        const currentReservation = await prisma.reservation.findUnique({
-          where: { id }
-        })
-        
-        if (!currentReservation) {
-          return res.status(404).json({ error: 'Reservation not found' })
-        }
         
         const checkInDate = newCheckIn || currentReservation.checkIn
         const checkOutDate = newCheckOut || currentReservation.checkOut
@@ -123,22 +123,32 @@ export default async function handler(req, res) {
         }
         
         if (newCheckIn) {
-          updateData.checkIn = newCheckIn
-          changes.dates = true
+          const currentCheckInISO = currentReservation.checkIn.toISOString().split('T')[0]
+          if (checkIn !== currentCheckInISO) {
+            updateData.checkIn = newCheckIn
+            changes.dates = true
+          }
         }
         if (newCheckOut) {
-          updateData.checkOut = newCheckOut
-          changes.dates = true
+          const currentCheckOutISO = currentReservation.checkOut.toISOString().split('T')[0]
+          if (checkOut !== currentCheckOutISO) {
+            updateData.checkOut = newCheckOut
+            changes.dates = true
+          }
         }
       }
       
       if (adults !== undefined) {
-        updateData.adults = adults
-        changes.guests = true
+        if (adults !== currentReservation.adults) {
+          updateData.adults = adults
+          changes.guests = true
+        }
       }
       if (children !== undefined) {
-        updateData.children = children
-        changes.guests = true
+        if (children !== currentReservation.children) {
+          updateData.children = children
+          changes.guests = true
+        }
       }
       if (specialRequests !== undefined) updateData.specialRequests = specialRequests
       if (ownerNote !== undefined) {
