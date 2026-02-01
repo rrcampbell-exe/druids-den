@@ -15,7 +15,7 @@
         rgba(var(--color-iron-ore-rgb), 0.05) 100%
       );
       background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
+      animation: shimmer-datepicker 1.5s infinite;
       cursor: not-allowed;
       font-style: italic;
       color: var(--color-iron-ore);
@@ -266,7 +266,7 @@
   }
 }
 
-@keyframes shimmer {
+@keyframes shimmer-datepicker {
   0% {
     background-position: -200% 0;
   }
