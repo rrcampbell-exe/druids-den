@@ -443,11 +443,33 @@ const handleApprove = async (reservationId) => {
     }
   }
 
-  const handleMessage = (reservationId, message) => {
-    // In real implementation, this would call an API to send email
-    console.log('Sending message to reservation:', reservationId, message)
-    // TODO: Send custom email to guest
-    alert('Message sent to guest!')
+  const handleMessage = async (reservationId, message) => {
+    setActionLoading(true)
+    try {
+      const response = await fetch('/api/message-guest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reservationId,
+          message
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message')
+      }
+
+      showNotification('success', 'Message sent successfully to guest')
+    } catch (error) {
+      console.error('Error sending message:', error)
+      showNotification('error', error.message || 'Failed to send message. Please try again.')
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const handleEdit = async (reservationId, editData) => {
