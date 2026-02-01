@@ -8,7 +8,8 @@ const cache = {
   reservations: {
     data: null,
     timestamp: null,
-    ttl: 5 * 60 * 1000 // 5 minutes
+    ttl: 5 * 60 * 1000, // 5 minutes
+    inFlight: null // Track in-flight fetch promise for deduplication
   }
 }
 
@@ -50,12 +51,13 @@ export const reservationCache = {
     cache.reservations = {
       data: null,
       timestamp: null,
-      ttl: cache.reservations.ttl
+      ttl: cache.reservations.ttl,
+      inFlight: null
     }
   },
 
   /**
-   * Fetch reservations with caching
+   * Fetch reservations with caching and request deduplication
    * @param {boolean} forceRefresh - Skip cache and fetch fresh data
    */
   async fetch(forceRefresh = false) {
@@ -67,18 +69,35 @@ export const reservationCache = {
       }
     }
 
-    // Fetch from API
-    const response = await fetch('/api/reservations')
-    if (!response.ok) {
-      throw new Error('Failed to fetch reservations')
+    // If there's already an in-flight request, wait for it instead of making a new one
+    if (cache.reservations.inFlight) {
+      return cache.reservations.inFlight
     }
 
-    const data = await response.json()
-    const reservations = data.reservations || []
+    // Create the fetch promise and store it
+    const fetchPromise = (async () => {
+      try {
+        const response = await fetch('/api/reservations')
+        if (!response.ok) {
+          throw new Error('Failed to fetch reservations')
+        }
 
-    // Cache the result
-    this.set(reservations)
+        const data = await response.json()
+        const reservations = data.reservations || []
 
-    return reservations
+        // Cache the result
+        this.set(reservations)
+
+        return reservations
+      } finally {
+        // Clear the in-flight promise after it resolves or rejects
+        cache.reservations.inFlight = null
+      }
+    })()
+
+    // Store the in-flight promise
+    cache.reservations.inFlight = fetchPromise
+
+    return fetchPromise
   }
 }
