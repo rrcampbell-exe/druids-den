@@ -387,7 +387,8 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                     max='10'
                     value={editData.adults}
                     onChange={(e) => {
-                      setEditData({ ...editData, adults: parseInt(e.target.value) })
+                      const value = e.target.value === '' ? 1 : Number(e.target.value)
+                      setEditData({ ...editData, adults: Number.isFinite(value) ? value : 1 })
                       setEditError('')
                     }}
                   />
@@ -401,7 +402,8 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                     max='9'
                     value={editData.children}
                     onChange={(e) => {
-                      setEditData({ ...editData, children: parseInt(e.target.value) })
+                      const value = e.target.value === '' ? 0 : Number(e.target.value)
+                      setEditData({ ...editData, children: Number.isFinite(value) ? value : 0 })
                       setEditError('')
                     }}
                   />

@@ -356,9 +356,7 @@ const handleApprove = async (reservationId) => {
       if (!response.ok) throw new Error('Failed to approve reservation')
       
       const updatedReservation = await response.json()
-            // Invalidate cache after mutation
-      reservationCache.invalidate()
-            // Invalidate cache after mutation
+      // Invalidate cache after mutation
       reservationCache.invalidate()
       
       // Update local state
