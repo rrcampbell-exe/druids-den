@@ -31,11 +31,50 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Create reservation in database with pending status
     // Convert YYYY-MM-DD dates to ISO-8601 DateTime for Prisma
     const checkInDate = new Date(sanitized.checkIn + 'T00:00:00.000Z')
     const checkOutDate = new Date(sanitized.checkOut + 'T00:00:00.000Z')
     
+    // Check for conflicts with existing APPROVED/PENDING reservations
+    const conflictingReservations = await prisma.reservation.findMany({
+      where: {
+        deletedAt: null,
+        status: { in: ['APPROVED', 'PENDING'] },
+        OR: [
+          {
+            AND: [
+              { checkIn: { lte: checkInDate } },
+              { checkOut: { gt: checkInDate } }
+            ]
+          },
+          {
+            AND: [
+              { checkIn: { lt: checkOutDate } },
+              { checkOut: { gte: checkOutDate } }
+            ]
+          },
+          {
+            AND: [
+              { checkIn: { gte: checkInDate } },
+              { checkOut: { lte: checkOutDate } }
+            ]
+          }
+        ]
+      }
+    })
+    
+    if (conflictingReservations.length > 0) {
+      return res.status(409).json({ 
+        error: 'Date conflict',
+        message: 'These dates overlap with an existing reservation. Please select different dates.',
+        conflicts: conflictingReservations.map(r => ({
+          checkIn: r.checkIn.toISOString().split('T')[0],
+          checkOut: r.checkOut.toISOString().split('T')[0]
+        }))
+      })
+    }
+    
+    // Create reservation in database with pending status
     await prisma.reservation.create({
       data: {
         checkIn: checkInDate.toISOString(),

@@ -332,6 +332,20 @@ const Reservations = () => {
           email: false,
           phone: false
         })
+      } else if (response.status === 409) {
+        // Date conflict - refetch reservations to update calendar
+        setErrorMessage(data.message || 'These dates are no longer available. Please select different dates.')
+        setShowErrorModal(true)
+        // Refetch reservations to update calendar with the newly-booked dates
+        try {
+          const reservationsResponse = await fetch('/api/reservations')
+          if (reservationsResponse.ok) {
+            const reservationsData = await reservationsResponse.json()
+            setReservations(reservationsData.reservations || [])
+          }
+        } catch (err) {
+          console.error('Error refreshing reservations:', err)
+        }
       } else {
         throw new Error(data.error || 'Failed to submit reservation')
       }
