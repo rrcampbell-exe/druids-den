@@ -2,6 +2,7 @@ import { prisma } from '../utils/db.js'
 import { sendEmail } from '../utils/emailService.js'
 import { generateApprovalEmail } from '../utils/emailTemplates.js'
 import { generateDenialEmail, generateCancellationEmail, generateReservationModificationEmail } from '../utils/dashboardEmailTemplates.js'
+import { sanitizeDate } from '../utils/sanitize.js'
 
 export default async function handler(req, res) {
   const { id } = req.query
@@ -46,8 +47,23 @@ export default async function handler(req, res) {
 
       // Full reservation update with conflict checking
       if (checkIn || checkOut) {
-        const newCheckIn = checkIn ? new Date(checkIn) : null
-        const newCheckOut = checkOut ? new Date(checkOut) : null
+        // Validate date formats if provided
+        if (checkIn) {
+          const checkInValidation = sanitizeDate(checkIn)
+          if (!checkInValidation.valid) {
+            return res.status(400).json({ error: 'Invalid check-in date format (use YYYY-MM-DD)' })
+          }
+        }
+        
+        if (checkOut) {
+          const checkOutValidation = sanitizeDate(checkOut)
+          if (!checkOutValidation.valid) {
+            return res.status(400).json({ error: 'Invalid check-out date format (use YYYY-MM-DD)' })
+          }
+        }
+        
+        const newCheckIn = checkIn ? new Date(checkIn + 'T00:00:00.000Z') : null
+        const newCheckOut = checkOut ? new Date(checkOut + 'T00:00:00.000Z') : null
         
         // Get current reservation to check against
         const currentReservation = await prisma.reservation.findUnique({
@@ -60,6 +76,11 @@ export default async function handler(req, res) {
         
         const checkInDate = newCheckIn || currentReservation.checkIn
         const checkOutDate = newCheckOut || currentReservation.checkOut
+        
+        // Validate that checkout is after checkin
+        if (checkOutDate <= checkInDate) {
+          return res.status(400).json({ error: 'Check-out date must be after check-in date' })
+        }
         
         // Check for conflicts with other reservations
         const conflictingReservations = await prisma.reservation.findMany({

@@ -195,6 +195,57 @@ describe('reservations/[id] API', () => {
       expect(res.status).toHaveBeenCalledWith(200)
     })
 
+    it('returns 400 when checkIn date format is invalid', async () => {
+      req.body = {
+        checkIn: 'invalid-date',
+        checkOut: '2026-03-05'
+      }
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Invalid check-in date format (use YYYY-MM-DD)'
+      })
+    })
+
+    it('returns 400 when checkOut date format is invalid', async () => {
+      req.body = {
+        checkIn: '2026-03-01',
+        checkOut: '03/05/2026'
+      }
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Invalid check-out date format (use YYYY-MM-DD)'
+      })
+    })
+
+    it('returns 400 when checkOut is before or equal to checkIn', async () => {
+      req.body = {
+        checkIn: '2026-03-05',
+        checkOut: '2026-03-01'
+      }
+
+      const mockReservation = {
+        id: '1',
+        checkIn: new Date('2026-02-15T00:00:00.000Z'),
+        checkOut: new Date('2026-02-17T00:00:00.000Z'),
+        deletedAt: null
+      }
+
+      prisma.reservation.findUnique.mockResolvedValue(mockReservation)
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Check-out date must be after check-in date'
+      })
+    })
+
     it('returns 400 when date conflict exists', async () => {
       req.body = {
         checkIn: '2026-03-01',
