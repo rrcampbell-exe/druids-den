@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import './Reservations.scss'
 import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal } from '../components'
+import { validateReservationForm } from '../utils/formValidation'
 
 const Reservations = () => {
   const emailRef = useRef(null)
@@ -30,15 +31,9 @@ const Reservations = () => {
     estimatedTotal: 0
   })
   
-  const [validationErrors, setValidationErrors] = useState({
-    email: '',
-    phone: ''
-  })
+  const [validationErrors, setValidationErrors] = useState({})
   
-  const [touchedFields, setTouchedFields] = useState({
-    email: false,
-    phone: false
-  })
+  const [touchedFields, setTouchedFields] = useState({})
   
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
@@ -80,6 +75,21 @@ const Reservations = () => {
 
     fetchReservations()
   }, [])
+
+  // Validate fields when touched to show errors
+  useEffect(() => {
+    const validation = validateReservationForm(formData)
+    
+    // Only update errors for fields that have been touched
+    const newErrors = {}
+    Object.keys(touchedFields).forEach(field => {
+      if (touchedFields[field]) {
+        newErrors[field] = validation.errors[field] || ''
+      }
+    })
+    
+    setValidationErrors(newErrors)
+  }, [formData, touchedFields])
 
   const isDateBlackedOut = (dateString) => {
     const date = parseLocalDate(dateString)
@@ -217,35 +227,7 @@ const Reservations = () => {
         ...prev,
         [name]: formatted
       }))
-      
-      // Validate phone (but don't show error until blur)
-      if (formatted && !validatePhone(formatted)) {
-        setValidationErrors(prev => ({
-          ...prev,
-          phone: 'Please enter a valid 10-digit US phone number'
-        }))
-      } else {
-        setValidationErrors(prev => ({
-          ...prev,
-          phone: ''
-        }))
-      }
       return
-    }
-    
-    // Validate email (but don't show error until blur)
-    if (name === 'email') {
-      if (value && !validateEmail(value)) {
-        setValidationErrors(prev => ({
-          ...prev,
-          email: 'Please enter a valid email address'
-        }))
-      } else {
-        setValidationErrors(prev => ({
-          ...prev,
-          email: ''
-        }))
-      }
     }
     
     setFormData(prev => ({
@@ -256,13 +238,10 @@ const Reservations = () => {
   
   const handleBlur = (e) => {
     const { name } = e.target
-    
-    if (name === 'email' || name === 'phone') {
-      setTouchedFields(prev => ({
-        ...prev,
-        [name]: true
-      }))
-    }
+    setTouchedFields(prev => ({
+      ...prev,
+      [name]: true
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -270,30 +249,37 @@ const Reservations = () => {
     
     if (submitting) return
     
-    // Validate email
-    if (!validateEmail(formData.email)) {
-      setTouchedFields(prev => ({ ...prev, email: true }))
-      emailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // Validate entire form
+    const validation = validateReservationForm(formData)
+    
+    if (!validation.valid) {
+      // Set all validation errors
+      setValidationErrors(validation.errors)
+      
+      // Mark all fields as touched so errors display
+      const allFields = {}
+      Object.keys(validation.errors).forEach(field => {
+        allFields[field] = true
+      })
+      setTouchedFields(allFields)
+      
+      // Scroll to first error
+      const firstErrorField = Object.keys(validation.errors)[0]
+      if (firstErrorField === 'firstName' || firstErrorField === 'lastName' || 
+          firstErrorField === 'email' || firstErrorField === 'phone') {
+        if (emailRef.current) {
+          emailRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }
       return
     }
     
-    // Validate phone
-    if (!validatePhone(formData.phone)) {
-      setTouchedFields(prev => ({ ...prev, phone: true }))
-      phoneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      return
-    }
+    // Clear errors if validation passes
+    setValidationErrors({})
     
-    // Validate check-in date
+    // Validate check-in date is not blacked out
     if (isDateBlackedOut(formData.checkIn)) {
       setErrorMessage('The selected check-in date is not available. Please choose another date.')
-      setShowErrorModal(true)
-      return
-    }
-    
-    // Validate check-out is after check-in
-    if (new Date(formData.checkOut) <= new Date(formData.checkIn)) {
-      setErrorMessage('Check-out date must be after check-in date.')
       setShowErrorModal(true)
       return
     }
@@ -401,8 +387,12 @@ const Reservations = () => {
                     name='firstName'
                     value={formData.firstName}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     required
                   />
+                  {touchedFields.firstName && validationErrors.firstName && (
+                    <span className='error-message'>{validationErrors.firstName}</span>
+                  )}
                 </div>
                 
                 <div className='form-group'>
@@ -413,8 +403,12 @@ const Reservations = () => {
                     name='lastName'
                     value={formData.lastName}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     required
                   />
+                  {touchedFields.lastName && validationErrors.lastName && (
+                    <span className='error-message'>{validationErrors.lastName}</span>
+                  )}
                 </div>
               </div>
               
@@ -513,9 +507,17 @@ const Reservations = () => {
                   name='specialRequests'
                   value={formData.specialRequests}
                   onChange={handleInputChange}
+                  onBlur={handleBlur}
                   rows='5'
+                  maxLength='500'
                   placeholder='Let us know if you have any special requests or requirements for your stay...'
                 />
+                <div style={{ fontSize: '0.85em', color: '#666', marginTop: '4px' }}>
+                  {formData.specialRequests.length}/500 characters
+                </div>
+                {validationErrors.specialRequests && (
+                  <span className='error-message'>{validationErrors.specialRequests}</span>
+                )}
               </div>
             </section>
             
