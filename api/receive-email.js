@@ -98,7 +98,7 @@ Date: ${new Date(emailMetadata.created_at).toLocaleString()}
 View full email content in your Resend dashboard.
 Email ID: ${emailMetadata.email_id}
       `,
-      reply_to: sanitizedFrom.sanitized
+      ...(sanitizedFrom.valid ? { reply_to: sanitizedFrom.sanitized } : {})
     }
 
     // Send notification via Resend API
