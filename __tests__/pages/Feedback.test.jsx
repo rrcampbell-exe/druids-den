@@ -11,6 +11,14 @@ vi.mock('../../src/components/Awen', () => ({
 // Mock fetch
 global.fetch = vi.fn()
 
+const formatDateISO = (date) => date.toISOString().split('T')[0]
+
+const getRelativeDateISO = (daysFromToday) => {
+  const date = new Date()
+  date.setDate(date.getDate() + daysFromToday)
+  return formatDateISO(date)
+}
+
 const mockCompletedReservation = {
   id: 'res-a3d9e4f5-0b8c-9a7d-3f1e-2b4a9c8d0f5a',
   status: 'completed',
@@ -25,8 +33,8 @@ const mockFutureReservation = {
   status: 'approved',
   firstName: 'Future',
   lastName: 'Guest',
-  checkIn: '2026-03-01',
-  checkOut: '2026-03-05'
+  checkIn: getRelativeDateISO(11),
+  checkOut: getRelativeDateISO(14)
 }
 
 describe('Feedback', () => {
