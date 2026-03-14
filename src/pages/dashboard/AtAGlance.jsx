@@ -498,15 +498,18 @@ const handleApprove = async (reservationId) => {
 
       if (!response.ok) {
         const errorData = await response.json()
+        let userMessage = errorData.message || 'Failed to update reservation'
+
         if (errorData.error === 'Date conflict') {
           const conflictDates = errorData.conflicts.map(c => 
             `${c.checkIn} to ${c.checkOut}`
           ).join(', ')
-          showNotification('error', `Cannot update: These dates conflict with existing reservations (${conflictDates}). Please choose different dates.`)
-        } else {
-          showNotification('error', errorData.message || 'Failed to update reservation')
+          userMessage = `Cannot update: These dates conflict with existing reservations (${conflictDates}). Please choose different dates.`
         }
-        throw new Error(errorData.message || 'Failed to update reservation')
+
+        const error = new Error(errorData.message || 'Failed to update reservation')
+        error.userMessage = userMessage
+        throw error
       }
       
       const updatedReservation = await response.json()
@@ -522,7 +525,7 @@ const handleApprove = async (reservationId) => {
       showNotification('success', 'Reservation updated successfully! Guest has been notified via email.')
     } catch (error) {
       console.error('Error updating reservation:', error)
-      showNotification('error', 'Failed to update reservation. Please try again.')
+      showNotification('error', error.userMessage || 'Failed to update reservation. Please try again.')
       throw error
     } finally {
       setActionLoading(false)

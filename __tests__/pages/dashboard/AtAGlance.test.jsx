@@ -12,13 +12,21 @@ vi.mock('../../../src/utils/reservationCache', () => ({
 
 // Mock ReservationCard
 vi.mock('../../../src/pages/dashboard/ReservationCard', () => ({
-  default: ({ reservation, onApprove, onDeny, onCancel, onMessage }) => (
+  default: ({ reservation, onApprove, onDeny, onCancel, onMessage, onEdit }) => (
     <div data-testid={`reservation-card-${reservation.id}`}>
       <span>{reservation.firstName} {reservation.lastName}</span>
       <button onClick={() => onApprove(reservation.id)}>Approve</button>
       <button onClick={() => onDeny(reservation.id, 'test')}>Deny</button>
       <button onClick={() => onCancel(reservation.id, 'test')}>Cancel</button>
       <button onClick={() => onMessage(reservation.id, 'test')}>Message</button>
+      <button onClick={() => onEdit && onEdit(reservation.id, {
+        checkIn: reservation.checkIn,
+        checkOut: reservation.checkOut,
+        adults: reservation.adults || 2,
+        children: reservation.children || 0,
+        specialRequests: 'Updated notes',
+        ownerNote: 'Owner update'
+      }).catch(() => {})}>Edit</button>
     </div>
   )
 }))
@@ -468,6 +476,54 @@ describe('AtAGlance', () => {
       await waitFor(() => {
         expect(screen.getByText(/Pending Requests/)).toBeInTheDocument()
       })
+    })
+
+    it('shows date conflict error message on edit failure', async () => {
+      fetch.mockReset()
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({
+          error: 'Date conflict',
+          conflicts: [{ checkIn: '2026-02-16', checkOut: '2026-02-18' }],
+          message: 'Date conflict'
+        })
+      })
+
+      render(<AtAGlance />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('reservation-card-res-001')).toBeInTheDocument()
+      })
+
+      fireEvent.click(screen.getAllByText('Edit')[0])
+
+      await waitFor(() => {
+        expect(screen.getByText(/Cannot update: These dates conflict with existing reservations/)).toBeInTheDocument()
+      })
+
+      expect(screen.queryByText('Failed to update reservation. Please try again.')).not.toBeInTheDocument()
+    })
+
+    it('shows API-provided generic error message on edit failure', async () => {
+      fetch.mockReset()
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ message: 'Reservation overlaps blackout period' })
+      })
+
+      render(<AtAGlance />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('reservation-card-res-001')).toBeInTheDocument()
+      })
+
+      fireEvent.click(screen.getAllByText('Edit')[0])
+
+      await waitFor(() => {
+        expect(screen.getByText('Reservation overlaps blackout period')).toBeInTheDocument()
+      })
+
+      expect(screen.queryByText('Failed to update reservation. Please try again.')).not.toBeInTheDocument()
     })
   })
 
