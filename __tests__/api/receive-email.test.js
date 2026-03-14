@@ -1,8 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/receive-email'
+import { setupTestEnv } from '../helpers/testEnv'
 
 describe('receive-email API', () => {
   let req, res, fetchSpy
+
+  setupTestEnv({
+    RESEND_API_KEY: 'test-api-key-123',
+    RESEND_WEBHOOK_SECRET: ''
+  })
 
   beforeEach(() => {
     // Mock request object with proper webhook structure
@@ -30,14 +36,10 @@ describe('receive-email API', () => {
     // Mock fetch globally
     fetchSpy = vi.spyOn(global, 'fetch')
     
-    // Set up environment variables
-    vi.stubEnv('RESEND_API_KEY', 'test-api-key-123')
-    // No webhook secret - testing without signature validation
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
-    vi.unstubAllEnvs()
   })
 
   describe('HTTP Method Validation', () => {
@@ -170,7 +172,8 @@ describe('receive-email API', () => {
 
   describe('Email Service Not Configured', () => {
     it('returns 500 when RESEND_API_KEY is not set', async () => {
-      vi.unstubAllEnvs()
+      vi.stubEnv('RESEND_API_KEY', '')
+      vi.stubEnv('RESEND_WEBHOOK_SECRET', '')
       
       await handler(req, res)
       

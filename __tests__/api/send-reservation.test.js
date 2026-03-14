@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import handler from '../../api/send-reservation'
 import { prisma } from '../../api/utils/db.js'
+import { setupTestEnv } from '../helpers/testEnv'
 
 // Mock the database utility
 vi.mock('../../api/utils/db.js', () => ({
@@ -29,6 +30,10 @@ vi.mock('../../api/utils/db.js', () => ({
 describe('send-reservation API', () => {
   let req, res, fetchSpy
 
+  setupTestEnv({
+    RESEND_API_KEY: 'test-api-key-123'
+  })
+
   beforeEach(() => {
     // Mock request object
     req = {
@@ -55,13 +60,10 @@ describe('send-reservation API', () => {
     // Mock fetch globally
     fetchSpy = vi.spyOn(global, 'fetch')
     
-    // Set up environment variable
-    vi.stubEnv('RESEND_API_KEY', 'test-api-key-123')
   })
 
   afterEach(() => {
     fetchSpy.mockRestore()
-    vi.unstubAllEnvs()
     // Reset the findMany mock to default (no conflicts)
     prisma.reservation.findMany.mockResolvedValue([])
     // Clear mock call history
@@ -293,7 +295,7 @@ describe('send-reservation API', () => {
 
   describe('Email Service Not Configured', () => {
     it('returns 200 with note when RESEND_API_KEY is not set', async () => {
-      vi.unstubAllEnvs()
+      vi.stubEnv('RESEND_API_KEY', '')
       
       await handler(req, res)
       
