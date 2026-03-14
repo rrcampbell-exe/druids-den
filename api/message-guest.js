@@ -68,8 +68,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error sending custom message:', error)
     return res.status(500).json({ 
-      error: 'Failed to send message',
-      details: error.message 
+      error: 'Failed to send message'
     })
   }
 }
