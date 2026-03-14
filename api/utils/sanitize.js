@@ -155,9 +155,25 @@ export const sanitizeDate = (dateString) => {
     return { valid: false, sanitized: '' }
   }
   
+  const [yearStr, monthStr, dayStr] = trimmed.split('-')
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  const day = Number(dayStr)
+
+  // Basic numeric validation
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return { valid: false, sanitized: '' }
+  }
+
   // Validate it's a real date using noon UTC to avoid timezone boundary issues
-  const date = new Date(trimmed + 'T12:00:00.000Z')
+  const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0, 0))
   if (isNaN(date.getTime())) {
+    return { valid: false, sanitized: '' }
+  }
+
+  // Ensure impossible dates (for example, 2027-02-30) are rejected
+  const normalized = date.toISOString().slice(0, 10)
+  if (normalized !== trimmed) {
     return { valid: false, sanitized: '' }
   }
   

@@ -220,10 +220,20 @@ describe('Sanitization Utilities', () => {
       expect(result.valid).toBe(false)
     })
 
-    it('accepts invalid date (Feb 30) due to JS Date lenience', () => {
-      // JavaScript Date parser is lenient and Feb 30 becomes March 2
+    it('rejects impossible dates like Feb 30', () => {
       const result = sanitizeDate('2027-02-30')
+      expect(result.valid).toBe(false)
+    })
+
+    it('accepts valid leap day', () => {
+      const result = sanitizeDate('2028-02-29')
       expect(result.valid).toBe(true)
+      expect(result.sanitized).toBe('2028-02-29')
+    })
+
+    it('rejects non-leap year Feb 29', () => {
+      const result = sanitizeDate('2027-02-29')
+      expect(result.valid).toBe(false)
     })
 
     it('trims date', () => {
