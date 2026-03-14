@@ -172,11 +172,9 @@ const Reservations = () => {
       const checkIn = parseLocalDate(reservation.checkIn)
       const checkOut = parseLocalDate(reservation.checkOut)
       const current = new Date(checkIn)
-      
-      // Start the day AFTER check-in (guests can check out on someone else's check-in date)
-      current.setDate(current.getDate() + 1)
-      
-      // Add all dates in the reservation range (exclusive of check-in, exclusive of check-out)
+
+      // Add all occupied dates in the reservation range (inclusive of check-in, exclusive of check-out)
+      // This blocks overlapping check-ins while still allowing same-day turnover on checkout dates.
       while (current < checkOut) {
         const year = current.getFullYear()
         const month = String(current.getMonth() + 1).padStart(2, '0')
