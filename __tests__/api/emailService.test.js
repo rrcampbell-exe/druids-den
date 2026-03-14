@@ -1,22 +1,24 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { sendEmail, sendBulkEmails } from '../../api/utils/emailService'
+import { setupTestEnv } from '../helpers/testEnv'
 
 describe('emailService', () => {
   let fetchSpy, consoleLogSpy, consoleErrorSpy
+
+  setupTestEnv({
+    RESEND_API_KEY: 'test-api-key-123'
+  })
 
   beforeEach(() => {
     fetchSpy = vi.spyOn(global, 'fetch')
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     
-    // Set up environment variable
-    vi.stubEnv('RESEND_API_KEY', 'test-api-key-123')
   })
 
   afterEach(() => {
     fetchSpy.mockClear()
     vi.restoreAllMocks()
-    vi.unstubAllEnvs()
   })
 
   describe('sendEmail', () => {
@@ -124,7 +126,7 @@ describe('emailService', () => {
     })
 
     it('logs when API key is not configured', async () => {
-      vi.unstubAllEnvs()
+      vi.stubEnv('RESEND_API_KEY', '')
 
       const validEmail = {
         from: 'The Druids Den <grovekeeper@druidsdenwi.com>',
@@ -143,7 +145,7 @@ describe('emailService', () => {
     })
 
     it('logs email details when API key is not configured', async () => {
-      vi.unstubAllEnvs()
+      vi.stubEnv('RESEND_API_KEY', '')
 
       const validEmail = {
         from: 'The Druids Den <grovekeeper@druidsdenwi.com>',

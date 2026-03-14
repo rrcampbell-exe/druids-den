@@ -16,7 +16,7 @@ exports[`dashboardEmailTemplates > HTML email structure > HTML template snapshot
     <div style="padding: 40px 30px; background-color: #fff;">
       <p>Dear John,</p>
       
-      <p>Your reservation from February 28, 2026 to March 2, 2026 has been cancelled.</p>
+      <p>Your reservation from March 1, 2026 to March 3, 2026 has been cancelled.</p>
       
       <div style="background: rgba(200, 100, 100, 0.1); border-left: 4px solid rgba(200, 100, 100, 0.8); padding: 20px; border-radius: 8px; margin: 30px 0;">
         <p style="margin: 0;">Test reason</p>
@@ -80,7 +80,7 @@ exports[`dashboardEmailTemplates > HTML email structure > HTML template snapshot
     <div style="padding: 40px 30px; background-color: #fff;">
       <p>Dear John,</p>
       
-      <p>Thank you for your interest in staying at The Druids Den from February 28, 2026 to March 2, 2026.</p>
+      <p>Thank you for your interest in staying at The Druids Den from March 1, 2026 to March 3, 2026.</p>
       
       <div style="background: rgba(200, 100, 100, 0.1); border-left: 4px solid rgba(200, 100, 100, 0.8); padding: 20px; border-radius: 8px; margin: 30px 0;">
         <p style="margin: 0;">Test reason</p>
@@ -114,12 +114,12 @@ exports[`dashboardEmailTemplates > HTML email structure > HTML template snapshot
     <div style="padding: 40px 30px; background-color: #fff;">
       <p>Dear John,</p>
       
-      <p>We hope you enjoyed your stay from February 28, 2026 to March 2, 2026.</p>
+      <p>We hope you enjoyed your stay from March 1, 2026 to March 3, 2026.</p>
       
       <p>Your feedback helps us improve and helps future guests know what to expect. We'd love to hear about your experience!</p>
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="https://druidsdencabin.com/feedback/res-123" style="display: inline-block; background: #6b8e6f; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 18px;">Share Your Feedback</a>
+        <a href="https://druidsdenwi.com/feedback/res-123" style="display: inline-block; background: #6b8e6f; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 18px;">Share Your Feedback</a>
       </div>
       
       <p style="margin: 30px 0 0 0;">
@@ -154,7 +154,7 @@ exports[`dashboardEmailTemplates > HTML email structure > HTML template snapshot
         <p style="font-size: 20px; margin: 15px 0; font-weight: 600;">WiFi: WiFiPass</p>
       </div>
       
-      <p>Check-in: 3:00 PM on February 28, 2026</p>
+      <p>Check-in: 3:00 PM on March 1, 2026</p>
       
       <p style="margin: 20px 0 0 0;">
         Best regards,<br>

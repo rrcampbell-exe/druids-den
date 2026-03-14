@@ -30,7 +30,7 @@ export const calculateNights = (checkIn, checkOut) => {
   return diffDays
 }
 
-const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, isApproved = false, expanded = false }) => {
+const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, onEdit, isApproved = false, expanded = false, loading = false }) => {
   const [showDenyForm, setShowDenyForm] = useState(false)
   const [denialMessage, setDenialMessage] = useState('')
   const [denialError, setDenialError] = useState('')
@@ -40,6 +40,16 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
   const [showMessageForm, setShowMessageForm] = useState(false)
   const [messageContent, setMessageContent] = useState('')
   const [messageError, setMessageError] = useState('')
+  const [showEditForm, setShowEditForm] = useState(false)
+  const [editData, setEditData] = useState({
+    checkIn: '',
+    checkOut: '',
+    adults: 2,
+    children: 0,
+    specialRequests: '',
+    ownerNote: ''
+  })
+  const [editError, setEditError] = useState('')
 
   const nights = calculateNights(reservation.checkIn, reservation.checkOut)
 
@@ -93,6 +103,61 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
     setShowMessageForm(false)
     setMessageContent('')
     setMessageError('')
+  }
+
+  const handleEditClick = () => {
+    setEditData({
+      checkIn: reservation.checkIn,
+      checkOut: reservation.checkOut,
+      adults: reservation.adults,
+      children: reservation.children,
+      specialRequests: reservation.specialRequests || '',
+      ownerNote: reservation.ownerNote || ''
+    })
+    setShowEditForm(true)
+  }
+
+  const handleEditSubmit = async () => {
+    // Validate dates
+    if (!editData.checkIn || !editData.checkOut) {
+      setEditError('Check-in and check-out dates are required')
+      return
+    }
+
+    const checkInDate = new Date(editData.checkIn)
+    const checkOutDate = new Date(editData.checkOut)
+
+    if (checkOutDate <= checkInDate) {
+      setEditError('Check-out date must be after check-in date')
+      return
+    }
+
+    // Validate guest count
+    if (editData.adults < 1) {
+      setEditError('At least 1 adult is required')
+      return
+    }
+
+    if (editData.adults + editData.children > 10) {
+      setEditError('Maximum 10 guests allowed')
+      return
+    }
+
+    // Call the onEdit callback and await it
+    try {
+      await onEdit(reservation.id, editData)
+      // Only close form and clear error on success
+      setShowEditForm(false)
+      setEditError('')
+    } catch (error) {
+      // Keep the form open and show error if edit fails
+      setEditError(error.message || 'Failed to update reservation. Please try again.')
+    }
+  }
+
+  const handleEditCancel = () => {
+    setShowEditForm(false)
+    setEditError('')
   }
 
   const isOwner = reservation.isOwnerReservation
@@ -172,12 +237,14 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
               <button 
                 className='action-button approve-button'
                 onClick={() => onApprove(reservation.id)}
+                disabled={loading}
               >
-                ✓ Approve Reservation
+                {loading ? '...' : '✓ Approve Reservation'}
               </button>
               <button 
                 className='action-button deny-button'
                 onClick={() => setShowDenyForm(true)}
+                disabled={loading}
               >
                 ✗ Deny Request
               </button>
@@ -185,6 +252,7 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                 <button 
                   className='action-button message-button'
                   onClick={() => setShowMessageForm(true)}
+                  disabled={loading}
                 >
                   💬 Message Guest
                 </button>
@@ -210,12 +278,14 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                 <button 
                   className='action-button deny-confirm-button'
                   onClick={handleDenySubmit}
+                  disabled={loading}
                 >
-                  Send Denial
+                  {loading ? 'Sending...' : 'Send Denial'}
                 </button>
                 <button 
                   className='action-button cancel-button'
                   onClick={handleDenyCancel}
+                  disabled={loading}
                 >
                   Cancel
                 </button>
@@ -241,12 +311,14 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                 <button 
                   className='action-button message-confirm-button'
                   onClick={handleMessageSubmit}
+                  disabled={loading}
                 >
-                  Send Message
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
                 <button 
                   className='action-button cancel-button'
                   onClick={handleMessageCancel}
+                  disabled={loading}
                 >
                   Cancel
                 </button>
@@ -258,11 +330,19 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
 
       {isApproved && reservation.status === 'approved' && (
         <div className='card-actions'>
-          {!showCancelForm && !showMessageForm ? (
+          {!showCancelForm && !showMessageForm && !showEditForm ? (
             <>
+              <button 
+                className='action-button edit-button'
+                onClick={handleEditClick}
+                disabled={loading}
+              >
+                ✎ Edit Reservation
+              </button>
               <button 
                 className='action-button cancel-reservation-button'
                 onClick={() => setShowCancelForm(true)}
+                disabled={loading}
               >
                 Cancel Reservation
               </button>
@@ -270,11 +350,128 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                 <button 
                   className='action-button message-button'
                   onClick={() => setShowMessageForm(true)}
+                  disabled={loading}
                 >
                   💬 Message Guest
                 </button>
               )}
             </>
+          ) : showEditForm ? (
+            <div className='edit-form'>
+              <h4>Edit Reservation Details</h4>
+              <div className='edit-form-grid'>
+                <div className='form-group'>
+                  <label htmlFor={`edit-checkin-${reservation.id}`}>Check-in:</label>
+                  <input
+                    type='date'
+                    id={`edit-checkin-${reservation.id}`}
+                    value={editData.checkIn}
+                    onChange={(e) => {
+                      setEditData({ ...editData, checkIn: e.target.value })
+                      setEditError('')
+                    }}
+                  />
+                </div>
+                <div className='form-group'>
+                  <label htmlFor={`edit-checkout-${reservation.id}`}>Check-out:</label>
+                  <input
+                    type='date'
+                    id={`edit-checkout-${reservation.id}`}
+                    value={editData.checkOut}
+                    onChange={(e) => {
+                      setEditData({ ...editData, checkOut: e.target.value })
+                      setEditError('')
+                    }}
+                  />
+                </div>
+                <div className='form-group'>
+                  <label htmlFor={`edit-adults-${reservation.id}`}>Adults:</label>
+                  <input
+                    type='number'
+                    id={`edit-adults-${reservation.id}`}
+                    min='1'
+                    max='10'
+                    value={editData.adults}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? 1 : Number(e.target.value)
+                      const newAdults = Number.isFinite(value) ? value : 1
+                      setEditData({ ...editData, adults: newAdults })
+                      // Show proactive validation for total guests
+                      if (newAdults + editData.children > 10) {
+                        setEditError('Maximum 10 guests total allowed')
+                      } else if (newAdults < 1) {
+                        setEditError('At least 1 adult is required')
+                      } else {
+                        setEditError('')
+                      }
+                    }}
+                  />
+                </div>
+                <div className='form-group'>
+                  <label htmlFor={`edit-children-${reservation.id}`}>Children:</label>
+                  <input
+                    type='number'
+                    id={`edit-children-${reservation.id}`}
+                    min='0'
+                    max='9'
+                    value={editData.children}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? 0 : Number(e.target.value)
+                      const newChildren = Number.isFinite(value) ? value : 0
+                      setEditData({ ...editData, children: newChildren })
+                      // Show proactive validation for total guests
+                      if (editData.adults + newChildren > 10) {
+                        setEditError('Maximum 10 guests total allowed')
+                      } else if (editData.adults < 1) {
+                        setEditError('At least 1 adult is required')
+                      } else {
+                        setEditError('')
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              {!isOwner ? (
+                <div className='form-group full-width'>
+                  <label htmlFor={`edit-requests-${reservation.id}`}>Special Requests:</label>
+                  <textarea
+                    id={`edit-requests-${reservation.id}`}
+                    value={editData.specialRequests}
+                    onChange={(e) => setEditData({ ...editData, specialRequests: e.target.value })}
+                    rows={3}
+                    placeholder='Special requests or notes...'
+                  />
+                </div>
+              ) : (
+                <div className='form-group full-width'>
+                  <label htmlFor={`edit-note-${reservation.id}`}>Owner's Note:</label>
+                  <textarea
+                    id={`edit-note-${reservation.id}`}
+                    value={editData.ownerNote}
+                    onChange={(e) => setEditData({ ...editData, ownerNote: e.target.value })}
+                    rows={3}
+                    placeholder='Notes about this owner reservation...'
+                  />
+                </div>
+              )}
+              {editError && <span className='error-message'>{editError}</span>}
+              <div className='edit-form-actions'>
+                <button 
+                  className='action-button save-button'
+                  onClick={handleEditSubmit}
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button 
+                  className='action-button cancel-button'
+                  onClick={handleEditCancel}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           ) : showCancelForm ? (
             <div className='cancel-form'>
               {!isOwner && (
@@ -302,12 +499,14 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                 <button 
                   className='action-button cancel-confirm-button'
                   onClick={handleCancelSubmit}
+                  disabled={loading}
                 >
-                  {isOwner ? 'Confirm Cancellation' : 'Send Cancellation'}
+                  {loading ? 'Cancelling...' : (isOwner ? 'Confirm Cancellation' : 'Send Cancellation')}
                 </button>
                 <button 
                   className='action-button cancel-button'
                   onClick={handleCancelCancel}
+                  disabled={loading}
                 >
                   Nevermind
                 </button>
@@ -333,12 +532,14 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                 <button 
                   className='action-button message-confirm-button'
                   onClick={handleMessageSubmit}
+                  disabled={loading}
                 >
-                  Send Message
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
                 <button 
                   className='action-button cancel-button'
                   onClick={handleMessageCancel}
+                  disabled={loading}
                 >
                   Cancel
                 </button>

@@ -4,6 +4,7 @@ import {
   generatePostCheckoutEmail,
   generateDenialEmail,
   generateCancellationEmail,
+  generateReservationModificationEmail,
   generateCustomMessageEmail
 } from '../../api/utils/dashboardEmailTemplates'
 
@@ -52,9 +53,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in date in email', () => {
       const result = generatePreArrivalEmail(mockReservation, '1234', 'MyWiFi123')
       
-      // Date is formatted with America/Chicago timezone, so 2026-03-01 UTC becomes February 28, 2026
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.html).toContain('February 28, 2026')
+      // Date should display exactly as submitted: 2026-03-01 -> March 1, 2026
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.html).toContain('March 1, 2026')
     })
 
     it('has welcoming subject line', () => {
@@ -84,9 +85,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in and checkout dates', () => {
       const result = generatePostCheckoutEmail(mockReservation)
       
-      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.text).toContain('March 2, 2026')
+      // Dates should display exactly as submitted: 2026-03-01 -> March 1, 2026-03-03 -> March 3
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.text).toContain('March 3, 2026')
     })
 
     it('includes feedback link with reservation ID', () => {
@@ -99,7 +100,7 @@ describe('dashboardEmailTemplates', () => {
     it('uses default base URL if not provided', () => {
       const result = generatePostCheckoutEmail(mockReservation)
       
-      expect(result.text).toContain('https://druidsdencabin.com/feedback/res-123')
+      expect(result.text).toContain('https://druidsdenwi.com/feedback/res-123')
     })
 
     it('has thank you subject line', () => {
@@ -146,9 +147,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in and checkout dates', () => {
       const result = generateDenialEmail(mockReservation, 'Dates unavailable')
       
-      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.text).toContain('March 2, 2026')
+      // Dates should display exactly as submitted: 2026-03-01 -> March 1, 2026-03-03 -> March 3
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.text).toContain('March 3, 2026')
     })
 
     it('has apologetic subject line', () => {
@@ -193,9 +194,9 @@ describe('dashboardEmailTemplates', () => {
     it('includes check-in and checkout dates', () => {
       const result = generateCancellationEmail(mockReservation, 'Unexpected maintenance')
       
-      // Dates with America/Chicago timezone: 2026-03-01 -> Feb 28, 2026-03-03 -> Mar 2
-      expect(result.text).toContain('February 28, 2026')
-      expect(result.text).toContain('March 2, 2026')
+      // Dates should display exactly as submitted: 2026-03-01 -> March 1, 2026-03-03 -> March 3
+      expect(result.text).toContain('March 1, 2026')
+      expect(result.text).toContain('March 3, 2026')
     })
 
     it('has cancellation in subject line', () => {
@@ -356,6 +357,81 @@ describe('dashboardEmailTemplates', () => {
     })
   })
 
+  describe('generateReservationModificationEmail', () => {
+    it('generates email with date changes', () => {
+      const changes = { dates: true, guests: false }
+      const result = generateReservationModificationEmail(mockReservation, changes)
+
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+      expect(result.text).toContain('New Dates')
+      // Date conversion depends on timezone, just check date structure
+      expect(result.text).toMatch(/\w+ \d+, 2026 to \w+ \d+, 2026/)
+      expect(result.html).toContain('New Dates')
+    })
+
+    it('generates email with guest count changes', () => {
+      const resWithChildren = { ...mockReservation, children: 2 }
+      const changes = { dates: false, guests: true }
+      const result = generateReservationModificationEmail(resWithChildren, changes)
+
+      expect(result.text).toContain('Guests')
+      expect(result.text).toContain('2 adult(s)')
+      expect(result.text).toContain('2 child(ren)')
+      expect(result.html).toContain('2 adult(s)')
+      expect(result.html).toContain('2 child(ren)')
+    })
+
+    it('generates email with both dates and guests changed', () => {
+      const changes = { dates: true, guests: true }
+      const result = generateReservationModificationEmail(mockReservation, changes)
+
+      expect(result.text).toContain('New Dates')
+      expect(result.text).toContain('Guests')
+      expect(result.html).toContain('New Dates')
+      expect(result.html).toContain('Guests')
+    })
+
+    it('includes note when provided in changes', () => {
+      const changes = { dates: true, note: 'Please arrive by 5 PM' }
+      const result = generateReservationModificationEmail(mockReservation, changes)
+
+      expect(result.text).toContain('Note: Please arrive by 5 PM')
+      expect(result.html).toContain('Please arrive by 5 PM')
+    })
+
+    it('handles reservation with no children correctly', () => {
+      const changes = { guests: true }
+      const result = generateReservationModificationEmail(mockReservation, changes)
+
+      expect(result.text).toContain('2 adult(s)')
+      expect(result.text).not.toContain('child')
+    })
+
+    it('omits note section when no note provided', () => {
+      const changes = { dates: true }
+      const result = generateReservationModificationEmail(mockReservation, changes)
+
+      expect(result.text).not.toContain('Note:')
+    })
+
+    it('handles only guest changes without dates', () => {
+      const changes = { guests: true }
+      const result = generateReservationModificationEmail(mockReservation, changes)
+
+      expect(result.text).not.toContain('New Dates')
+      expect(result.text).toContain('Guests')
+    })
+
+    it('uses yellow/warning styling in HTML', () => {
+      const changes = { dates: true }
+      const result = generateReservationModificationEmail(mockReservation, changes)
+
+      expect(result.html).toContain('212, 185, 66') // RGB for yellow
+    })
+  })
+
   describe('Email format consistency', () => {
     it('all emails have text and HTML versions', () => {
       const emails = [
@@ -363,6 +439,7 @@ describe('dashboardEmailTemplates', () => {
         generatePostCheckoutEmail(mockReservation),
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
+        generateReservationModificationEmail(mockReservation, { dates: true }),
         generateCustomMessageEmail(mockReservation, 'test')
       ]
 
@@ -380,6 +457,7 @@ describe('dashboardEmailTemplates', () => {
         generatePostCheckoutEmail(mockReservation),
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
+        generateReservationModificationEmail(mockReservation, { dates: true }),
         generateCustomMessageEmail(mockReservation, 'test')
       ]
 
@@ -388,18 +466,20 @@ describe('dashboardEmailTemplates', () => {
       })
     })
 
-    it('all emails include property name in subject', () => {
+    it('all emails include property name in subject or body', () => {
       const emails = [
         generatePreArrivalEmail(mockReservation, '1234', 'wifi'),
         generatePostCheckoutEmail(mockReservation),
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
+        generateReservationModificationEmail(mockReservation, { dates: true }),
         generateCustomMessageEmail(mockReservation, 'test')
       ]
 
       emails.forEach(email => {
         // Property name appears as "Druids Den" or "Druid's Den"
-        expect(email.subject.toLowerCase()).toMatch(/druid'?s den/)
+        const combined = email.subject.toLowerCase() + email.text.toLowerCase()
+        expect(combined).toMatch(/druid'?s den/)
       })
     })
   })

@@ -4,16 +4,18 @@
 
 /**
  * Format date string to "Month Day, Year" format
- * @param {string} dateString - Date string in any format
+ * @param {string} dateString - Date string in YYYY-MM-DD format
  * @returns {string} Formatted date (e.g., "January 25, 2026")
  */
 function formatDateForEmail(dateString) {
-  const date = new Date(dateString)
+  // Parse YYYY-MM-DD as UTC to avoid timezone shifts
+  // Split the date string and create date using year, month-1, day
+  const [year, month, day] = dateString.split('T')[0].split('-').map(Number)
+  const date = new Date(year, month - 1, day)
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
-    timeZone: 'America/Chicago'
+    day: 'numeric'
   })
 }
 
@@ -132,7 +134,7 @@ export function generateCustomerConfirmationEmail(reservationData) {
   const subject = `Reservation Request Received - The Druids Den`
 
   const text = `
-Dear ${reservationData.firstName},
+Dear ${reservationData.firstName} ${reservationData.lastName},
 
 Thank you for your reservation request at The Druids Den! We've received your information and will be in touch soon to confirm your stay.
 
@@ -140,6 +142,7 @@ RESERVATION DETAILS:
 Check-In: ${reservationData.checkIn}
 Check-Out: ${reservationData.checkOut}
 Guests: ${reservationData.adults} adult(s)${reservationData.children ? `, ${reservationData.children} child(ren)` : ''}
+Estimated Total: $${reservationData.estimatedTotal}
 
 ${reservationData.specialRequests ? `Special Requests: ${reservationData.specialRequests}\n` : ''}
 We'll review your request and send you a confirmation email within 24 hours. If you have any questions in the meantime, please don't hesitate to reach out.
@@ -171,7 +174,7 @@ This is an automated confirmation. Please do not reply to this email. For questi
     
     <!-- Content -->
     <div style="padding: 40px 30px; background-color: #fff;">
-      <p style="margin: 0 0 20px 0; font-size: 16px;">Dear ${reservationData.firstName},</p>
+      <p style="margin: 0 0 20px 0; font-size: 16px;">Dear ${reservationData.firstName} ${reservationData.lastName},</p>
       
       <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.8;">
         Thank you for your reservation request at <strong>The Druids Den</strong>! We've received your information and will be in touch soon to confirm your stay.
@@ -193,6 +196,10 @@ This is an automated confirmation. Please do not reply to this email. For questi
           <tr>
             <td style="padding: 10px 0; font-weight: 600; color: #666;">Guests:</td>
             <td style="padding: 10px 0; color: #333;">${reservationData.adults} adult(s)${reservationData.children ? `, ${reservationData.children} child(ren)` : ''}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; font-weight: 600; color: #666;">Estimated Total:</td>
+            <td style="padding: 10px 0; color: #333; font-size: 18px; font-weight: 600;">$${reservationData.estimatedTotal}</td>
           </tr>
         </table>
         

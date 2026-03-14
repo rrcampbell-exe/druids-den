@@ -1,8 +1,38 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import handler from '../../api/send-reservation'
+import { prisma } from '../../api/utils/db.js'
+import { setupTestEnv } from '../helpers/testEnv'
+
+// Mock the database utility
+vi.mock('../../api/utils/db.js', () => ({
+  prisma: {
+    reservation: {
+      findMany: vi.fn().mockResolvedValue([]), // No conflicts by default
+      create: vi.fn().mockResolvedValue({
+        id: 1,
+        checkIn: new Date('2026-06-01T00:00:00.000Z'),
+        checkOut: new Date('2026-06-03T00:00:00.000Z'),
+        adults: 2,
+        children: 0,
+        specialRequests: 'Early check-in please',
+        status: 'PENDING',
+        guestFirstName: 'John',
+        guestLastName: 'Doe',
+        guestEmail: 'john@example.com',
+        guestPhone: '(555) 123-4567',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+    }
+  }
+}))
 
 describe('send-reservation API', () => {
   let req, res, fetchSpy
+
+  setupTestEnv({
+    RESEND_API_KEY: 'test-api-key-123'
+  })
 
   beforeEach(() => {
     // Mock request object
@@ -30,13 +60,15 @@ describe('send-reservation API', () => {
     // Mock fetch globally
     fetchSpy = vi.spyOn(global, 'fetch')
     
-    // Set up environment variable
-    vi.stubEnv('RESEND_API_KEY', 'test-api-key-123')
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
-    vi.unstubAllEnvs()
+    fetchSpy.mockRestore()
+    // Reset the findMany mock to default (no conflicts)
+    prisma.reservation.findMany.mockResolvedValue([])
+    // Clear mock call history
+    prisma.reservation.findMany.mockClear()
+    prisma.reservation.create.mockClear()
   })
 
   describe('HTTP Method Validation', () => {
@@ -77,7 +109,11 @@ describe('send-reservation API', () => {
       await handler(req, res)
       
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid reservation data'
+        })
+      )
     })
 
     it('returns 400 when email is missing', async () => {
@@ -86,7 +122,11 @@ describe('send-reservation API', () => {
       await handler(req, res)
       
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid reservation data'
+        })
+      )
     })
 
     it('returns 400 when checkIn is missing', async () => {
@@ -95,7 +135,82 @@ describe('send-reservation API', () => {
       await handler(req, res)
       
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' })
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid reservation data'
+        })
+      )
+    })
+  })
+
+  describe('Date Conflict Detection', () => {
+    it('returns 409 when dates conflict with existing reservation', async () => {
+      // Mock findMany to return a conflicting reservation
+      prisma.reservation.findMany.mockResolvedValueOnce([
+        {
+          id: 999,
+          checkIn: new Date('2026-06-01T00:00:00.000Z'),
+          checkOut: new Date('2026-06-04T00:00:00.000Z'),
+          status: 'APPROVED',
+          guestFirstName: 'Jane',
+          guestLastName: 'Smith'
+        }
+      ])
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(409)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: 'Date conflict',
+          message: 'These dates overlap with an existing reservation. Please select different dates.',
+          conflicts: expect.arrayContaining([
+            expect.objectContaining({
+              checkIn: '2026-06-01',
+              checkOut: '2026-06-04'
+            })
+          ])
+        })
+      )
+
+      // Should not create reservation or send emails
+      expect(prisma.reservation.create).not.toHaveBeenCalled()
+      expect(fetchSpy).not.toHaveBeenCalled()
+    })
+
+    it('returns 409 when dates conflict with pending reservation', async () => {
+      // Mock findMany to return a pending conflicting reservation
+      prisma.reservation.findMany.mockResolvedValueOnce([
+        {
+          id: 888,
+          checkIn: new Date('2026-05-30T00:00:00.000Z'),
+          checkOut: new Date('2026-06-02T00:00:00.000Z'),
+          status: 'PENDING'
+        }
+      ])
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(409)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: 'Date conflict'
+        })
+      )
+    })
+
+    it('allows reservation when no conflicts exist', async () => {
+      // Default mock returns empty array (no conflicts)
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+
+      await handler(req, res)
+
+      expect(prisma.reservation.findMany).toHaveBeenCalled()
+      expect(prisma.reservation.create).toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(200)
     })
   })
 
@@ -180,7 +295,7 @@ describe('send-reservation API', () => {
 
   describe('Email Service Not Configured', () => {
     it('returns 200 with note when RESEND_API_KEY is not set', async () => {
-      vi.unstubAllEnvs()
+      vi.stubEnv('RESEND_API_KEY', '')
       
       await handler(req, res)
       

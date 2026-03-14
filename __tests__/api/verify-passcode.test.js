@@ -1,8 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/verify-passcode'
+import { setupTestEnv } from '../helpers/testEnv'
 
 describe('verify-passcode API', () => {
   let req, res
+
+  setupTestEnv({
+    SPOOKTOBERFEST_PASSCODE: 'test-passcode-123'
+  })
 
   beforeEach(() => {
     // Mock request object
@@ -17,8 +22,6 @@ describe('verify-passcode API', () => {
       json: vi.fn().mockReturnThis(),
     }
 
-    // Reset environment variable
-    vi.stubEnv('SPOOKTOBERFEST_PASSCODE', 'test-passcode-123')
   })
 
   describe('HTTP Method Validation', () => {
@@ -62,7 +65,7 @@ describe('verify-passcode API', () => {
 
   describe('Environment Configuration', () => {
     it('returns 500 when SPOOKTOBERFEST_PASSCODE env var is not set', () => {
-      vi.unstubAllEnvs()
+      vi.stubEnv('SPOOKTOBERFEST_PASSCODE', '')
       req.body = { passcode: 'any-passcode', page: 'spooktoberfest' }
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       

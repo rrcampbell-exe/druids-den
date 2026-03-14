@@ -101,7 +101,7 @@ export async function sendBulkEmails(emails) {
       results.push({
         success: false,
         to: emailData.to,
-        error: error.message
+        error: 'Failed to send email'
       })
     }
   }

@@ -11,18 +11,23 @@
     "preview": "vite preview",
     "test": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "db:seed": "node prisma/seed.js",
+    "db:reset": "npx prisma migrate reset --force"
   },
   "dependencies": {
     "@nivo/bar": "^0.99.0",
     "@nivo/core": "^0.99.0",
     "@nivo/line": "^0.99.0",
+    "@prisma/client": "^7.3.0",
+    "dotenv": "^17.2.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.6.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@faker-js/faker": "^10.2.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -36,8 +41,12 @@
     "globals": "^16.0.0",
     "happy-dom": "^20.3.7",
     "jsdom": "^27.4.0",
+    "prisma": "^7.3.0",
     "sass": "^1.97.2",
     "vite": "^6.3.5",
     "vitest": "^4.0.18"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

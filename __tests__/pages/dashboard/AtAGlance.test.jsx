@@ -2,15 +2,31 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import AtAGlance, { getDaysInMonth, formatDateString, getReservationsForDate, getDayClass, getPendingReservations, getUpcomingReservations } from '../../../src/pages/dashboard/AtAGlance'
 
+// Mock the reservation cache utility
+vi.mock('../../../src/utils/reservationCache', () => ({
+  reservationCache: {
+    fetch: vi.fn(),
+    invalidate: vi.fn()
+  }
+}))
+
 // Mock ReservationCard
 vi.mock('../../../src/pages/dashboard/ReservationCard', () => ({
-  default: ({ reservation, onApprove, onDeny, onCancel, onMessage }) => (
+  default: ({ reservation, onApprove, onDeny, onCancel, onMessage, onEdit }) => (
     <div data-testid={`reservation-card-${reservation.id}`}>
       <span>{reservation.firstName} {reservation.lastName}</span>
       <button onClick={() => onApprove(reservation.id)}>Approve</button>
       <button onClick={() => onDeny(reservation.id, 'test')}>Deny</button>
       <button onClick={() => onCancel(reservation.id, 'test')}>Cancel</button>
       <button onClick={() => onMessage(reservation.id, 'test')}>Message</button>
+      <button onClick={() => onEdit && onEdit(reservation.id, {
+        checkIn: reservation.checkIn,
+        checkOut: reservation.checkOut,
+        adults: reservation.adults || 2,
+        children: reservation.children || 0,
+        specialRequests: 'Updated notes',
+        ownerNote: 'Owner update'
+      }).catch(() => {})}>Edit</button>
     </div>
   )
 }))
@@ -50,6 +66,9 @@ const mockReservations = {
   ]
 }
 
+// Import the mock after setting it up
+import { reservationCache } from '../../../src/utils/reservationCache'
+
 describe('AtAGlance', () => {
   beforeEach(() => {
     // Mock the current date to January 29, 2026 for consistent test results
@@ -59,6 +78,9 @@ describe('AtAGlance', () => {
     fetch.mockResolvedValue({
       json: async () => mockReservations
     })
+    
+    // Mock cache.fetch to return mockReservations
+    reservationCache.fetch.mockResolvedValue(mockReservations.reservations)
   })
 
   afterEach(() => {
@@ -77,7 +99,7 @@ describe('AtAGlance', () => {
     render(<AtAGlance />)
     
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/mock-reservations.json')
+      expect(reservationCache.fetch).toHaveBeenCalled()
     })
   })
 
@@ -284,9 +306,7 @@ describe('AtAGlance', () => {
   })
 
   it('displays no reservations message when list is empty', async () => {
-    fetch.mockResolvedValueOnce({
-      json: async () => ({ reservations: [] })
-    })
+    reservationCache.fetch.mockResolvedValueOnce([])
     
     render(<AtAGlance />)
     
@@ -435,7 +455,7 @@ describe('AtAGlance', () => {
     it('handles fetch errors gracefully', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       
-      fetch.mockRejectedValueOnce(new Error('Network error'))
+      reservationCache.fetch.mockRejectedValueOnce(new Error('Network error'))
       
       render(<AtAGlance />)
       
@@ -456,6 +476,54 @@ describe('AtAGlance', () => {
       await waitFor(() => {
         expect(screen.getByText(/Pending Requests/)).toBeInTheDocument()
       })
+    })
+
+    it('shows date conflict error message on edit failure', async () => {
+      fetch.mockReset()
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({
+          error: 'Date conflict',
+          conflicts: [{ checkIn: '2026-02-16', checkOut: '2026-02-18' }],
+          message: 'Date conflict'
+        })
+      })
+
+      render(<AtAGlance />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('reservation-card-res-001')).toBeInTheDocument()
+      })
+
+      fireEvent.click(screen.getAllByText('Edit')[0])
+
+      await waitFor(() => {
+        expect(screen.getByText(/Cannot update: These dates conflict with existing reservations/)).toBeInTheDocument()
+      })
+
+      expect(screen.queryByText('Failed to update reservation. Please try again.')).not.toBeInTheDocument()
+    })
+
+    it('shows API-provided generic error message on edit failure', async () => {
+      fetch.mockReset()
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ message: 'Reservation overlaps blackout period' })
+      })
+
+      render(<AtAGlance />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('reservation-card-res-001')).toBeInTheDocument()
+      })
+
+      fireEvent.click(screen.getAllByText('Edit')[0])
+
+      await waitFor(() => {
+        expect(screen.getByText('Reservation overlaps blackout period')).toBeInTheDocument()
+      })
+
+      expect(screen.queryByText('Failed to update reservation. Please try again.')).not.toBeInTheDocument()
     })
   })
 

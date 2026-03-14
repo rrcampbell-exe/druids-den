@@ -51,9 +51,9 @@ describe('emailTemplates', () => {
       expect(email.html).toContain('Doe')
       expect(email.html).toContain('john@example.com')
       expect(email.html).toContain('(555) 123-4567')
-      // HTML contains formatted dates
-      expect(email.html).toContain('May 31, 2026')
-      expect(email.html).toContain('June 2, 2026')
+      // HTML contains formatted dates (should match input dates exactly)
+      expect(email.html).toContain('June 1, 2026')
+      expect(email.html).toContain('June 3, 2026')
       expect(email.html).toContain('2')
       expect(email.html).toContain('1')
     })
@@ -242,8 +242,8 @@ describe('emailTemplates', () => {
     it('formats dates correctly in text', () => {
       const result = generateApprovalEmail(approvalReservation)
       
-      expect(result.text).toContain('June 14, 2026')
-      expect(result.text).toContain('June 19, 2026')
+      expect(result.text).toContain('June 15, 2026')
+      expect(result.text).toContain('June 20, 2026')
     })
 
     it('includes check-in and check-out times', () => {

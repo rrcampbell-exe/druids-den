@@ -6,6 +6,28 @@
   position: relative;
   margin-bottom: 1rem;
 
+  &.loading {
+    .date-input-wrapper input {
+      background: linear-gradient(
+        90deg,
+        rgba(var(--color-iron-ore-rgb), 0.05) 0%,
+        rgba(var(--color-iron-ore-rgb), 0.1) 50%,
+        rgba(var(--color-iron-ore-rgb), 0.05) 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer-datepicker 1.5s infinite;
+      cursor: not-allowed;
+      font-style: italic;
+      color: var(--color-iron-ore);
+      opacity: 0.7;
+    }
+
+    .calendar-icon-btn {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
   label {
     margin-bottom: 0.5rem;
     font-weight: 500;
@@ -241,5 +263,14 @@
         font-size: 0.8rem;
       }
     }
+  }
+}
+
+@keyframes shimmer-datepicker {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }

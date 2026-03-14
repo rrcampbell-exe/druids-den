@@ -1,0 +1,222 @@
+// Prisma schema for The Druids Den cabin rental application
+// Defines database tables for users, reservations, blackout dates, feedback, messages, and audit logs
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User accounts (linked to Clerk authentication)
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique @map("clerk_id")
+  email     String   @unique
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
+  phone     String?
+  role      Role     @default(GUEST)
+
+  // Communication preferences
+  marketingOptIn          Boolean         @default(false) @map("marketing_opt_in")
+  preferredContactMethod  ContactMethod   @default(EMAIL) @map("preferred_contact_method")
+
+  // Metadata
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  // Relations
+  reservations          Reservation[] @relation("UserReservations")
+  statusChanges         Reservation[] @relation("StatusChangedBy")
+  blackoutDatesCreated  BlackoutDate[]
+  feedbackGiven         Feedback[]
+  messagesSent          Message[]     @relation("SentMessages")
+  messagesReceived      Message[]     @relation("ReceivedMessages")
+  feedbackApprovals     Feedback[]    @relation("FeedbackApprover")
+  auditLogs             AuditLog[]
+
+  @@index([clerkId])
+  @@index([email])
+  @@map("users")
+}
+
+// Reservation requests and bookings
+model Reservation {
+  id String @id @default(uuid())
+
+  // User association (NULL if guest hasn't created account yet)
+  userId String? @map("user_id")
+  user   User?   @relation("UserReservations", fields: [userId], references: [id])
+
+  // Guest information (preserved even if user account created)
+  guestFirstName String  @map("guest_first_name")
+  guestLastName  String  @map("guest_last_name")
+  guestEmail     String  @map("guest_email")
+  guestPhone     String? @map("guest_phone")
+
+  // Reservation details
+  checkIn         DateTime @map("check_in") @db.Date
+  checkOut        DateTime @map("check_out") @db.Date
+  adults          Int      @default(1)
+  children        Int      @default(0)
+  specialRequests String?  @map("special_requests") @db.Text
+
+  // Status tracking
+  status           ReservationStatus @default(PENDING)
+  statusChangedAt  DateTime?         @map("status_changed_at")
+  statusChangedBy  User?             @relation("StatusChangedBy", fields: [statusChangedById], references: [id])
+  statusChangedById String?          @map("status_changed_by")
+
+  // Denial/cancellation messages
+  denialMessage       String? @map("denial_message") @db.Text
+  cancellationMessage String? @map("cancellation_message") @db.Text
+
+  // Owner reservation flag
+  isOwnerReservation Boolean @default(false) @map("is_owner_reservation")
+  ownerNotes         String? @map("owner_notes") @db.Text
+
+  // Timestamps
+  submittedAt DateTime  @default(now()) @map("submitted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  // Relations
+  feedback Feedback[]
+  messages Message[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([checkIn, checkOut])
+  @@index([guestEmail])
+  @@map("reservations")
+}
+
+// Blackout dates (dates unavailable for booking)
+model BlackoutDate {
+  id        String   @id @default(uuid())
+  startDate DateTime @map("start_date") @db.Date
+  endDate   DateTime @map("end_date") @db.Date
+  reason    String?
+
+  // Who created this blackout
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+  createdById String? @map("created_by")
+
+  // Metadata
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([startDate, endDate])
+  @@map("blackout_dates")
+}
+
+// Guest feedback and reviews
+model Feedback {
+  id            String @id @default(uuid())
+  reservationId String @map("reservation_id")
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id])
+
+  // Feedback content
+  rating         Int     @db.SmallInt
+  review         String? @db.Text
+  wouldRecommend Boolean @map("would_recommend")
+
+  // Moderation (for future testimonials feature)
+  isPublic    Boolean   @default(false) @map("is_public")
+  approvedAt  DateTime? @map("approved_at")
+  approvedBy  User?     @relation("FeedbackApprover", fields: [approvedById], references: [id])
+  approvedById String?  @map("approved_by")
+
+  // Timestamps
+  submittedAt DateTime  @default(now()) @map("submitted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@index([reservationId])
+  @@map("feedback")
+}
+
+// Messages between guests and owners
+model Message {
+  id            String      @id @default(uuid())
+  reservationId String?     @map("reservation_id")
+  reservation   Reservation? @relation(fields: [reservationId], references: [id])
+
+  senderId   String? @map("sender_id")
+  sender     User?   @relation("SentMessages", fields: [senderId], references: [id])
+  
+  recipientId String? @map("recipient_id")
+  recipient   User?   @relation("ReceivedMessages", fields: [recipientId], references: [id])
+
+  content String @db.Text
+  readAt  DateTime? @map("read_at")
+
+  // System-generated messages (approval notifications, etc.)
+  isSystemMessage Boolean      @default(false) @map("is_system_message")
+  messageType     MessageType? @map("message_type")
+
+  // Metadata
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([reservationId])
+  @@map("messages")
+}
+
+// Audit log for tracking changes
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  user       User?    @relation(fields: [userId], references: [id])
+  
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  oldValues  Json?    @map("old_values")
+  newValues  Json?    @map("new_values")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@map("audit_log")
+}
+
+// Enums
+enum Role {
+  GUEST
+  ADMIN
+  OWNER
+}
+
+enum ContactMethod {
+  EMAIL
+  TEXT
+  BOTH
+}
+
+enum ReservationStatus {
+  PENDING
+  APPROVED
+  DENIED
+  CANCELLED
+  COMPLETED
+}
+
+enum MessageType {
+  APPROVAL
+  DENIAL
+  CANCELLATION
+  INQUIRY
+  RESPONSE
+}

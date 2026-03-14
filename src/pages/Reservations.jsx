@@ -2,12 +2,16 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import './Reservations.scss'
 import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal } from '../components'
+import { validateReservationForm } from '../utils/formValidation'
 
 const Reservations = () => {
+  const firstNameRef = useRef(null)
+  const lastNameRef = useRef(null)
   const emailRef = useRef(null)
   const phoneRef = useRef(null)
   
-  const [blackoutDates, setBlackoutDates] = useState([])
+  const [reservations, setReservations] = useState([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     // Personal Information
     firstName: '',
@@ -29,19 +33,14 @@ const Reservations = () => {
     estimatedTotal: 0
   })
   
-  const [validationErrors, setValidationErrors] = useState({
-    email: '',
-    phone: ''
-  })
+  const [validationErrors, setValidationErrors] = useState({})
   
-  const [touchedFields, setTouchedFields] = useState({
-    email: false,
-    phone: false
-  })
+  const [touchedFields, setTouchedFields] = useState({})
   
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const navItems = [
     { label: 'Your Information', href: '#your-information' },
@@ -49,23 +48,53 @@ const Reservations = () => {
     { label: 'Additional Notes', href: '#additional-notes' }
   ]
 
+  // Parse date string as local date (America/Chicago) to avoid timezone issues
+  const parseLocalDate = (dateString) => {
+    const [year, month, day] = dateString.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
+    date.setHours(0, 0, 0, 0)
+    return date
+  }
+
   useEffect(() => {
-    // Fetch blackout dates
-    fetch('/blackout-dates.json')
-      .then(response => {
+    // Fetch reservations from database (always fresh, no caching)
+    const fetchReservations = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/reservations')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        return response.json()
-      })
-      .then(data => {
-        setBlackoutDates(data.blackoutDates)
-      })
-      .catch(err => console.error('Error loading blackout dates:', err))
+        const data = await response.json()
+        setReservations(data.reservations || [])
+      } catch (err) {
+        console.error('Error loading reservations:', err)
+        setReservations([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchReservations()
   }, [])
 
+  // Validate fields when touched to show errors
+  useEffect(() => {
+    const validation = validateReservationForm(formData)
+    
+    // Only update errors for fields that have been touched
+    const newErrors = {}
+    Object.keys(touchedFields).forEach(field => {
+      if (touchedFields[field]) {
+        newErrors[field] = validation.errors[field] || ''
+      }
+    })
+    
+    setValidationErrors(newErrors)
+  }, [formData, touchedFields])
+
   const isDateBlackedOut = (dateString) => {
-    const date = new Date(dateString)
+    const date = parseLocalDate(dateString)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
@@ -78,15 +107,27 @@ const Reservations = () => {
     // Check if date is outside current calendar year
     if (dateYear !== currentYear) return true
     
-    // Check if date is in blackout list
-    if (blackoutDates.includes(dateString)) return true
+    // Check if date falls within any approved or pending reservation
+    // (including owner reservations)
+    for (const reservation of reservations) {
+      // Skip cancelled or denied reservations
+      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
+      
+      const checkIn = parseLocalDate(reservation.checkIn)
+      const checkOut = parseLocalDate(reservation.checkOut)
+      
+      // Date is blacked out if it falls within the reservation range (inclusive of check-in, exclusive of check-out)
+      if (date >= checkIn && date < checkOut) {
+        return true
+      }
+    }
     
     return false
   }
   
   const hasBlackoutDatesInRange = (startDateString, endDateString) => {
-    const startDate = new Date(startDateString)
-    const endDate = new Date(endDateString)
+    const startDate = parseLocalDate(startDateString)
+    const endDate = parseLocalDate(endDateString)
     const current = new Date(startDate)
     const blackedOutDates = []
     
@@ -98,13 +139,53 @@ const Reservations = () => {
       const day = String(current.getDate()).padStart(2, '0')
       const dateString = `${year}-${month}-${day}`
       
-      if (blackoutDates.includes(dateString)) {
-        blackedOutDates.push(dateString)
+      // Check if date falls within any approved or pending reservation
+      for (const reservation of reservations) {
+        // Skip cancelled or denied reservations
+        if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
+        
+        const checkIn = parseLocalDate(reservation.checkIn)
+        const checkOut = parseLocalDate(reservation.checkOut)
+        const checkDate = parseLocalDate(dateString)
+        
+        // Date is blacked out if it falls within the reservation range (inclusive of check-in, exclusive of check-out)
+        if (checkDate >= checkIn && checkDate < checkOut) {
+          blackedOutDates.push(dateString)
+          break
+        }
       }
+      
       current.setDate(current.getDate() + 1)
     }
     
     return blackedOutDates
+  }
+  
+  // Convert reservations to blackout dates array for DatePicker
+  const getBlackoutDates = () => {
+    const blackoutDates = []
+    
+    for (const reservation of reservations) {
+      // Skip cancelled or denied reservations
+      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
+      
+      const checkIn = parseLocalDate(reservation.checkIn)
+      const checkOut = parseLocalDate(reservation.checkOut)
+      const current = new Date(checkIn)
+
+      // Add all occupied dates in the reservation range (inclusive of check-in, exclusive of check-out)
+      // This blocks overlapping check-ins while still allowing same-day turnover on checkout dates.
+      while (current < checkOut) {
+        const year = current.getFullYear()
+        const month = String(current.getMonth() + 1).padStart(2, '0')
+        const day = String(current.getDate()).padStart(2, '0')
+        const dateString = `${year}-${month}-${day}`
+        blackoutDates.push(dateString)
+        current.setDate(current.getDate() + 1)
+      }
+    }
+    
+    return blackoutDates
   }
   
   const validateEmail = (email) => {
@@ -146,35 +227,7 @@ const Reservations = () => {
         ...prev,
         [name]: formatted
       }))
-      
-      // Validate phone (but don't show error until blur)
-      if (formatted && !validatePhone(formatted)) {
-        setValidationErrors(prev => ({
-          ...prev,
-          phone: 'Please enter a valid 10-digit US phone number'
-        }))
-      } else {
-        setValidationErrors(prev => ({
-          ...prev,
-          phone: ''
-        }))
-      }
       return
-    }
-    
-    // Validate email (but don't show error until blur)
-    if (name === 'email') {
-      if (value && !validateEmail(value)) {
-        setValidationErrors(prev => ({
-          ...prev,
-          email: 'Please enter a valid email address'
-        }))
-      } else {
-        setValidationErrors(prev => ({
-          ...prev,
-          email: ''
-        }))
-      }
     }
     
     setFormData(prev => ({
@@ -185,60 +238,66 @@ const Reservations = () => {
   
   const handleBlur = (e) => {
     const { name } = e.target
-    
-    if (name === 'email' || name === 'phone') {
-      setTouchedFields(prev => ({
-        ...prev,
-        [name]: true
-      }))
-    }
+    setTouchedFields(prev => ({
+      ...prev,
+      [name]: true
+    }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    // Validate email
-    if (!validateEmail(formData.email)) {
-      setTouchedFields(prev => ({ ...prev, email: true }))
-      emailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (submitting) return
+    
+    // Validate entire form
+    const validation = validateReservationForm(formData)
+    
+    if (!validation.valid) {
+      // Set all validation errors
+      setValidationErrors(validation.errors)
+      
+      // Mark all fields as touched so errors display
+      const allFields = {}
+      Object.keys(validation.errors).forEach(field => {
+        allFields[field] = true
+      })
+      setTouchedFields(allFields)
+      
+      // Scroll to first error
+      const firstErrorField = Object.keys(validation.errors)[0]
+      const fieldRefs = {
+        firstName: firstNameRef,
+        lastName: lastNameRef,
+        email: emailRef,
+        phone: phoneRef
+      }
+      
+      const ref = fieldRefs[firstErrorField]
+      if (ref?.current) {
+        ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
       return
     }
     
-    // Validate phone
-    if (!validatePhone(formData.phone)) {
-      setTouchedFields(prev => ({ ...prev, phone: true }))
-      phoneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      return
-    }
+    // Clear errors if validation passes
+    setValidationErrors({})
     
-    // Validate check-in date
+    // Validate check-in date is not blacked out
     if (isDateBlackedOut(formData.checkIn)) {
       setErrorMessage('The selected check-in date is not available. Please choose another date.')
       setShowErrorModal(true)
       return
     }
     
-    // Validate check-out date
-    if (isDateBlackedOut(formData.checkOut)) {
-      setErrorMessage('The selected check-out date is not available. Please choose another date.')
-      setShowErrorModal(true)
-      return
-    }
-    
-    // Validate check-out is after check-in
-    if (new Date(formData.checkOut) <= new Date(formData.checkIn)) {
-      setErrorMessage('Check-out date must be after check-in date.')
-      setShowErrorModal(true)
-      return
-    }
-    
-    // Validate no blackout dates in range
+    // Validate no blackout dates in range (excluding check-in and check-out dates)
     const blackedOutInRange = hasBlackoutDatesInRange(formData.checkIn, formData.checkOut)
     if (blackedOutInRange.length > 0) {
       setErrorMessage(`Your selected dates conflict with other reservations. Please select a different date range.`)
       setShowErrorModal(true)
       return
     }
+    
+    setSubmitting(true)
     
     try {
       // Send reservation email
@@ -278,6 +337,20 @@ const Reservations = () => {
           email: false,
           phone: false
         })
+      } else if (response.status === 409) {
+        // Date conflict - refetch reservations to update calendar
+        setErrorMessage(data.message || 'These dates are no longer available. Please select different dates.')
+        setShowErrorModal(true)
+        // Refetch reservations to update calendar with the newly-booked dates
+        try {
+          const reservationsResponse = await fetch('/api/reservations')
+          if (reservationsResponse.ok) {
+            const reservationsData = await reservationsResponse.json()
+            setReservations(reservationsData.reservations || [])
+          }
+        } catch (err) {
+          console.error('Error refreshing reservations:', err)
+        }
       } else {
         throw new Error(data.error || 'Failed to submit reservation')
       }
@@ -285,6 +358,8 @@ const Reservations = () => {
       console.error('Error submitting reservation:', error)
       setErrorMessage('There was an error submitting your reservation. Please try again or contact us directly at grovekeeper@druidsdenwi.com.')
       setShowErrorModal(true)
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -326,25 +401,35 @@ const Reservations = () => {
                 <div className='form-group'>
                   <label htmlFor='firstName'>First Name *</label>
                   <input
+                    ref={firstNameRef}
                     type='text'
                     id='firstName'
                     name='firstName'
                     value={formData.firstName}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     required
                   />
+                  {touchedFields.firstName && validationErrors.firstName && (
+                    <span className='error-message'>{validationErrors.firstName}</span>
+                  )}
                 </div>
                 
                 <div className='form-group'>
                   <label htmlFor='lastName'>Last Name *</label>
                   <input
+                    ref={lastNameRef}
                     type='text'
                     id='lastName'
                     name='lastName'
                     value={formData.lastName}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     required
                   />
+                  {touchedFields.lastName && validationErrors.lastName && (
+                    <span className='error-message'>{validationErrors.lastName}</span>
+                  )}
                 </div>
               </div>
               
@@ -395,8 +480,10 @@ const Reservations = () => {
                 checkOutValue={formData.checkOut}
                 onCheckInChange={handleInputChange}
                 onCheckOutChange={handleInputChange}
-                blackoutDates={blackoutDates}
+                blackoutDates={loading ? [] : getBlackoutDates()}
                 required
+                loading={loading}
+                loadingMessage='Loading available dates...'
               />
               
               <div className='form-row'>
@@ -413,6 +500,9 @@ const Reservations = () => {
                     required
                   />
                   <small>Age 13+</small>
+                  {touchedFields.adults && validationErrors.adults && (
+                    <span className='error-message'>{validationErrors.adults}</span>
+                  )}
                 </div>
                 
                 <div className='form-group'>
@@ -441,15 +531,23 @@ const Reservations = () => {
                   name='specialRequests'
                   value={formData.specialRequests}
                   onChange={handleInputChange}
+                  onBlur={handleBlur}
                   rows='5'
+                  maxLength='500'
                   placeholder='Let us know if you have any special requests or requirements for your stay...'
                 />
+                <div style={{ fontSize: '0.85em', color: '#666', marginTop: '4px' }}>
+                  {formData.specialRequests.length}/500 characters
+                </div>
+                {validationErrors.specialRequests && (
+                  <span className='error-message'>{validationErrors.specialRequests}</span>
+                )}
               </div>
             </section>
             
             <div className='form-actions'>
-              <button type='submit' className='submit-button'>
-                Submit Reservation Request and Make Deposit
+              <button type='submit' className='submit-button' disabled={submitting || loading}>
+                {submitting ? 'Submitting Reservation...' : 'Submit Reservation Request and Make Deposit'}
               </button>
               <p className='disclaimer'>
                 * By submitting this form, you are requesting a reservation. 

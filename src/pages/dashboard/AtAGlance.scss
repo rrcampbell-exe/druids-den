@@ -1,4 +1,5 @@
 @use '../../variables' as *;
+@use './skeleton';
 
 .at-a-glance {
   display: grid;
@@ -89,6 +90,7 @@
       border: 2px solid rgba(70, 70, 69, 0.2);
       border-radius: 8px;
       padding: 1.5rem;
+      overflow: hidden; // Prevent content from extending beyond padding
 
       .calendar-header {
         display: flex;
@@ -121,9 +123,15 @@
 
       .calendar-grid {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(7, minmax(0, 1fr));
         gap: 0.5rem;
         margin-bottom: 1rem;
+        width: 100%; // Ensure grid doesn't exceed container
+        box-sizing: border-box; // Include padding/border in width calculation
+
+        @media (max-width: $breakpoint-tablet) {
+          gap: 0.25rem;
+        }
 
         .day-name {
           text-align: center;
@@ -475,6 +483,7 @@
             color: var(--color-iron-ore);
             background: rgba(255, 255, 255, 0.5);
             resize: vertical;
+            box-sizing: border-box;
 
             &:focus {
               outline: none;
@@ -504,8 +513,13 @@
             cursor: pointer;
             transition: all 0.2s;
 
-            &:hover {
+            &:hover:not(:disabled) {
               background: #5a5a59;
+            }
+            
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
             }
           }
 
@@ -522,12 +536,82 @@
             cursor: pointer;
             transition: all 0.2s;
 
-            &:hover {
+            &:hover:not(:disabled) {
               background: rgba(70, 70, 69, 0.3);
+            }
+            
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
             }
           }
         }
       }
+    }
+  }
+  
+  // Notification Toast
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-width: 300px;
+    max-width: 500px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+    font-weight: 500;
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    &.success {
+      background: #6b8e6f;
+      color: white;
+      border-left: 4px solid #4a6b4d;
+    }
+    
+    &.error {
+      background: rgba(200, 100, 100, 0.95);
+      color: white;
+      border-left: 4px solid #8b0000;
+    }
+    
+    .notification-close {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      
+      &:hover {
+        opacity: 1;
+      }
+    }
+    
+    @media (max-width: $breakpoint-mobile) {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+      min-width: auto;
     }
   }
 }

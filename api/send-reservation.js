@@ -1,8 +1,11 @@
+import { prisma } from './utils/db.js'
 import { sendBulkEmails } from './utils/emailService.js'
 import { 
   generateAdminNotificationEmail, 
   generateCustomerConfirmationEmail 
 } from './utils/emailTemplates.js'
+import { sanitizeReservationData } from './utils/sanitize.js'
+import { calculateEstimatedTotal } from './utils/pricing.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -10,17 +13,96 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const reservationData = req.body
+  const rawReservationData = req.body
 
-  // Basic validation
-  if (!reservationData.firstName || !reservationData.email || !reservationData.checkIn) {
+  // Validate and sanitize all input data
+  const { sanitized, errors } = sanitizeReservationData(rawReservationData)
+
+  // Check for any validation errors
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({ 
+      error: 'Invalid reservation data',
+      details: errors
+    })
+  }
+
+  // Ensure required fields passed validation
+  if (!sanitized.firstName || !sanitized.email || !sanitized.checkIn) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
   try {
+    // Convert YYYY-MM-DD dates to ISO-8601 DateTime for Prisma
+    // Using noon UTC (12:00) instead of midnight to avoid timezone boundary issues
+    // This ensures the date part stays consistent when converted to any timezone
+    const checkInDate = new Date(sanitized.checkIn + 'T12:00:00.000Z')
+    const checkOutDate = new Date(sanitized.checkOut + 'T12:00:00.000Z')
+    
+    // Calculate estimated total for this reservation
+    const estimatedTotal = calculateEstimatedTotal(sanitized.checkIn, sanitized.checkOut)
+    
+    // Check for conflicts with existing APPROVED/PENDING reservations
+    const conflictingReservations = await prisma.reservation.findMany({
+      where: {
+        deletedAt: null,
+        status: { in: ['APPROVED', 'PENDING'] },
+        OR: [
+          {
+            AND: [
+              { checkIn: { lte: checkInDate } },
+              { checkOut: { gt: checkInDate } }
+            ]
+          },
+          {
+            AND: [
+              { checkIn: { lt: checkOutDate } },
+              { checkOut: { gte: checkOutDate } }
+            ]
+          },
+          {
+            AND: [
+              { checkIn: { gte: checkInDate } },
+              { checkOut: { lte: checkOutDate } }
+            ]
+          }
+        ]
+      }
+    })
+    
+    if (conflictingReservations.length > 0) {
+      return res.status(409).json({ 
+        error: 'Date conflict',
+        message: 'These dates overlap with an existing reservation. Please select different dates.',
+        conflicts: conflictingReservations.map(r => ({
+          checkIn: r.checkIn.toISOString().split('T')[0],
+          checkOut: r.checkOut.toISOString().split('T')[0]
+        }))
+      })
+    }
+    
+    // Create reservation in database with pending status
+    await prisma.reservation.create({
+      data: {
+        checkIn: checkInDate.toISOString(),
+        checkOut: checkOutDate.toISOString(),
+        adults: sanitized.adults || 1,
+        children: sanitized.children || 0,
+        specialRequests: sanitized.specialRequests,
+        status: 'PENDING',
+        guestFirstName: sanitized.firstName,
+        guestLastName: sanitized.lastName,
+        guestEmail: sanitized.email,
+        guestPhone: sanitized.phone
+      }
+    })
+
     // Generate email templates
-    const adminEmail = generateAdminNotificationEmail(reservationData)
-    const customerEmail = generateCustomerConfirmationEmail(reservationData)
+    const reservationDataWithTotal = {
+      ...sanitized,
+      estimatedTotal
+    }
+    const adminEmail = generateAdminNotificationEmail(reservationDataWithTotal)
+    const customerEmail = generateCustomerConfirmationEmail(reservationDataWithTotal)
 
     // Prepare emails to send
     const emails = [
@@ -35,7 +117,7 @@ export default async function handler(req, res) {
       // 2. Customer confirmation email
       {
         from: 'The Druids Den <grovekeeper@druidsdenwi.com>',
-        to: reservationData.email,
+        to: sanitized.email,
         subject: customerEmail.subject,
         text: customerEmail.text,
         html: customerEmail.html
@@ -87,8 +169,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error processing reservation:', error)
     return res.status(500).json({
-      error: 'Failed to process reservation request',
-      details: error.message
+      error: 'Failed to process reservation request'
     })
   }
 }
