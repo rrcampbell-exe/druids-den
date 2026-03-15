@@ -1,26 +1,26 @@
 import { prisma } from './utils/db.js'
-import { calculateEstimatedTotal } from './utils/pricing.js'
+import { requireRole, getErrorResponse } from './utils/auth.js'
+import { serializeReservation } from './utils/serializers.js'
 
 export default async function handler(req, res) {
   // POST - Create new reservation (owner reservations)
   if (req.method === 'POST') {
     try {
+      const { user: actor } = await requireRole(req, ['OWNER', 'ADMIN'])
       const { 
         checkIn, 
         checkOut, 
         adults = 2, 
         children = 0, 
         ownerNote,
-        ownerEmail // Owner's email for future reference
+        ownerEmail // Backwards-compatible fallback until the dashboard is updated
       } = req.body
 
       if (!checkIn || !checkOut) {
         return res.status(400).json({ error: 'Check-in and check-out dates are required' })
       }
 
-      if (!ownerEmail) {
-        return res.status(400).json({ error: 'Owner email is required' })
-      }
+      const reservationOwnerEmail = actor.email || ownerEmail
 
       // Validate date order
       const checkInDate = new Date(checkIn)
@@ -69,12 +69,12 @@ export default async function handler(req, res) {
         })
       }
 
-      // Create owner reservation without userId (will add when Clerk auth is implemented)
       const reservation = await prisma.reservation.create({
         data: {
+          userId: actor.id,
           guestFirstName: 'Owner',
           guestLastName: 'Reservation',
-          guestEmail: ownerEmail,
+          guestEmail: reservationOwnerEmail,
           guestPhone: '',
           checkIn: checkInDate,
           checkOut: checkOutDate,
@@ -85,42 +85,15 @@ export default async function handler(req, res) {
           status: 'APPROVED',
           isOwnerReservation: true,
           statusChangedAt: new Date(),
+          statusChangedById: actor.id,
           submittedAt: new Date(),
         }
       })
 
-      // Format response
-      const responseCheckInDate = new Date(reservation.checkIn)
-      const responseCheckOutDate = new Date(reservation.checkOut)
-      const nights = Math.ceil((responseCheckOutDate - responseCheckInDate) / (1000 * 60 * 60 * 24))
-
-      return res.status(201).json({
-        id: reservation.id,
-        firstName: reservation.guestFirstName,
-        lastName: reservation.guestLastName,
-        email: reservation.guestEmail,
-        phone: reservation.guestPhone,
-        checkIn: reservation.checkIn.toISOString().split('T')[0],
-        checkOut: reservation.checkOut.toISOString().split('T')[0],
-        adults: reservation.adults,
-        children: reservation.children,
-        specialRequests: reservation.specialRequests,
-        status: reservation.status.toLowerCase(),
-        isOwnerReservation: reservation.isOwnerReservation,
-        submittedAt: reservation.submittedAt.toISOString(),
-        statusChangedAt: reservation.statusChangedAt.toISOString(),
-        approvedAt: reservation.statusChangedAt.toISOString(),
-        estimatedTotal: calculateEstimatedTotal(
-          reservation.checkIn.toISOString().split('T')[0],
-          reservation.checkOut.toISOString().split('T')[0]
-        ),
-        ownerNote: reservation.ownerNotes,
-      })
+      return res.status(201).json(serializeReservation(reservation))
     } catch (error) {
-      console.error('Error creating reservation:', error)
-      return res.status(500).json({ 
-        error: 'Failed to create reservation' 
-      })
+      const { statusCode, body } = getErrorResponse(error, 'Failed to create reservation')
+      return res.status(statusCode).json(body)
     }
   }
 
@@ -128,6 +101,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
 
   try {
+    await requireRole(req, ['OWNER', 'ADMIN'])
     // Fetch all non-deleted reservations with user data
     const reservations = await prisma.reservation.findMany({
       where: {
@@ -138,42 +112,14 @@ export default async function handler(req, res) {
       }
     })
 
-    // Transform to match the format expected by the frontend
-    const formattedReservations = reservations.map(res => {
-      const checkInStr = res.checkIn.toISOString().split('T')[0]
-      const checkOutStr = res.checkOut.toISOString().split('T')[0]
-      const estimatedTotal = calculateEstimatedTotal(checkInStr, checkOutStr)
-      
-      return {
-        id: res.id,
-        // Map to frontend field names (firstName/lastName not guestFirstName/guestLastName)
-        firstName: res.guestFirstName,
-        lastName: res.guestLastName,
-        email: res.guestEmail,
-        phone: res.guestPhone,
-        checkIn: res.checkIn.toISOString().split('T')[0], // Format as YYYY-MM-DD
-        checkOut: res.checkOut.toISOString().split('T')[0],
-        adults: res.adults,
-        children: res.children,
-        specialRequests: res.specialRequests,
-        status: res.status.toLowerCase(), // Convert PENDING to 'pending'
-        isOwnerReservation: res.isOwnerReservation,
-        submittedAt: res.submittedAt ? res.submittedAt.toISOString() : null,
-        statusChangedAt: res.statusChangedAt ? res.statusChangedAt.toISOString() : null,
-        approvedAt: res.status === 'APPROVED' && res.statusChangedAt ? res.statusChangedAt.toISOString() : null,
-        estimatedTotal,
-        ownerNote: res.isOwnerReservation ? res.ownerNotes : null
-      }
-    })
-
     return res.status(200).json({
-      reservations: formattedReservations
+      reservations: reservations.map(serializeReservation)
     })
   } catch (error) {
-    console.error('Error fetching reservations:', error)
-    return res.status(500).json({ 
-      error: 'Failed to fetch reservations'
-    })
+    const { statusCode, body } = getErrorResponse(error, 'Failed to fetch reservations')
+    return res.status(statusCode).json(body)
   }
   }
+
+  return res.status(405).json({ error: 'Method not allowed' })
 }

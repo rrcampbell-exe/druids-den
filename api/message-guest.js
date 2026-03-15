@@ -1,6 +1,7 @@
 import { prisma } from './utils/db.js'
 import { sendEmail } from './utils/emailService.js'
 import { generateCustomMessageEmail } from './utils/dashboardEmailTemplates.js'
+import { requireRole, getErrorResponse } from './utils/auth.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -20,6 +21,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    await requireRole(req, ['OWNER', 'ADMIN'])
+
     // Fetch the reservation
     const reservation = await prisma.reservation.findUnique({
       where: { id: reservationId }
@@ -66,9 +69,7 @@ export default async function handler(req, res) {
       message: 'Message sent successfully' 
     })
   } catch (error) {
-    console.error('Error sending custom message:', error)
-    return res.status(500).json({ 
-      error: 'Failed to send message'
-    })
+    const { statusCode, body } = getErrorResponse(error, 'Failed to send message')
+    return res.status(statusCode).json(body)
   }
 }
