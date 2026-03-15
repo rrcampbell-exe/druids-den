@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import ReservationCard, { formatDate, formatDateTime, calculateNights } from '../../../src/pages/dashboard/ReservationCard'
 
 describe('ReservationCard', () => {
@@ -514,8 +514,9 @@ describe('ReservationCard', () => {
       expect(screen.queryByText('Maximum 10 guests total allowed')).not.toBeInTheDocument()
     })
 
-    it('calls onEdit when valid edit is submitted', () => {
+    it('calls onEdit when valid edit is submitted', async () => {
       const editableReservation = { ...mockApprovedReservation }
+      mockHandlers.onEdit.mockResolvedValueOnce()
       render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
       
       const editButton = screen.getByText('✎ Edit Reservation')
@@ -527,7 +528,9 @@ describe('ReservationCard', () => {
       const updateButton = screen.getByText('Save Changes')
       fireEvent.click(updateButton)
       
-      expect(mockHandlers.onEdit).toHaveBeenCalled()
+      await waitFor(() => {
+        expect(mockHandlers.onEdit).toHaveBeenCalled()
+      })
     })
 
     it('cancels edit form when Cancel clicked', () => {

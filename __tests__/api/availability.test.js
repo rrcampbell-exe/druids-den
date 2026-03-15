@@ -1,0 +1,89 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import handler from '../../api/availability'
+
+vi.mock('../../api/utils/db.js', () => ({
+  prisma: {
+    reservation: {
+      findMany: vi.fn(),
+    },
+  },
+}))
+
+import { prisma } from '../../api/utils/db.js'
+
+describe('availability API', () => {
+  let req
+  let res
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    req = { method: 'GET' }
+    res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn().mockReturnThis(),
+    }
+  })
+
+  it('returns reservation availability for approved and pending reservations', async () => {
+    prisma.reservation.findMany.mockResolvedValue([
+      {
+        id: 'res-1',
+        checkIn: new Date('2026-06-01T00:00:00.000Z'),
+        checkOut: new Date('2026-06-03T00:00:00.000Z'),
+        status: 'APPROVED',
+        isOwnerReservation: false,
+      },
+    ])
+
+    await handler(req, res)
+
+    expect(prisma.reservation.findMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        status: {
+          in: ['APPROVED', 'PENDING'],
+        },
+      },
+      select: {
+        id: true,
+        checkIn: true,
+        checkOut: true,
+        status: true,
+        isOwnerReservation: true,
+      },
+      orderBy: {
+        checkIn: 'asc',
+      },
+    })
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({
+      reservations: [
+        {
+          id: 'res-1',
+          checkIn: '2026-06-01',
+          checkOut: '2026-06-03',
+          status: 'approved',
+          isOwnerReservation: false,
+        },
+      ],
+    })
+  })
+
+  it('rejects unsupported methods', async () => {
+    req.method = 'POST'
+
+    await handler(req, res)
+
+    expect(res.status).toHaveBeenCalledWith(405)
+    expect(res.json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+  })
+
+  it('returns a 500 when the query fails', async () => {
+    prisma.reservation.findMany.mockRejectedValue(new Error('db down'))
+
+    await handler(req, res)
+
+    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch reservation availability' })
+  })
+})

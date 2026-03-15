@@ -1,31 +1,90 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router'
+
+// Use vi.hoisted so the mockUser object has a stable reference across renders.
+// Without this, useUser() returns a new object on every render, which causes
+// useEffect([user]) in Reservations.jsx to fire infinitely.
+const { mockUser } = vi.hoisted(() => ({
+  mockUser: {
+    firstName: 'Test',
+    lastName: 'User',
+    primaryEmailAddress: { emailAddress: 'owner@example.com' },
+    primaryPhoneNumber: null,
+  },
+}))
+
+vi.mock('@clerk/react', () => ({
+  useAuth: () => ({ getToken: async () => 'mock-token' }),
+  useUser: () => ({ user: mockUser }),
+}))
+
+vi.mock('../../src/utils/authHeaders', () => ({
+  buildAuthHeaders: vi.fn().mockResolvedValue({ 'Content-Type': 'application/json' }),
+}))
+
+vi.mock('../../src/components', () => ({
+  Coelbren: ({ children, renderAs: Tag = 'div', ...props }) => <Tag {...props}>{children}</Tag>,
+  Flower: () => <div>Flower</div>,
+  Leaf: () => <div>Leaf</div>,
+  Awen: () => <span>Awen</span>,
+  PageNav: () => <nav>PageNav</nav>,
+  DatePicker: ({ label, checkInValue, checkOutValue, onCheckInChange, onCheckOutChange }) => (
+    <div>
+      <label htmlFor='checkIn'>{label} Check In</label>
+      <input id='checkIn' name='checkIn' value={checkInValue} onChange={onCheckInChange} />
+      <label htmlFor='checkOut'>{label} Check Out</label>
+      <input id='checkOut' name='checkOut' value={checkOutValue} onChange={onCheckOutChange} />
+    </div>
+  ),
+  Modal: ({ isOpen, title, children }) => (isOpen ? <div><h2>{title}</h2>{children}</div> : null),
+  AuthHeader: () => <div>Signed in as</div>,
+}))
+
 import Reservations from '../../src/pages/Reservations'
+
+const renderReservations = async () => {
+  render(
+    <BrowserRouter>
+      <Reservations />
+    </BrowserRouter>,
+  )
+
+  await waitFor(() => {
+    expect(global.fetch).toHaveBeenCalledWith('/api/availability')
+  })
+}
+
+// Convenience: set both date fields via fireEvent (controlled inputs)
+const setDates = (checkIn, checkOut) => {
+  fireEvent.change(screen.getByLabelText('Dates of Reservation Check In'), {
+    target: { name: 'checkIn', value: checkIn },
+  })
+  fireEvent.change(screen.getByLabelText('Dates of Reservation Check Out'), {
+    target: { name: 'checkOut', value: checkOut },
+  })
+}
 
 describe('Reservations', () => {
   let fetchSpy
 
   beforeEach(() => {
-    // Mock scrollIntoView for input elements
     Element.prototype.scrollIntoView = vi.fn()
-    
     fetchSpy = vi.spyOn(global, 'fetch')
-    
-    // Mock reservations API response
-    fetchSpy.mockResolvedValueOnce({
+    fetchSpy.mockResolvedValue({
       ok: true,
       json: async () => ({
         reservations: [
           {
             id: 1,
-            checkIn: '2026-06-10T00:00:00.000Z',
-            checkOut: '2026-06-12T00:00:00.000Z',
-            status: 'APPROVED'
-          }
-        ]
-      })
+            checkIn: '2026-06-10',
+            checkOut: '2026-06-12',
+            status: 'approved',
+            isOwnerReservation: false,
+          },
+        ],
+      }),
     })
   })
 
@@ -34,350 +93,438 @@ describe('Reservations', () => {
     vi.restoreAllMocks()
   })
 
-  it('renders reservation form', async () => {
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
+  it('renders the reservation form for signed-in guests', async () => {
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith('/api/availability')
+    })
+
     expect(screen.getByText('Reservations')).toBeInTheDocument()
     expect(screen.getByText('Your Northwoods Retreat Awaits')).toBeInTheDocument()
+    expect(screen.getByText('Signed in as')).toBeInTheDocument()
     expect(screen.getByLabelText('First Name *')).toBeInTheDocument()
     expect(screen.getByLabelText('Last Name *')).toBeInTheDocument()
     expect(screen.getByLabelText('Email Address *')).toBeInTheDocument()
     expect(screen.getByLabelText('Phone Number *')).toBeInTheDocument()
   })
 
-  it('loads reservations on mount', async () => {
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
+  it('loads public availability on mount', async () => {
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
     await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledWith('/api/reservations')
+      expect(fetchSpy).toHaveBeenCalledWith('/api/availability')
     })
   })
 
-  it('handles reservations fetch error', async () => {
+  it('handles availability fetch error gracefully', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     fetchSpy.mockReset()
     fetchSpy.mockRejectedValue(new Error('Network error'))
-    
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
+
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error loading reservations:',
-        expect.any(Error)
-      )
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error loading reservations:', expect.any(Error))
     })
   })
 
-  it('validates email format', async () => {
-    const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    const emailInput = screen.getByLabelText('Email Address *')
-    
-    await user.type(emailInput, 'invalid-email')
-    await user.tab()
-    
-    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
+  it('prefills the authenticated email and keeps it read-only', async () => {
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
+    const emailInput = await screen.findByLabelText('Email Address *')
+    expect(emailInput).toHaveValue('owner@example.com')
+    expect(emailInput).toHaveAttribute('readonly')
   })
 
-  it('accepts valid email', async () => {
-    const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    const emailInput = screen.getByLabelText('Email Address *')
-    
-    await user.type(emailInput, 'valid@example.com')
-    await user.tab()
-    
-    expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument()
+  it('shows the linked-account note for the email field', async () => {
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/availability'))
+
+    expect(
+      screen.getByText('Your reservation will be linked to this approved account email.'),
+    ).toBeInTheDocument()
   })
 
-  it('validates phone format', async () => {
+  it('formats the phone number input', async () => {
     const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
+
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
     const phoneInput = screen.getByLabelText('Phone Number *')
-    
+    await user.clear(phoneInput)
+    await user.type(phoneInput, '5551234567')
+
+    expect(phoneInput).toHaveValue('(555) 123-4567')
+  })
+
+  it('validates phone format on blur', async () => {
+    const user = userEvent.setup()
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
+    const phoneInput = screen.getByLabelText('Phone Number *')
     await user.type(phoneInput, '123')
     await user.tab()
-    
+
     expect(screen.getByText('Please enter a valid 10-digit US phone number')).toBeInTheDocument()
   })
 
-  it('formats phone number', async () => {
+  it('accepts valid phone without showing an error', async () => {
     const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    const phoneInput = screen.getByLabelText('Phone Number *')
-    
-    await user.type(phoneInput, '5551234567')
-    
-    expect(phoneInput.value).toBe('(555) 123-4567')
-  })
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
 
-  it('accepts valid phone number', async () => {
-    const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
     const phoneInput = screen.getByLabelText('Phone Number *')
-    
     await user.type(phoneInput, '5551234567')
     await user.tab()
-    
-    expect(screen.queryByText('Please enter a valid 10-digit US phone number')).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Please enter a valid 10-digit US phone number'),
+    ).not.toBeInTheDocument()
   })
 
-  it('updates form fields on input', async () => {
+  it('updates first and last name on input', async () => {
     const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
     const firstNameInput = screen.getByLabelText('First Name *')
     const lastNameInput = screen.getByLabelText('Last Name *')
-    
+    await user.clear(firstNameInput)
     await user.type(firstNameInput, 'John')
+    await user.clear(lastNameInput)
     await user.type(lastNameInput, 'Doe')
-    
-    expect(firstNameInput.value).toBe('John')
-    expect(lastNameInput.value).toBe('Doe')
+
+    expect(firstNameInput).toHaveValue('John')
+    expect(lastNameInput).toHaveValue('Doe')
   })
 
   it('updates adults and children count', async () => {
     const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
     const adultsInput = screen.getByLabelText('Adults *')
     const childrenInput = screen.getByLabelText('Children')
-    
     await user.clear(adultsInput)
     await user.type(adultsInput, '2')
+    await user.clear(childrenInput)
     await user.type(childrenInput, '1')
-    
-    expect(adultsInput.value).toBe('2')
-    expect(childrenInput.value).toBe('1')
+
+    expect(adultsInput).toHaveValue(2)
+    expect(childrenInput).toHaveValue(1)
   })
 
-  it('updates special requests', async () => {
+  it('updates special requests textarea', async () => {
     const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
     const textarea = screen.getByLabelText(/Anything else we should know/)
-    
     await user.type(textarea, 'Early check-in please')
-    
-    expect(textarea.value).toBe('Early check-in please')
+
+    expect(textarea).toHaveValue('Early check-in please')
   })
 
-  it('prevents submission with invalid email', async () => {
+  it('prevents submission when required fields are missing', async () => {
     const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    // Fill required fields with invalid email
-    await user.type(screen.getByLabelText('First Name *'), 'John')
-    await user.type(screen.getByLabelText('Last Name *'), 'Doe')
-    await user.type(screen.getByLabelText('Email Address *'), 'invalid')
-    await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
-    
-    // Try to submit
-    const form = screen.getByRole('button', { name: /Submit Reservation Request/ })
-    await user.click(form)
-    
-    // Should show validation error
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
+    await user.clear(screen.getByLabelText('First Name *'))
+    await user.clear(screen.getByLabelText('Last Name *'))
+    await user.clear(screen.getByLabelText('Phone Number *'))
+    await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
     await waitFor(() => {
-      expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
+      expect(screen.getByText('First name is required')).toBeInTheDocument()
     })
+
+    expect(fetchSpy).not.toHaveBeenCalledWith('/api/send-reservation', expect.anything())
   })
 
-  it('prevents submission with invalid phone', async () => {
+  it('prevents submission with an invalid phone number', async () => {
     const user = userEvent.setup()
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    // Fill required fields with invalid phone
-    await user.type(screen.getByLabelText('First Name *'), 'John')
-    await user.type(screen.getByLabelText('Last Name *'), 'Doe')
-    await user.type(screen.getByLabelText('Email Address *'), 'john@example.com')
-    await user.type(screen.getByLabelText('Phone Number *'), '123')
-    
-    // Try to submit
-    const form = screen.getByRole('button', { name: /Submit Reservation Request/ })
-    await user.click(form)
-    
-    // Should show validation error
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
+    const phoneInput = screen.getByLabelText('Phone Number *')
+    await user.clear(phoneInput)
+    await user.type(phoneInput, '123')
+    await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
     await waitFor(() => {
       expect(screen.getByText('Please enter a valid 10-digit US phone number')).toBeInTheDocument()
     })
+
+    expect(fetchSpy).not.toHaveBeenCalledWith('/api/send-reservation', expect.anything())
   })
 
-  it('renders navigation', () => {
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    expect(screen.getByText(/Go Back/)).toBeInTheDocument()
+  it('renders page sections', async () => {
+    await renderReservations()
+
+    const headings = screen.getAllByRole('heading', { level: 2 })
+    const headingTexts = headings.map((h) => h.textContent)
+    expect(headingTexts).toContain('Your Information')
+    expect(headingTexts).toContain('Reservation Details')
+    expect(headingTexts).toContain('Additional Notes')
   })
 
-  it('renders page sections', () => {
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    const sections = screen.getAllByRole('heading', { level: 2 })
-    const sectionTexts = sections.map(s => s.textContent)
-    
-    expect(sectionTexts).toContain('Your Information')
-    expect(sectionTexts).toContain('Reservation Details')
-    expect(sectionTexts).toContain('Additional Notes')
-  })
+  it('includes disclaimer text', async () => {
+    await renderReservations()
 
-  it('includes disclaimer text', () => {
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
     expect(screen.getByText(/By submitting this form/)).toBeInTheDocument()
   })
 
-  it('renders date picker component', () => {
-    render(<BrowserRouter><Reservations /></BrowserRouter>)
-    
-    expect(screen.getByText(/Dates of Reservation/)).toBeInTheDocument()
+  it('renders the date picker component', async () => {
+    await renderReservations()
+
+    expect(screen.getByText('Dates of Reservation Check In')).toBeInTheDocument()
   })
 
   describe('Form submission', () => {
-    it('successfully submits valid reservation', async () => {
-      const user = userEvent.setup()
-      
-      // Mock successful submission
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ blackoutDates: [] })
-      }).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true, reservationId: 'res-123' })
+    // Helper: mock fetch to route submission calls separately from availability
+    const mockSubmitFetch = (submitResponse) => {
+      fetchSpy.mockImplementation((url) => {
+        if (url === '/api/send-reservation') {
+          return Promise.resolve(submitResponse)
+        }
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ reservations: [] }),
+        })
       })
-      
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      // Fill all required fields
-      await user.type(screen.getByLabelText('First Name *'), 'John')
-      await user.type(screen.getByLabelText('Last Name *'), 'Doe')
-      await user.type(screen.getByLabelText('Email Address *'), 'john@example.com')
-      await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
-      
-      // Submit form
-      const submitButton = screen.getByRole('button', { name: /Submit Reservation Request/ })
-      await user.click(submitButton)
-      
-      // Should attempt submission (though form might prevent it without dates)
-      expect(submitButton).toBeInTheDocument()
+    }
+
+    it('does not POST when required fields are empty', async () => {
+      const user = userEvent.setup()
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/availability'))
+      await user.clear(screen.getByLabelText('First Name *'))
+      await user.clear(screen.getByLabelText('Last Name *'))
+
+      await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
+      expect(fetchSpy).not.toHaveBeenCalledWith('/api/send-reservation', expect.anything())
     })
 
-    it('prevents submission with empty fields', async () => {
+    it('POSTs to /api/send-reservation with a fully valid form', async () => {
       const user = userEvent.setup()
-      
-      fetchSpy.mockResolvedValueOnce({
+      mockSubmitFetch({
         ok: true,
-        json: async () => ({ blackoutDates: [] })
+        json: async () => ({ success: true, reservationId: 'res-123' }),
       })
-      
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const submitButton = screen.getByRole('button', { name: /Submit Reservation Request/i })
-      await user.click(submitButton)
-      
-      // Should not submit if required fields are empty
-      expect(fetchSpy).not.toHaveBeenCalledWith('/api/send-reservation', expect.anything())
+
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/availability'))
+      await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
+      setDates('2026-07-15', '2026-07-20')
+
+      await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
+      await waitFor(() => {
+        expect(fetchSpy).toHaveBeenCalledWith('/api/send-reservation', expect.any(Object))
+      })
+    })
+
+    it('shows success modal after successful submission', async () => {
+      const user = userEvent.setup()
+      mockSubmitFetch({
+        ok: true,
+        json: async () => ({ success: true }),
+      })
+
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/availability'))
+      await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
+      setDates('2026-07-15', '2026-07-20')
+
+      await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Reservation Request Received!')).toBeInTheDocument()
+      })
+    })
+
+    it('shows error modal on server error', async () => {
+      const user = userEvent.setup()
+      mockSubmitFetch({
+        ok: false,
+        status: 500,
+        json: async () => ({ error: 'Internal server error' }),
+      })
+
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/availability'))
+      await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
+      setDates('2026-07-15', '2026-07-20')
+
+      await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Unable to Complete Request')).toBeInTheDocument()
+      })
+    })
+
+    it('shows date conflict message on 409 response', async () => {
+      const user = userEvent.setup()
+      mockSubmitFetch({
+        ok: false,
+        status: 409,
+        json: async () => ({ message: 'These dates are no longer available.' }),
+      })
+
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith('/api/availability'))
+      await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
+      setDates('2026-07-15', '2026-07-20')
+
+      await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('These dates are no longer available.')).toBeInTheDocument()
+      })
     })
   })
 
   describe('Guest count validation', () => {
-    it('limits adults to maximum', async () => {
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const adultsInput = screen.getByLabelText('Adults *')
-      expect(adultsInput).toHaveAttribute('max', '6')
+    it('limits adults to a maximum of 6', async () => {
+      await renderReservations()
+
+      expect(screen.getByLabelText('Adults *')).toHaveAttribute('max', '6')
     })
 
-    it('requires at least one adult', () => {
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const adultsInput = screen.getByLabelText('Adults *')
-      expect(adultsInput).toHaveAttribute('min', '1')
+    it('requires at least one adult', async () => {
+      await renderReservations()
+
+      expect(screen.getByLabelText('Adults *')).toHaveAttribute('min', '1')
     })
 
-    it('allows zero children', () => {
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const childrenInput = screen.getByLabelText('Children')
-      expect(childrenInput).toHaveAttribute('min', '0')
+    it('allows zero children', async () => {
+      await renderReservations()
+
+      expect(screen.getByLabelText('Children')).toHaveAttribute('min', '0')
     })
 
     it('prevents submission when total guests exceed 10', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      await waitFor(() => {
-        expect(fetchSpy).toHaveBeenCalledTimes(1)
-      })
-      
-      // Fill out valid form data
-      const firstNameInput = screen.getByLabelText('First Name *')
-      const lastNameInput = screen.getByLabelText('Last Name *')
-      const emailInput = screen.getByLabelText('Email Address *')
-      const phoneInput = screen.getByLabelText('Phone Number *')
-      const adultsInput = screen.getByLabelText('Adults *')
-      const childrenInput = screen.getByLabelText('Children')
-      
-      await user.type(firstNameInput, 'John')
-      await user.type(lastNameInput, 'Doe')
-      await user.type(emailInput, 'john@example.com')
-      await user.type(phoneInput, '5551234567')
-      
-      // Set guests to exceed 10 total (6 adults + 5 children = 11)
-      await user.clear(adultsInput)
-      await user.type(adultsInput, '6')
-      await user.type(childrenInput, '5')
-      
-      const submitButton = screen.getByRole('button', { name: /Submit Reservation Request/i })
-      await user.click(submitButton)
-      
-      // Should show validation error
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1))
+
+      await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
+      // 6 adults + 5 children = 11
+      await user.clear(screen.getByLabelText('Adults *'))
+      await user.type(screen.getByLabelText('Adults *'), '6')
+      await user.clear(screen.getByLabelText('Children'))
+      await user.type(screen.getByLabelText('Children'), '5')
+
+      await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
       await waitFor(() => {
         expect(screen.getByText('Maximum 10 guests total allowed')).toBeInTheDocument()
       })
-      
-      // Should not submit
-      expect(fetchSpy).toHaveBeenCalledTimes(1) // Only the initial load, no POST
+
+      // Only the initial availability fetch — no POST
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
     })
 
-    it('allows submission with exactly 10 total guests', async () => {
+    it('does not show guest limit error with exactly 10 guests', async () => {
       const user = userEvent.setup()
-      
-      // Mock successful submission
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ blackoutDates: [] })
-      }).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true, reservationId: 'res-123' })
-      })
-      
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      // Fill out valid form data with exactly 10 guests
-      await user.type(screen.getByLabelText('First Name *'), 'John')
-      await user.type(screen.getByLabelText('Last Name *'), 'Doe')
-      await user.type(screen.getByLabelText('Email Address *'), 'john@example.com')
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1))
+
       await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
-      
-      const adultsInput = screen.getByLabelText('Adults *')
-      const childrenInput = screen.getByLabelText('Children')
-      
-      // Set guests to exactly 10 total (6 adults + 4 children)
-      await user.clear(adultsInput)
-      await user.type(adultsInput, '6')
-      await user.type(childrenInput, '4')
-      
-      const submitButton = screen.getByRole('button', { name: /Submit Reservation Request/i })
-      await user.click(submitButton)
-      
-      // Should submit (though will fail on date validation, but that's OK - 
-      // we're just verifying guest count validation passes)
+      // 6 adults + 4 children = 10
+      await user.clear(screen.getByLabelText('Adults *'))
+      await user.type(screen.getByLabelText('Adults *'), '6')
+      await user.clear(screen.getByLabelText('Children'))
+      await user.type(screen.getByLabelText('Children'), '4')
+
+      await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
+
       await waitFor(() => {
-        // If total guest validation failed, we'd see the error message
         expect(screen.queryByText('Maximum 10 guests total allowed')).not.toBeInTheDocument()
       })
     })
@@ -386,268 +533,206 @@ describe('Reservations', () => {
   describe('Special requests', () => {
     it('accepts text input for special requests', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       const textarea = screen.getByLabelText(/Anything else we should know/)
       await user.type(textarea, 'Please provide extra pillows')
-      
-      expect(textarea.value).toBe('Please provide extra pillows')
+
+      expect(textarea).toHaveValue('Please provide extra pillows')
     })
 
-    it('allows empty special requests', () => {
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const textarea = screen.getByLabelText(/Anything else we should know/)
-      expect(textarea.value).toBe('')
-    })
-  })
+    it('starts with an empty special requests field', async () => {
+      await renderReservations()
 
-  describe('Email formatting edge cases', () => {
-    it('accepts email with plus addressing', async () => {
-      const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const emailInput = screen.getByLabelText('Email Address *')
-      await user.type(emailInput, 'user+tag@example.com')
-      await user.tab()
-      
-      expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument()
-    })
-
-    it('accepts email with subdomain', async () => {
-      const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const emailInput = screen.getByLabelText('Email Address *')
-      await user.type(emailInput, 'user@mail.example.com')
-      await user.tab()
-      
-      expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument()
-    })
-
-    it('rejects email without domain', async () => {
-      const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const emailInput = screen.getByLabelText('Email Address *')
-      await user.type(emailInput, 'user@')
-      await user.tab()
-      
-      await waitFor(() => {
-        expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
-      })
-    })
-
-    it('rejects email without @', async () => {
-      const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      const emailInput = screen.getByLabelText('Email Address *')
-      await user.type(emailInput, 'userexample.com')
-      await user.tab()
-      
-      await waitFor(() => {
-        expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
-      })
+      expect(screen.getByLabelText(/Anything else we should know/)).toHaveValue('')
     })
   })
 
   describe('Phone formatting edge cases', () => {
     it('formats phone with parentheses and dashes', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '1234567890')
-      
-      expect(phoneInput.value).toBe('(123) 456-7890')
+
+      expect(phoneInput).toHaveValue('(123) 456-7890')
     })
 
     it('strips non-numeric characters during formatting', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '(555) 123-4567')
-      
-      expect(phoneInput.value).toBe('(555) 123-4567')
+
+      expect(phoneInput).toHaveValue('(555) 123-4567')
     })
 
     it('prevents phone numbers longer than 10 digits', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '12345678901234')
-      
-      // Should only keep first 10 digits
-      expect(phoneInput.value).toBe('(123) 456-7890')
+
+      expect(phoneInput).toHaveValue('(123) 456-7890')
     })
 
-    it('rejects phone with fewer than 10 digits', async () => {
+    it('rejects phone with fewer than 10 digits on blur', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '555')
       await user.tab()
-      
+
       await waitFor(() => {
-        expect(screen.getByText('Please enter a valid 10-digit US phone number')).toBeInTheDocument()
+        expect(
+          screen.getByText('Please enter a valid 10-digit US phone number'),
+        ).toBeInTheDocument()
       })
     })
   })
 
   describe('Form validation edge cases', () => {
-    it('allows submission after fixing validation errors', async () => {
+    it('clears phone validation error when the field is corrected', async () => {
       const user = userEvent.setup()
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
 
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      await waitFor(() => {
-        expect(fetchSpy).toHaveBeenCalledTimes(1)
-      })
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalled())
 
-      // Try to submit with invalid email first
-      const emailInput = screen.getByLabelText('Email Address *')
-      await user.type(emailInput, 'invalid-email')
-      await user.tab()
-      
-      await waitFor(() => {
-        expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
-      })
-
-      // Fix the email
-      await user.clear(emailInput)
-      await user.type(emailInput, 'valid@example.com')
+      const phoneInput = screen.getByLabelText('Phone Number *')
+      await user.type(phoneInput, '123')
       await user.tab()
 
       await waitFor(() => {
-        expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument()
+        expect(
+          screen.getByText('Please enter a valid 10-digit US phone number'),
+        ).toBeInTheDocument()
+      })
+
+      await user.clear(phoneInput)
+      await user.type(phoneInput, '5551234567')
+      await user.tab()
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Please enter a valid 10-digit US phone number'),
+        ).not.toBeInTheDocument()
       })
     })
 
     it('maintains form state when navigating between fields', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       await waitFor(() => expect(fetchSpy).toHaveBeenCalled())
 
       const firstNameInput = screen.getByLabelText('First Name *')
-      const emailInput = screen.getByLabelText('Email Address *')
-      
-      await user.type(firstNameInput, 'John')
-      await user.click(emailInput)
-      await user.type(emailInput, 'john@example.com')
-      await user.click(firstNameInput)
-      
-      expect(firstNameInput.value).toBe('John')
-      expect(emailInput.value).toBe('john@example.com')
-    })
-
-    it('handles empty reservations array', async () => {
-      fetchSpy.mockClear()
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ reservations: [] })
-      })
-      
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      await waitFor(() => {
-        expect(screen.getByText('Reservations')).toBeInTheDocument()
-      })
-    })
-
-    it('handles malformed reservations response gracefully', async () => {
-      fetchSpy.mockClear()
-      fetchSpy.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({}) // No reservations property
-      })
-      
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      await waitFor(() => {
-        expect(screen.getByText('Reservations')).toBeInTheDocument()
-      })
-    })
-
-    it('clears validation errors when field is corrected', async () => {
-      const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      await waitFor(() => expect(fetchSpy).toHaveBeenCalled())
-
-      const emailInput = screen.getByLabelText('Email Address *')
-      
-      // Enter invalid email
-      await user.type(emailInput, 'invalid')
-      await user.tab()
-      
-      await waitFor(() => {
-        expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
-      })
-      
-      // Correct the email
-      await user.clear(emailInput)
-      await user.type(emailInput, 'valid@example.com')
-      await user.tab()
-      
-      await waitFor(() => {
-        expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument()
-      })
-    })
-
-    it('displays phone validation error before clearing', async () => {
-      const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
-      await waitFor(() => expect(fetchSpy).toHaveBeenCalled())
-
       const phoneInput = screen.getByLabelText('Phone Number *')
-      
-      // Enter invalid phone
-      await user.type(phoneInput, '123')
-      await user.tab()
-      
-      await waitFor(() => {
-        expect(screen.getByText('Please enter a valid 10-digit US phone number')).toBeInTheDocument()
+
+      await user.clear(firstNameInput)
+      await user.type(firstNameInput, 'Jane')
+      await user.click(phoneInput)
+      await user.type(phoneInput, '5559876543')
+      await user.click(firstNameInput)
+
+      expect(firstNameInput).toHaveValue('Jane')
+      expect(phoneInput).toHaveValue('(555) 987-6543')
+    })
+
+    it('handles an empty reservations array gracefully', async () => {
+      fetchSpy.mockClear()
+      fetchSpy.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ reservations: [] }),
       })
-      
-      // Clear and enter valid phone
-      await user.clear(phoneInput)
-      await user.type(phoneInput, '5551234567')
-      await user.tab()
-      
+
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       await waitFor(() => {
-        expect(screen.queryByText('Please enter a valid 10-digit US phone number')).not.toBeInTheDocument()
+        expect(screen.getByText('Reservations')).toBeInTheDocument()
       })
     })
 
-    it('accepts input in all form fields', async () => {
+    it('handles a malformed availability response gracefully', async () => {
+      fetchSpy.mockClear()
+      fetchSpy.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({}), // no reservations key
+      })
+
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText('Reservations')).toBeInTheDocument()
+      })
+    })
+
+    it('accepts input across all user-editable form fields', async () => {
       const user = userEvent.setup()
-      render(<BrowserRouter><Reservations /></BrowserRouter>)
-      
+      render(
+        <BrowserRouter>
+          <Reservations />
+        </BrowserRouter>,
+      )
+
       await waitFor(() => expect(fetchSpy).toHaveBeenCalled())
 
       const firstNameInput = screen.getByLabelText('First Name *')
       const lastNameInput = screen.getByLabelText('Last Name *')
-      const emailInput = screen.getByLabelText('Email Address *')
       const phoneInput = screen.getByLabelText('Phone Number *')
       const specialRequestsInput = screen.getByLabelText('Anything else we should know? (Optional)')
-      
+
+      await user.clear(firstNameInput)
       await user.type(firstNameInput, 'Jane')
+      await user.clear(lastNameInput)
       await user.type(lastNameInput, 'Smith')
-      await user.type(emailInput, 'jane@example.com')
+      await user.clear(phoneInput)
       await user.type(phoneInput, '5559876543')
       await user.type(specialRequestsInput, 'Celebrating anniversary')
-      
-      expect(firstNameInput.value).toBe('Jane')
-      expect(lastNameInput.value).toBe('Smith')
-      expect(emailInput.value).toBe('jane@example.com')
-      expect(phoneInput.value).toBe('(555) 987-6543')
-      expect(specialRequestsInput.value).toBe('Celebrating anniversary')
+
+      expect(firstNameInput).toHaveValue('Jane')
+      expect(lastNameInput).toHaveValue('Smith')
+      expect(phoneInput).toHaveValue('(555) 987-6543')
+      expect(specialRequestsInput).toHaveValue('Celebrating anniversary')
     })
   })
 })

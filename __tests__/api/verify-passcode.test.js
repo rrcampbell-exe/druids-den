@@ -93,6 +93,17 @@ describe('verify-passcode API', () => {
   })
 
   describe('Passcode Validation', () => {
+    it('returns 400 for non-spooktoberfest pages', () => {
+      req.body = { passcode: 'test-passcode-123', page: 'reservations' }
+
+      handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Passcode auth is only available for Spooktoberfest'
+      })
+    })
+
     it('returns 200 with token for correct passcode', () => {
       req.body = { passcode: 'test-passcode-123', page: 'spooktoberfest' }
       

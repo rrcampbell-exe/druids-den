@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import ProtectedRoute from '../../src/components/ProtectedRoute'
 
 // Mock PasscodePrompt component
@@ -100,9 +101,10 @@ describe('ProtectedRoute', () => {
   })
 
   it('shows protected content after successful authentication', async () => {
+    const user = userEvent.setup()
     global.localStorage.getItem.mockReturnValue(null)
     
-    const { rerender } = render(
+    render(
       <ProtectedRoute>
         <div>Protected Content</div>
       </ProtectedRoute>
@@ -114,8 +116,9 @@ describe('ProtectedRoute', () => {
     })
     
     // Simulate successful login
-    const loginButton = screen.getByText('Mock Login')
-    loginButton.click()
+    await act(async () => {
+      await user.click(screen.getByText('Mock Login'))
+    })
     
     await waitFor(() => {
       expect(screen.getByText('Protected Content')).toBeInTheDocument()

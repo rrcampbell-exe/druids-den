@@ -2,6 +2,23 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
+vi.mock('../../api/utils/auth.js', () => ({
+  requireRole: vi.fn().mockResolvedValue({
+    user: {
+      id: 'owner-1',
+      email: 'owner@example.com',
+      role: 'OWNER',
+      accountStatus: 'APPROVED',
+    },
+  }),
+  getErrorResponse: (error, fallbackMessage = 'Internal server error') => ({
+    statusCode: error?.statusCode || 500,
+    body: {
+      error: error?.message || fallbackMessage,
+    },
+  }),
+}))
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -107,7 +124,7 @@ describe('reservations/[id] API', () => {
         data: {
           status: 'APPROVED',
           statusChangedAt: expect.any(Date),
-          statusChangedById: null
+          statusChangedById: 'owner-1'
         }
       })
       expect(res.status).toHaveBeenCalledWith(200)
@@ -147,7 +164,7 @@ describe('reservations/[id] API', () => {
           status: 'DENIED',
           denialMessage: 'Not available',
           statusChangedAt: expect.any(Date),
-          statusChangedById: null
+          statusChangedById: 'owner-1'
         }
       })
     })
@@ -294,7 +311,7 @@ describe('reservations/[id] API', () => {
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({ 
-        error: 'Failed to update reservation'
+        error: 'Record not found'
       })
     })
 

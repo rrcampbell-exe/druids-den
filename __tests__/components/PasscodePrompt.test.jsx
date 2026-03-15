@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router'
 import PasscodePrompt from '../../src/components/PasscodePrompt'
@@ -186,8 +186,15 @@ describe('PasscodePrompt', () => {
     expect(input).toBeDisabled()
     
     // Resolve the promise
-    resolvePromise({
-      json: async () => ({ success: true, token: 'token' }),
+    await act(async () => {
+      resolvePromise({
+        json: async () => ({ success: true, token: 'token' }),
+      })
+      await mockPromise
+    })
+
+    await waitFor(() => {
+      expect(mockOnSuccess).toHaveBeenCalled()
     })
   })
 

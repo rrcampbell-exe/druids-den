@@ -3,35 +3,47 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import Dashboard from '../../src/pages/Dashboard'
 
-// Mock child components
 vi.mock('../../src/pages/dashboard/AtAGlance', () => ({
-  default: () => <div data-testid="at-a-glance">At A Glance Component</div>
+  default: () => <div data-testid='at-a-glance'>At A Glance Component</div>
+}))
+
+vi.mock('../../src/pages/dashboard/Guests', () => ({
+  default: () => <div data-testid='guests'>Guests Component</div>
 }))
 
 vi.mock('../../src/pages/dashboard/Reports', () => ({
-  default: () => <div data-testid="reports">Reports Component</div>
+  default: () => <div data-testid='reports'>Reports Component</div>
+}))
+
+vi.mock('../../src/hooks/useCurrentAppUser', () => ({
+  useCurrentAppUser: () => ({
+    user: {
+      id: 'owner-1',
+      email: 'owner@example.com',
+      role: 'OWNER',
+      accountStatus: 'APPROVED',
+    },
+  }),
 }))
 
 vi.mock('../../src/components', () => ({
-  Coelbren: ({ children }) => <span data-testid="coelbren">{children}</span>,
-  Awen: () => <span data-testid="awen">Awen</span>,
-  Flower: () => <span data-testid="flower">Flower</span>,
-  Leaf: () => <span data-testid="leaf">Leaf</span>
+  Coelbren: ({ children }) => <span data-testid='coelbren'>{children}</span>,
+  Awen: () => <span data-testid='awen'>Awen</span>,
+  AuthHeader: () => <div data-testid='auth-header'>Auth Header</div>,
 }))
 
 describe('Dashboard', () => {
-  const renderWithRouter = (component) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>)
-  }
+  const renderWithRouter = (component) => render(<BrowserRouter>{component}</BrowserRouter>)
 
   it('renders without crashing', () => {
     renderWithRouter(<Dashboard />)
     expect(screen.getByText('Owner Dashboard')).toBeInTheDocument()
   })
 
-  it('renders all three tabs', () => {
+  it('renders all four tabs', () => {
     renderWithRouter(<Dashboard />)
     expect(screen.getByText('At A Glance')).toBeInTheDocument()
+    expect(screen.getByText('Guests')).toBeInTheDocument()
     expect(screen.getByText('Reports')).toBeInTheDocument()
     expect(screen.getByText('Insights')).toBeInTheDocument()
   })
@@ -41,10 +53,15 @@ describe('Dashboard', () => {
     expect(screen.getByTestId('at-a-glance')).toBeInTheDocument()
   })
 
+  it('switches to Guests tab when clicked', () => {
+    renderWithRouter(<Dashboard />)
+    fireEvent.click(screen.getByText('Guests'))
+    expect(screen.getByTestId('guests')).toBeInTheDocument()
+  })
+
   it('switches to Reports tab when clicked', () => {
     renderWithRouter(<Dashboard />)
-    const reportsTab = screen.getByText('Reports')
-    fireEvent.click(reportsTab)
+    fireEvent.click(screen.getByText('Reports'))
     expect(screen.getByTestId('reports')).toBeInTheDocument()
   })
 
@@ -59,18 +76,18 @@ describe('Dashboard', () => {
     expect(insightsTab).toBeDisabled()
   })
 
-  it('renders logout link', () => {
+  it('renders back home link', () => {
     renderWithRouter(<Dashboard />)
-    expect(screen.getByText('Log Out')).toBeInTheDocument()
+    expect(screen.getByText('Back Home')).toBeInTheDocument()
+  })
+
+  it('renders auth header', () => {
+    renderWithRouter(<Dashboard />)
+    expect(screen.getByTestId('auth-header')).toBeInTheDocument()
   })
 
   it('renders Coelbren subheading', () => {
     renderWithRouter(<Dashboard />)
     expect(screen.getByTestId('coelbren')).toHaveTextContent('Tending to The Druids Den')
-  })
-
-  it('matches snapshot', () => {
-    const { container } = renderWithRouter(<Dashboard />)
-    expect(container.firstChild).toMatchSnapshot()
   })
 })

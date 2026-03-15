@@ -1,6 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/reservations'
 
+vi.mock('../../api/utils/auth.js', () => ({
+  requireRole: vi.fn().mockResolvedValue({
+    user: {
+      id: 'owner-1',
+      email: 'owner@example.com',
+      role: 'OWNER',
+      accountStatus: 'APPROVED',
+    },
+  }),
+  getErrorResponse: (error, fallbackMessage = 'Internal server error') => ({
+    statusCode: error?.statusCode || 500,
+    body: {
+      error: error?.message || fallbackMessage,
+    },
+  }),
+}))
+
 // Mock the database utility
 vi.mock('../../api/utils/db.js', () => ({
   prisma: {
@@ -115,7 +132,7 @@ describe('reservations API', () => {
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({
-        error: 'Failed to fetch reservations'
+        error: 'Database error'
       })
     })
   })
@@ -209,18 +226,40 @@ describe('reservations API', () => {
       })
     })
 
-    it('returns 400 when ownerEmail is missing', async () => {
+    it('uses the authenticated owner email when ownerEmail is missing', async () => {
       req.body = {
         checkIn: '2026-04-01',
         checkOut: '2026-04-05'
       }
 
+      prisma.reservation.create.mockResolvedValue({
+        id: 4,
+        checkIn: new Date('2026-04-01T00:00:00.000Z'),
+        checkOut: new Date('2026-04-05T00:00:00.000Z'),
+        adults: 2,
+        children: 0,
+        status: 'APPROVED',
+        isOwnerReservation: true,
+        submittedAt: new Date(),
+        statusChangedAt: new Date(),
+        guestFirstName: 'Owner',
+        guestLastName: 'Reservation',
+        guestEmail: 'owner@example.com',
+        guestPhone: '',
+        specialRequests: null,
+        ownerNotes: null,
+      })
+
       await handler(req, res)
 
-      expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'Owner email is required'
+      expect(prisma.reservation.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          userId: 'owner-1',
+          guestEmail: 'owner@example.com',
+          statusChangedById: 'owner-1',
+        })
       })
+      expect(res.status).toHaveBeenCalledWith(201)
     })
 
     it('handles database errors during creation', async () => {
@@ -236,7 +275,7 @@ describe('reservations API', () => {
 
       expect(res.status).toHaveBeenCalledWith(500)
       expect(res.json).toHaveBeenCalledWith({
-        error: 'Failed to create reservation'
+        error: 'Database error'
       })
     })
 
