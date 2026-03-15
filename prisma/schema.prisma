@@ -18,6 +18,9 @@ model User {
   lastName  String?  @map("last_name")
   phone     String?
   role      Role     @default(GUEST)
+  accountStatus          AccountStatus @default(PENDING_APPROVAL) @map("account_status")
+  accountStatusChangedAt DateTime?     @map("account_status_changed_at")
+  accountStatusChangedBy String?       @map("account_status_changed_by")
 
   // Communication preferences
   marketingOptIn          Boolean         @default(false) @map("marketing_opt_in")
@@ -40,6 +43,7 @@ model User {
 
   @@index([clerkId])
   @@index([email])
+  @@index([accountStatus])
   @@map("users")
 }
 
@@ -197,6 +201,13 @@ enum Role {
   GUEST
   ADMIN
   OWNER
+}
+
+enum AccountStatus {
+  PENDING_APPROVAL
+  APPROVED
+  DENIED
+  REVOKED
 }
 
 enum ContactMethod {
