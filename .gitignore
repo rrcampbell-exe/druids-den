@@ -15,6 +15,7 @@ dist-ssr
 # Environment variables
 .env
 .env.local
+.env.test
 
 # Editor directories and files
 .vscode/*
@@ -31,5 +32,9 @@ dist-ssr
 
 # Test coverage
 coverage/
+playwright-report/
+playwright-results/
+test-results/
+e2e/.auth/
 
 /src/generated/prisma
