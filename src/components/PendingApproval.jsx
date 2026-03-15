@@ -2,6 +2,7 @@ import { useAuth } from '@clerk/react'
 import { Link } from 'react-router'
 import './PendingApproval.scss'
 import { Flower, Leaf, Awen } from './'
+import { clearE2EAuthState, getE2EAuthState } from '../utils/e2eAuth'
 
 const statusContent = {
   PENDING_APPROVAL: {
@@ -24,6 +25,17 @@ const statusContent = {
 const PendingApproval = ({ accountStatus = 'PENDING_APPROVAL' }) => {
   const { signOut } = useAuth()
   const content = statusContent[accountStatus] || statusContent.PENDING_APPROVAL
+  const isE2EAuth = Boolean(getE2EAuthState())
+
+  const handleSignOut = () => {
+    if (isE2EAuth) {
+      clearE2EAuthState()
+      window.location.assign('/')
+      return
+    }
+
+    signOut()
+  }
 
   return (
     <div className='pending-approval-page'>
@@ -34,7 +46,7 @@ const PendingApproval = ({ accountStatus = 'PENDING_APPROVAL' }) => {
         <p>{content.detail}</p>
 
         <div className='pending-approval-actions'>
-          <button type='button' onClick={() => signOut()}>
+          <button type='button' onClick={handleSignOut}>
             Sign Out
           </button>
           <Link to='/'>

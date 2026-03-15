@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '@clerk/react'
 import { buildAuthHeaders } from '../utils/authHeaders'
+import { getE2EAuthState } from '../utils/e2eAuth'
 
 export const useCurrentAppUser = () => {
   const { isLoaded, isSignedIn, getToken } = useAuth()
+  const [e2eAuthState] = useState(() => getE2EAuthState())
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!e2eAuthState)
   const [error, setError] = useState('')
 
   const refresh = useCallback(async () => {
+    if (e2eAuthState?.user) {
+      setUser(e2eAuthState.user)
+      setLoading(false)
+      setError('')
+      return e2eAuthState.user
+    }
+
     if (!isLoaded) {
       return null
     }
@@ -58,7 +67,7 @@ export const useCurrentAppUser = () => {
     } finally {
       setLoading(false)
     }
-  }, [getToken, isLoaded, isSignedIn])
+  }, [e2eAuthState, getToken, isLoaded, isSignedIn])
 
   useEffect(() => {
     refresh()

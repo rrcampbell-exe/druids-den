@@ -7,9 +7,12 @@ import AtAGlance from './dashboard/AtAGlance'
 import Reports from './dashboard/Reports'
 import Guests from './dashboard/Guests'
 import { useCurrentAppUser } from '../hooks/useCurrentAppUser'
+import { getE2EAuthState } from '../utils/e2eAuth'
 
 const Dashboard = () => {
   const { getToken } = useAuth()
+  const e2eAuthState = getE2EAuthState()
+  const effectiveGetToken = e2eAuthState ? async () => null : getToken
   const { user: currentUser } = useCurrentAppUser()
   const [activeTab, setActiveTab] = useState('at-a-glance')
 
@@ -56,9 +59,9 @@ const Dashboard = () => {
       </div>
 
       <div className='dashboard-content'>
-        {activeTab === 'at-a-glance' && <AtAGlance currentUser={currentUser} getToken={getToken} />}
-        {activeTab === 'guests' && <Guests getToken={getToken} />}
-        {activeTab === 'reports' && <Reports getToken={getToken} />}
+        {activeTab === 'at-a-glance' && <AtAGlance currentUser={currentUser} getToken={effectiveGetToken} />}
+        {activeTab === 'guests' && <Guests getToken={effectiveGetToken} />}
+        {activeTab === 'reports' && <Reports getToken={effectiveGetToken} />}
         {activeTab === 'insights' && (
           <div className='placeholder-tab'>
             <h2>Insights</h2>

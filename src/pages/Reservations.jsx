@@ -5,10 +5,14 @@ import './Reservations.scss'
 import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal, AuthHeader } from '../components'
 import { validateReservationForm } from '../utils/formValidation'
 import { buildAuthHeaders } from '../utils/authHeaders'
+import { getE2EClerkLikeUser, getE2EAuthState } from '../utils/e2eAuth'
 
 const Reservations = () => {
   const { getToken } = useAuth()
   const { user } = useUser()
+  const e2eAuthState = getE2EAuthState()
+  const effectiveUser = getE2EClerkLikeUser() || user
+  const effectiveGetToken = e2eAuthState ? async () => null : getToken
   const firstNameRef = useRef(null)
   const lastNameRef = useRef(null)
   const emailRef = useRef(null)
@@ -61,16 +65,16 @@ const Reservations = () => {
   }
 
   useEffect(() => {
-    if (!user) return
+    if (!effectiveUser) return
 
     setFormData(prev => ({
       ...prev,
-      firstName: prev.firstName || user.firstName || '',
-      lastName: prev.lastName || user.lastName || '',
-      email: user.primaryEmailAddress?.emailAddress || prev.email,
-      phone: prev.phone || user.primaryPhoneNumber?.phoneNumber || ''
+      firstName: prev.firstName || effectiveUser.firstName || '',
+      lastName: prev.lastName || effectiveUser.lastName || '',
+      email: effectiveUser.primaryEmailAddress?.emailAddress || prev.email,
+      phone: prev.phone || effectiveUser.primaryPhoneNumber?.phoneNumber || ''
     }))
-  }, [user])
+  }, [effectiveUser])
 
   useEffect(() => {
      // Fetch blocked date ranges from the public availability endpoint
@@ -310,7 +314,7 @@ const Reservations = () => {
       // Send reservation email
       const response = await fetch('/api/send-reservation', {
         method: 'POST',
-        headers: await buildAuthHeaders(getToken, {
+        headers: await buildAuthHeaders(effectiveGetToken, {
           'Content-Type': 'application/json',
         }),
         body: JSON.stringify({

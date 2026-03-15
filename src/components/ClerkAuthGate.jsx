@@ -4,18 +4,22 @@ import PendingApproval from './PendingApproval'
 import { useCurrentAppUser } from '../hooks/useCurrentAppUser'
 import './ClerkAuthGate.scss'
 import { Flower, Leaf } from './'
+import { getE2EAuthState } from '../utils/e2eAuth'
 
 const ClerkAuthGate = ({ children, requireApproval = false, requiredRoles = [] }) => {
   const location = useLocation()
   const { isLoaded, isSignedIn } = useAuth()
   const { user, loading, error } = useCurrentAppUser()
+  const e2eAuthState = getE2EAuthState()
+  const authLoaded = e2eAuthState ? true : isLoaded
+  const signedIn = e2eAuthState ? true : isSignedIn
   const redirect = encodeURIComponent(`${location.pathname}${location.search}`)
 
-  if (!isLoaded) {
+  if (!authLoaded) {
     return null
   }
 
-  if (!isSignedIn) {
+  if (!signedIn) {
     return (
       <div className='clerk-auth-gate'>
         <div className='clerk-auth-card'>
