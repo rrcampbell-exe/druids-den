@@ -1,0 +1,43 @@
+.clerk-auth-gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.clerk-auth-card {
+  width: min(40rem, 100%);
+  text-align: center;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 1.5rem;
+  border: 2px solid rgba(70, 70, 69, 0.15);
+  box-shadow: 0 1.5rem 3rem rgba(70, 70, 69, 0.12);
+}
+
+.clerk-auth-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1.75rem 0;
+}
+
+.auth-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 10rem;
+  padding: 0.9rem 1.35rem;
+  border-radius: 999px;
+  background: #464645;
+  color: #fff;
+  text-decoration: none;
+}
+
+.auth-link-button.secondary {
+  background: transparent;
+  color: #464645;
+  border: 1px solid rgba(70, 70, 69, 0.3);
+}

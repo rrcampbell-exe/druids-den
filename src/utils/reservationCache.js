@@ -60,7 +60,9 @@ export const reservationCache = {
    * Fetch reservations with caching and request deduplication
    * @param {boolean} forceRefresh - Skip cache and fetch fresh data
    */
-  async fetch(forceRefresh = false) {
+  async fetch(options = {}) {
+    const { forceRefresh = false, headers } = options
+
     // Check cache first
     if (!forceRefresh) {
       const cached = this.get()
@@ -77,7 +79,9 @@ export const reservationCache = {
     // Create the fetch promise and store it
     const fetchPromise = (async () => {
       try {
-        const response = await fetch('/api/reservations')
+        const response = await fetch('/api/reservations', {
+          headers,
+        })
         if (!response.ok) {
           throw new Error('Failed to fetch reservations')
         }

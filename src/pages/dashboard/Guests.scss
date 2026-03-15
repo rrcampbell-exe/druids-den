@@ -1,0 +1,123 @@
+.guests-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.guests-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.refresh-button {
+  align-self: center;
+}
+
+.guest-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.guest-status-tabs button.active {
+  background: #464645;
+  color: #fff;
+}
+
+.guests-error {
+  color: #9f2b2b;
+}
+
+.guests-empty-state {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.guest-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+}
+
+.guest-card {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(70, 70, 69, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.guest-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.guest-card-top h3 {
+  margin: 0 0 0.3rem;
+}
+
+.guest-card-top p {
+  margin: 0;
+  word-break: break-word;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-pill.pending_approval {
+  background: rgba(212, 185, 66, 0.18);
+}
+
+.status-pill.approved {
+  background: rgba(40, 128, 74, 0.18);
+}
+
+.status-pill.denied,
+.status-pill.revoked {
+  background: rgba(159, 43, 43, 0.14);
+}
+
+.guest-meta {
+  margin: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.guest-meta div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.guest-meta dt {
+  font-weight: 700;
+}
+
+.guest-meta dd {
+  margin: 0;
+}
+
+.guest-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.guest-card-actions .secondary {
+  background: transparent;
+  border: 1px solid rgba(70, 70, 69, 0.2);
+}

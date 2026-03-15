@@ -1,0 +1,31 @@
+.pending-approval-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.pending-approval-card {
+  max-width: 42rem;
+  width: 100%;
+  padding: 2.5rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 2px solid rgba(70, 70, 69, 0.15);
+  border-radius: 1.5rem;
+  box-shadow: 0 1.5rem 3rem rgba(70, 70, 69, 0.12);
+}
+
+.pending-approval-actions {
+  margin-top: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pending-approval-actions button {
+  padding: 0.85rem 1.25rem;
+}
