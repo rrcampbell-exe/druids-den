@@ -1,11 +1,11 @@
-import { prisma } from '../utils/db.js'
-import { sendEmail } from '../utils/emailService.js'
-import { generateApprovalEmail } from '../utils/emailTemplates.js'
-import { generateDenialEmail, generateCancellationEmail, generateReservationModificationEmail } from '../utils/dashboardEmailTemplates.js'
-import { sanitizeDate } from '../utils/sanitize.js'
-import { calculateEstimatedTotal } from '../utils/pricing.js'
-import { requireRole, getErrorResponse } from '../utils/auth.js'
-import { serializeReservation } from '../utils/serializers.js'
+import { prisma } from '../_utils/db.js'
+import { sendEmail } from '../_utils/emailService.js'
+import { generateApprovalEmail } from '../_utils/emailTemplates.js'
+import { generateDenialEmail, generateCancellationEmail, generateReservationModificationEmail } from '../_utils/dashboardEmailTemplates.js'
+import { sanitizeDate } from '../_utils/sanitize.js'
+import { calculateEstimatedTotal } from '../_utils/pricing.js'
+import { requireRole, getErrorResponse } from '../_utils/auth.js'
+import { serializeReservation } from '../_utils/serializers.js'
 
 export default async function handler(req, res) {
   const { id } = req.query

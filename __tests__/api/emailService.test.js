@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { sendEmail, sendBulkEmails } from '../../api/utils/emailService'
+import { sendEmail, sendBulkEmails } from '../../api/_utils/emailService'
 import { setupTestEnv } from '../helpers/testEnv'
 
 describe('emailService', () => {

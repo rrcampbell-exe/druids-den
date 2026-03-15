@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/availability'
 
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     reservation: {
       findMany: vi.fn(),
@@ -9,7 +9,7 @@ vi.mock('../../api/utils/db.js', () => ({
   },
 }))
 
-import { prisma } from '../../api/utils/db.js'
+import { prisma } from '../../api/_utils/db.js'
 
 describe('availability API', () => {
   let req

@@ -1,12 +1,12 @@
-import { prisma } from './utils/db.js'
-import { requireRole, getErrorResponse } from './utils/auth.js'
-import { serializeUser } from './utils/serializers.js'
-import { sendEmail } from './utils/emailService.js'
+import { prisma } from './_utils/db.js'
+import { requireRole, getErrorResponse } from './_utils/auth.js'
+import { serializeUser } from './_utils/serializers.js'
+import { sendEmail } from './_utils/emailService.js'
 import {
   generateAccountApprovedEmail,
   generateAccountDeniedEmail,
   generateAccountRevokedEmail,
-} from './utils/dashboardEmailTemplates.js'
+} from './_utils/dashboardEmailTemplates.js'
 
 const VALID_STATUSES = ['PENDING_APPROVAL', 'APPROVED', 'DENIED', 'REVOKED']
 

@@ -14,7 +14,7 @@ vi.mock('@clerk/backend', () => ({
   verifyToken: verifyTokenMock,
 }))
 
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     user: {
       findUnique: findUniqueMock,
@@ -22,7 +22,7 @@ vi.mock('../../api/utils/db.js', () => ({
   },
 }))
 
-vi.mock('../../api/utils/userSync.js', () => ({
+vi.mock('../../api/_utils/userSync.js', () => ({
   upsertClerkUser: upsertClerkUserMock,
 }))
 
@@ -40,7 +40,7 @@ describe('auth utils', () => {
   })
 
   it('formats error responses', async () => {
-    const { getErrorResponse } = await import('../../api/utils/auth.js')
+    const { getErrorResponse } = await import('../../api/_utils/auth.js')
 
     expect(getErrorResponse(new Error('boom'))).toEqual({
       statusCode: 500,
@@ -49,7 +49,7 @@ describe('auth utils', () => {
   })
 
   it('verifies bearer tokens', async () => {
-    const { verifyAuth } = await import('../../api/utils/auth.js')
+    const { verifyAuth } = await import('../../api/_utils/auth.js')
     verifyTokenMock.mockResolvedValueOnce({ sub: 'clerk-1' })
 
     const result = await verifyAuth({ headers: { authorization: 'Bearer test-token' } })
@@ -60,7 +60,7 @@ describe('auth utils', () => {
 
   it('rejects missing config, missing tokens, and invalid tokens', async () => {
     process.env.CLERK_SECRET_KEY = ''
-    let authModule = await import('../../api/utils/auth.js')
+    let authModule = await import('../../api/_utils/auth.js')
     await expect(authModule.verifyAuth({ headers: {} })).rejects.toMatchObject({
       statusCode: 500,
       message: 'Clerk secret key is not configured',
@@ -68,7 +68,7 @@ describe('auth utils', () => {
 
     vi.resetModules()
     process.env.CLERK_SECRET_KEY = 'sk_test'
-    authModule = await import('../../api/utils/auth.js')
+    authModule = await import('../../api/_utils/auth.js')
     await expect(authModule.verifyAuth({ headers: {} })).rejects.toMatchObject({
       statusCode: 401,
       message: 'Authentication required',
@@ -82,7 +82,7 @@ describe('auth utils', () => {
   })
 
   it('returns the current database user when present', async () => {
-    const { getCurrentUser } = await import('../../api/utils/auth.js')
+    const { getCurrentUser } = await import('../../api/_utils/auth.js')
     verifyTokenMock.mockResolvedValueOnce({ sub: 'clerk-1' })
     findUniqueMock.mockResolvedValueOnce({ id: 'user-1', accountStatus: 'APPROVED', role: 'OWNER' })
 
@@ -95,7 +95,7 @@ describe('auth utils', () => {
   })
 
   it('bootstraps a user from Clerk when no local user exists', async () => {
-    const { getCurrentUser } = await import('../../api/utils/auth.js')
+    const { getCurrentUser } = await import('../../api/_utils/auth.js')
     verifyTokenMock.mockResolvedValueOnce({ sub: 'clerk-2' })
     findUniqueMock.mockResolvedValueOnce(null)
     getUserMock.mockResolvedValueOnce({ id: 'clerk-2' })
@@ -109,7 +109,7 @@ describe('auth utils', () => {
   })
 
   it('throws when the token is missing a subject or Clerk client is unavailable', async () => {
-    const { getCurrentUser } = await import('../../api/utils/auth.js')
+    const { getCurrentUser } = await import('../../api/_utils/auth.js')
     verifyTokenMock.mockResolvedValueOnce({})
     await expect(getCurrentUser({ headers: { authorization: 'Bearer valid' } })).rejects.toMatchObject({
       statusCode: 401,
@@ -118,14 +118,14 @@ describe('auth utils', () => {
 
     vi.resetModules()
     process.env.CLERK_SECRET_KEY = ''
-    const noSecretModule = await import('../../api/utils/auth.js')
+    const noSecretModule = await import('../../api/_utils/auth.js')
     await expect(noSecretModule.getCurrentUser({ headers: { authorization: 'Bearer valid' } })).rejects.toMatchObject({
       statusCode: 500,
     })
   })
 
   it('enforces approved accounts and required roles', async () => {
-    const { requireApprovedUser, requireRole } = await import('../../api/utils/auth.js')
+    const { requireApprovedUser, requireRole } = await import('../../api/_utils/auth.js')
     verifyTokenMock.mockResolvedValueOnce({ sub: 'clerk-1' })
     findUniqueMock.mockResolvedValueOnce({ id: 'user-1', accountStatus: 'DENIED', role: 'GUEST' })
     await expect(requireApprovedUser({ headers: { authorization: 'Bearer valid' } })).rejects.toMatchObject({

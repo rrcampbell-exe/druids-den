@@ -1,6 +1,6 @@
-import { prisma } from './utils/db.js'
-import { requireRole, getErrorResponse } from './utils/auth.js'
-import { serializeReservation } from './utils/serializers.js'
+import { prisma } from './_utils/db.js'
+import { requireRole, getErrorResponse } from './_utils/auth.js'
+import { serializeReservation } from './_utils/serializers.js'
 
 export default async function handler(req, res) {
   // POST - Create new reservation (owner reservations)

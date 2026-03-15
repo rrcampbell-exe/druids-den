@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { NIGHTLY_RATE, calculateNights, calculateEstimatedTotal } from '../../../api/utils/pricing.js'
+import { NIGHTLY_RATE, calculateNights, calculateEstimatedTotal } from '../../../api/_utils/pricing.js'
 
 describe('pricing utilities', () => {
   describe('NIGHTLY_RATE', () => {

@@ -10,7 +10,7 @@ import {
   generateAccountApprovedEmail,
   generateAccountDeniedEmail,
   generateAccountRevokedEmail
-} from '../../api/utils/dashboardEmailTemplates'
+} from '../../api/_utils/dashboardEmailTemplates'
 
 describe('dashboardEmailTemplates', () => {
   const mockReservation = {

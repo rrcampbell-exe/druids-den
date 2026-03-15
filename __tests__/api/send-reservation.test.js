@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import handler from '../../api/send-reservation'
-import { prisma } from '../../api/utils/db.js'
+import { prisma } from '../../api/_utils/db.js'
 import { setupTestEnv } from '../helpers/testEnv'
 
-vi.mock('../../api/utils/auth.js', () => ({
+vi.mock('../../api/_utils/auth.js', () => ({
   requireApprovedUser: vi.fn().mockResolvedValue({
     user: {
       id: 'guest-1',
@@ -23,7 +23,7 @@ vi.mock('../../api/utils/auth.js', () => ({
 }))
 
 // Mock the database utility
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     reservation: {
       findMany: vi.fn().mockResolvedValue([]), // No conflicts by default

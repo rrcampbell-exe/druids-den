@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/users'
 
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     user: {
       findMany: vi.fn(),
@@ -11,7 +11,7 @@ vi.mock('../../api/utils/db.js', () => ({
   },
 }))
 
-vi.mock('../../api/utils/auth.js', () => ({
+vi.mock('../../api/_utils/auth.js', () => ({
   requireRole: vi.fn().mockResolvedValue({
     user: { id: 'owner-1', role: 'OWNER', accountStatus: 'APPROVED' },
   }),
@@ -23,18 +23,18 @@ vi.mock('../../api/utils/auth.js', () => ({
   }),
 }))
 
-vi.mock('../../api/utils/emailService.js', () => ({
+vi.mock('../../api/_utils/emailService.js', () => ({
   sendEmail: vi.fn(),
 }))
 
-vi.mock('../../api/utils/dashboardEmailTemplates.js', () => ({
+vi.mock('../../api/_utils/dashboardEmailTemplates.js', () => ({
   generateAccountApprovedEmail: vi.fn().mockReturnValue({ subject: 'Approved', text: 'approved', html: '<p>approved</p>' }),
   generateAccountDeniedEmail: vi.fn().mockReturnValue({ subject: 'Denied', text: 'denied', html: '<p>denied</p>' }),
   generateAccountRevokedEmail: vi.fn().mockReturnValue({ subject: 'Revoked', text: 'revoked', html: '<p>revoked</p>' }),
 }))
 
-import { prisma } from '../../api/utils/db.js'
-import { sendEmail } from '../../api/utils/emailService.js'
+import { prisma } from '../../api/_utils/db.js'
+import { sendEmail } from '../../api/_utils/emailService.js'
 
 describe('users API', () => {
   let req

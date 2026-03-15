@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 const findUniqueMock = vi.fn()
 const upsertMock = vi.fn()
 
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     user: {
       findUnique: findUniqueMock,
@@ -26,7 +26,7 @@ describe('userSync utils', () => {
   })
 
   it('normalizes Clerk payloads from camelCase and snake_case fields', async () => {
-    const { normalizeClerkUser } = await import('../../api/utils/userSync.js')
+    const { normalizeClerkUser } = await import('../../api/_utils/userSync.js')
 
     expect(normalizeClerkUser({
       id: 'clerk-1',
@@ -62,7 +62,7 @@ describe('userSync utils', () => {
   })
 
   it('throws when the Clerk payload is missing required identity fields', async () => {
-    const { normalizeClerkUser } = await import('../../api/utils/userSync.js')
+    const { normalizeClerkUser } = await import('../../api/_utils/userSync.js')
 
     expect(() => normalizeClerkUser({ id: 'clerk-1' })).toThrow(
       'Clerk user payload is missing an id or primary email address',
@@ -70,7 +70,7 @@ describe('userSync utils', () => {
   })
 
   it('bootstraps the owner account as approved', async () => {
-    const { upsertClerkUser } = await import('../../api/utils/userSync.js')
+    const { upsertClerkUser } = await import('../../api/_utils/userSync.js')
     findUniqueMock.mockResolvedValueOnce(null)
     upsertMock.mockResolvedValueOnce({ id: 'owner-1' })
 
@@ -98,7 +98,7 @@ describe('userSync utils', () => {
   })
 
   it('preserves existing guest role and status when updating', async () => {
-    const { upsertClerkUser } = await import('../../api/utils/userSync.js')
+    const { upsertClerkUser } = await import('../../api/_utils/userSync.js')
     findUniqueMock.mockResolvedValueOnce({
       role: 'GUEST',
       accountStatus: 'DENIED',
@@ -129,7 +129,7 @@ describe('userSync utils', () => {
   })
 
   it('defaults new non-owner accounts to pending approval', async () => {
-    const { upsertClerkUser } = await import('../../api/utils/userSync.js')
+    const { upsertClerkUser } = await import('../../api/_utils/userSync.js')
     findUniqueMock.mockResolvedValueOnce(null)
     upsertMock.mockResolvedValueOnce({ id: 'guest-2' })
 

@@ -2,11 +2,11 @@ import { describe, it, expect, vi } from 'vitest'
 
 const calculateEstimatedTotalMock = vi.fn()
 
-vi.mock('../../../api/utils/pricing.js', () => ({
+vi.mock('../../../api/_utils/pricing.js', () => ({
   calculateEstimatedTotal: (...args) => calculateEstimatedTotalMock(...args),
 }))
 
-import { serializeReservation, serializeUser } from '../../../api/utils/serializers.js'
+import { serializeReservation, serializeUser } from '../../../api/_utils/serializers.js'
 
 describe('serializers', () => {
   describe('serializeReservation', () => {

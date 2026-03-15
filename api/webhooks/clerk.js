@@ -1,8 +1,8 @@
 import { Webhook } from 'svix'
-import { sendEmail } from '../utils/emailService.js'
-import { generateNewUserNotificationEmail } from '../utils/dashboardEmailTemplates.js'
-import { upsertClerkUser } from '../utils/userSync.js'
-import { prisma } from '../utils/db.js'
+import { sendEmail } from '../_utils/emailService.js'
+import { generateNewUserNotificationEmail } from '../_utils/dashboardEmailTemplates.js'
+import { upsertClerkUser } from '../_utils/userSync.js'
+import { prisma } from '../_utils/db.js'
 
 const getWebhookHeaders = (req) => ({
   'svix-id': req.headers['svix-id'],

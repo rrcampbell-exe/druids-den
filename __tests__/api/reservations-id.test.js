@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
-vi.mock('../../api/utils/auth.js', () => ({
+vi.mock('../../api/_utils/auth.js', () => ({
   requireRole: vi.fn().mockResolvedValue({
     user: {
       id: 'owner-1',
@@ -26,7 +26,7 @@ const __dirname = dirname(__filename)
 const { default: handler } = await import(join(__dirname, '../../api/reservations/[id].js'))
 
 // Mock the database utility
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     reservation: {
       findUnique: vi.fn(),
@@ -37,12 +37,12 @@ vi.mock('../../api/utils/db.js', () => ({
 }))
 
 // Mock email service
-vi.mock('../../api/utils/emailService.js', () => ({
+vi.mock('../../api/_utils/emailService.js', () => ({
   sendEmail: vi.fn().mockResolvedValue({ success: true })
 }))
 
 // Mock email templates
-vi.mock('../../api/utils/emailTemplates.js', () => ({
+vi.mock('../../api/_utils/emailTemplates.js', () => ({
   generateApprovalEmail: vi.fn().mockReturnValue({
     subject: 'Reservation Approved',
     text: 'Your reservation has been approved',
@@ -50,7 +50,7 @@ vi.mock('../../api/utils/emailTemplates.js', () => ({
   })
 }))
 
-vi.mock('../../api/utils/dashboardEmailTemplates.js', () => ({
+vi.mock('../../api/_utils/dashboardEmailTemplates.js', () => ({
   generateDenialEmail: vi.fn().mockReturnValue({
     subject: 'Reservation Denied',
     text: 'Your reservation has been denied',
@@ -68,7 +68,7 @@ vi.mock('../../api/utils/dashboardEmailTemplates.js', () => ({
   })
 }))
 
-import { prisma } from '../../api/utils/db.js'
+import { prisma } from '../../api/_utils/db.js'
 
 describe('reservations/[id] API', () => {
   let req, res

@@ -1,12 +1,12 @@
-import { prisma } from './utils/db.js'
-import { sendBulkEmails } from './utils/emailService.js'
+import { prisma } from './_utils/db.js'
+import { sendBulkEmails } from './_utils/emailService.js'
 import { 
   generateAdminNotificationEmail, 
   generateCustomerConfirmationEmail 
-} from './utils/emailTemplates.js'
-import { sanitizeReservationData } from './utils/sanitize.js'
-import { calculateEstimatedTotal } from './utils/pricing.js'
-import { requireApprovedUser, getErrorResponse } from './utils/auth.js'
+} from './_utils/emailTemplates.js'
+import { sanitizeReservationData } from './_utils/sanitize.js'
+import { calculateEstimatedTotal } from './_utils/pricing.js'
+import { requireApprovedUser, getErrorResponse } from './_utils/auth.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests

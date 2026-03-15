@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/user/status'
 
-vi.mock('../../api/utils/auth.js', () => ({
+vi.mock('../../api/_utils/auth.js', () => ({
   getCurrentUser: vi.fn(),
   getErrorResponse: (error, fallbackMessage = 'Internal server error') => ({
     statusCode: error?.statusCode || 500,
@@ -11,7 +11,7 @@ vi.mock('../../api/utils/auth.js', () => ({
   }),
 }))
 
-import { getCurrentUser } from '../../api/utils/auth.js'
+import { getCurrentUser } from '../../api/_utils/auth.js'
 
 describe('user status API', () => {
   let req

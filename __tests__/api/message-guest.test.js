@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/message-guest'
 
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     reservation: {
       findUnique: vi.fn(),
@@ -9,11 +9,11 @@ vi.mock('../../api/utils/db.js', () => ({
   },
 }))
 
-vi.mock('../../api/utils/emailService.js', () => ({
+vi.mock('../../api/_utils/emailService.js', () => ({
   sendEmail: vi.fn(),
 }))
 
-vi.mock('../../api/utils/dashboardEmailTemplates.js', () => ({
+vi.mock('../../api/_utils/dashboardEmailTemplates.js', () => ({
   generateCustomMessageEmail: vi.fn().mockReturnValue({
     subject: 'Guest Message',
     text: 'Plain text body',
@@ -21,7 +21,7 @@ vi.mock('../../api/utils/dashboardEmailTemplates.js', () => ({
   }),
 }))
 
-vi.mock('../../api/utils/auth.js', () => ({
+vi.mock('../../api/_utils/auth.js', () => ({
   requireRole: vi.fn().mockResolvedValue({
     user: { id: 'owner-1', role: 'OWNER', accountStatus: 'APPROVED' },
   }),
@@ -33,10 +33,10 @@ vi.mock('../../api/utils/auth.js', () => ({
   }),
 }))
 
-import { prisma } from '../../api/utils/db.js'
-import { sendEmail } from '../../api/utils/emailService.js'
-import { generateCustomMessageEmail } from '../../api/utils/dashboardEmailTemplates.js'
-import { requireRole } from '../../api/utils/auth.js'
+import { prisma } from '../../api/_utils/db.js'
+import { sendEmail } from '../../api/_utils/emailService.js'
+import { generateCustomMessageEmail } from '../../api/_utils/dashboardEmailTemplates.js'
+import { requireRole } from '../../api/_utils/auth.js'
 
 describe('message-guest API', () => {
   let req

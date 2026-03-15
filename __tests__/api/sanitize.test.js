@@ -9,7 +9,7 @@ import {
   sanitizeInteger,
   sanitizeLongText,
   sanitizeReservationData
-} from '../../api/utils/sanitize.js'
+} from '../../api/_utils/sanitize.js'
 
 describe('Sanitization Utilities', () => {
   describe('sanitizeHtml', () => {

@@ -1,5 +1,5 @@
-import { getCurrentUser, getErrorResponse } from '../utils/auth.js'
-import { serializeUser } from '../utils/serializers.js'
+import { getCurrentUser, getErrorResponse } from '../_utils/auth.js'
+import { serializeUser } from '../_utils/serializers.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateAdminNotificationEmail, generateCustomerConfirmationEmail, generateApprovalEmail } from '../../api/utils/emailTemplates'
+import { generateAdminNotificationEmail, generateCustomerConfirmationEmail, generateApprovalEmail } from '../../api/_utils/emailTemplates'
 
 describe('emailTemplates', () => {
   const mockReservation = {

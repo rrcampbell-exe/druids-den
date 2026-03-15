@@ -1,7 +1,7 @@
-import { prisma } from './utils/db.js'
-import { sendEmail } from './utils/emailService.js'
-import { generateCustomMessageEmail } from './utils/dashboardEmailTemplates.js'
-import { requireRole, getErrorResponse } from './utils/auth.js'
+import { prisma } from './_utils/db.js'
+import { sendEmail } from './_utils/emailService.js'
+import { generateCustomMessageEmail } from './_utils/dashboardEmailTemplates.js'
+import { requireRole, getErrorResponse } from './_utils/auth.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests

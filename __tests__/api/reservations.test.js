@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/reservations'
 
-vi.mock('../../api/utils/auth.js', () => ({
+vi.mock('../../api/_utils/auth.js', () => ({
   requireRole: vi.fn().mockResolvedValue({
     user: {
       id: 'owner-1',
@@ -19,7 +19,7 @@ vi.mock('../../api/utils/auth.js', () => ({
 }))
 
 // Mock the database utility
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     reservation: {
       create: vi.fn(),
@@ -28,7 +28,7 @@ vi.mock('../../api/utils/db.js', () => ({
   }
 }))
 
-import { prisma } from '../../api/utils/db.js'
+import { prisma } from '../../api/_utils/db.js'
 
 describe('reservations API', () => {
   let req, res

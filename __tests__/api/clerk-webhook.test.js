@@ -28,19 +28,19 @@ vi.mock('svix', () => ({
   },
 }))
 
-vi.mock('../../api/utils/emailService.js', () => ({
+vi.mock('../../api/_utils/emailService.js', () => ({
   sendEmail: sendEmailMock,
 }))
 
-vi.mock('../../api/utils/dashboardEmailTemplates.js', () => ({
+vi.mock('../../api/_utils/dashboardEmailTemplates.js', () => ({
   generateNewUserNotificationEmail: generateNewUserNotificationEmailMock,
 }))
 
-vi.mock('../../api/utils/userSync.js', () => ({
+vi.mock('../../api/_utils/userSync.js', () => ({
   upsertClerkUser: upsertClerkUserMock,
 }))
 
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     user: {
       updateMany: updateManyMock,
