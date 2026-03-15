@@ -2,7 +2,7 @@
 // Forwards all emails received at *@druidsdenwi.com to campbell.ryan.r@gmail.com
 
 import crypto from 'node:crypto'
-import { sanitizeEmail, sanitizeText } from './utils/sanitize.js'
+import { sanitizeEmail, sanitizeText } from './_utils/sanitize.js'
 
 export default async function handler(req, res) {
   // Only accept POST requests

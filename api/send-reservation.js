@@ -1,11 +1,12 @@
-import { prisma } from './utils/db.js'
-import { sendBulkEmails } from './utils/emailService.js'
+import { prisma } from './_utils/db.js'
+import { sendBulkEmails } from './_utils/emailService.js'
 import { 
   generateAdminNotificationEmail, 
   generateCustomerConfirmationEmail 
-} from './utils/emailTemplates.js'
-import { sanitizeReservationData } from './utils/sanitize.js'
-import { calculateEstimatedTotal } from './utils/pricing.js'
+} from './_utils/emailTemplates.js'
+import { sanitizeReservationData } from './_utils/sanitize.js'
+import { calculateEstimatedTotal } from './_utils/pricing.js'
+import { requireApprovedUser, getErrorResponse } from './_utils/auth.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -32,6 +33,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    const { user } = await requireApprovedUser(req)
+
     // Convert YYYY-MM-DD dates to ISO-8601 DateTime for Prisma
     // Using noon UTC (12:00) instead of midnight to avoid timezone boundary issues
     // This ensures the date part stays consistent when converted to any timezone
@@ -83,22 +86,24 @@ export default async function handler(req, res) {
     // Create reservation in database with pending status
     await prisma.reservation.create({
       data: {
+        userId: user.id,
         checkIn: checkInDate.toISOString(),
         checkOut: checkOutDate.toISOString(),
         adults: sanitized.adults || 1,
         children: sanitized.children || 0,
         specialRequests: sanitized.specialRequests,
         status: 'PENDING',
-        guestFirstName: sanitized.firstName,
-        guestLastName: sanitized.lastName,
-        guestEmail: sanitized.email,
-        guestPhone: sanitized.phone
+        guestFirstName: sanitized.firstName || user.firstName || 'Guest',
+        guestLastName: sanitized.lastName || user.lastName || 'Guest',
+        guestEmail: user.email,
+        guestPhone: sanitized.phone || user.phone
       }
     })
 
     // Generate email templates
     const reservationDataWithTotal = {
       ...sanitized,
+      email: user.email,
       estimatedTotal
     }
     const adminEmail = generateAdminNotificationEmail(reservationDataWithTotal)
@@ -117,7 +122,7 @@ export default async function handler(req, res) {
       // 2. Customer confirmation email
       {
         from: 'The Druids Den <grovekeeper@druidsdenwi.com>',
-        to: sanitized.email,
+        to: user.email,
         subject: customerEmail.subject,
         text: customerEmail.text,
         html: customerEmail.html
@@ -167,9 +172,7 @@ export default async function handler(req, res) {
     })
 
   } catch (error) {
-    console.error('Error processing reservation:', error)
-    return res.status(500).json({
-      error: 'Failed to process reservation request'
-    })
+    const { statusCode, body } = getErrorResponse(error, 'Failed to process reservation request')
+    return res.status(statusCode).json(body)
   }
 }

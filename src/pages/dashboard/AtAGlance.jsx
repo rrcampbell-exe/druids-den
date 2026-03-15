@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import ReservationCard from './ReservationCard'
 import { reservationCache } from '../../utils/reservationCache'
+import { buildAuthHeaders } from '../../utils/authHeaders'
 import './AtAGlance.scss'
+
+const defaultGetToken = async () => null
 
 // Export helper functions for testing
 export const getDaysInMonth = (date) => {
@@ -154,7 +157,7 @@ export const getUpcomingReservations = (reservations, filter = 'all') => {
   return filtered.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn))
 }
 
-const AtAGlance = () => {
+const AtAGlance = ({ currentUser, getToken = defaultGetToken }) => {
   const [reservations, setReservations] = useState([])
   const [loading, setLoading] = useState(true)
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -185,17 +188,22 @@ const AtAGlance = () => {
 
   useEffect(() => {
     // Fetch reservations from database with caching
-    setLoading(true)
-    reservationCache.fetch()
-      .then(data => {
+    const loadReservations = async () => {
+      setLoading(true)
+
+      try {
+        const headers = await buildAuthHeaders(getToken)
+        const data = await reservationCache.fetch({ headers })
         setReservations(data)
-        setLoading(false)
-      })
-      .catch(err => {
+      } catch (err) {
         console.error('Error loading reservations:', err)
+      } finally {
         setLoading(false)
-      })
-  }, [])
+      }
+    }
+
+    loadReservations()
+  }, [getToken])
 
   // Update selectedReservation when reservations change
   useEffect(() => {
@@ -296,12 +304,12 @@ const AtAGlance = () => {
     try {
       const response = await fetch('/api/reservations', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await buildAuthHeaders(getToken, { 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           checkIn: formatDateString(selectedCheckIn),
           checkOut: formatDateString(selectedCheckOut),
           ownerNote: ownerNote || 'Owner blocked dates',
-          ownerEmail: 'owner@druidsdenwi.com' // TODO: Replace with actual owner email from auth
+          ownerEmail: currentUser?.email || ''
         })
       })
 
@@ -346,10 +354,9 @@ const handleApprove = async (reservationId) => {
     try {
       const response = await fetch(`/api/reservations/${reservationId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await buildAuthHeaders(getToken, { 'Content-Type': 'application/json' }),
         body: JSON.stringify({ 
-          status: 'approved',
-          statusChangedById: null // TODO: Replace with actual owner user ID from auth
+          status: 'approved'
         })
       })
 
@@ -379,11 +386,10 @@ const handleApprove = async (reservationId) => {
     try {
       const response = await fetch(`/api/reservations/${reservationId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await buildAuthHeaders(getToken, { 'Content-Type': 'application/json' }),
         body: JSON.stringify({ 
           status: 'denied',
-          denialMessage: message,
-          statusChangedById: null // TODO: Replace with actual owner user ID from auth
+          denialMessage: message
         })
       })
 
@@ -414,11 +420,10 @@ const handleApprove = async (reservationId) => {
     try {
       const response = await fetch(`/api/reservations/${reservationId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await buildAuthHeaders(getToken, { 'Content-Type': 'application/json' }),
         body: JSON.stringify({ 
           status: 'cancelled',
-          cancellationMessage: message,
-          statusChangedById: null // TODO: Replace with actual owner user ID from auth
+          cancellationMessage: message
         })
       })
 
@@ -448,9 +453,9 @@ const handleApprove = async (reservationId) => {
     try {
       const response = await fetch('/api/message-guest', {
         method: 'POST',
-        headers: {
+        headers: await buildAuthHeaders(getToken, {
           'Content-Type': 'application/json',
-        },
+        }),
         body: JSON.stringify({
           reservationId,
           message
@@ -492,7 +497,7 @@ const handleApprove = async (reservationId) => {
 
       const response = await fetch(`/api/reservations/${reservationId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await buildAuthHeaders(getToken, { 'Content-Type': 'application/json' }),
         body: JSON.stringify(updatePayload)
       })
 

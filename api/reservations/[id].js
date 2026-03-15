@@ -1,9 +1,11 @@
-import { prisma } from '../utils/db.js'
-import { sendEmail } from '../utils/emailService.js'
-import { generateApprovalEmail } from '../utils/emailTemplates.js'
-import { generateDenialEmail, generateCancellationEmail, generateReservationModificationEmail } from '../utils/dashboardEmailTemplates.js'
-import { sanitizeDate } from '../utils/sanitize.js'
-import { calculateEstimatedTotal } from '../utils/pricing.js'
+import { prisma } from '../_utils/db.js'
+import { sendEmail } from '../_utils/emailService.js'
+import { generateApprovalEmail } from '../_utils/emailTemplates.js'
+import { generateDenialEmail, generateCancellationEmail, generateReservationModificationEmail } from '../_utils/dashboardEmailTemplates.js'
+import { sanitizeDate } from '../_utils/sanitize.js'
+import { calculateEstimatedTotal } from '../_utils/pricing.js'
+import { requireRole, getErrorResponse } from '../_utils/auth.js'
+import { serializeReservation } from '../_utils/serializers.js'
 
 export default async function handler(req, res) {
   const { id } = req.query
@@ -15,11 +17,11 @@ export default async function handler(req, res) {
   // PATCH - Update reservation (status OR full details)
   if (req.method === 'PATCH') {
     try {
+      const { user: actor } = await requireRole(req, ['OWNER', 'ADMIN'])
       const { 
         status, 
         denialMessage, 
         cancellationMessage, 
-        statusChangedById,
         // Full update fields
         checkIn,
         checkOut,
@@ -49,7 +51,7 @@ export default async function handler(req, res) {
         }
         updateData.status = normalizedStatus.toUpperCase()
         updateData.statusChangedAt = new Date()
-        updateData.statusChangedById = statusChangedById || null
+        updateData.statusChangedById = actor.id
         
         if (normalizedStatus === 'denied') updateData.denialMessage = denialMessage
         if (normalizedStatus === 'cancelled') updateData.cancellationMessage = cancellationMessage
@@ -212,47 +214,17 @@ export default async function handler(req, res) {
       }
 
       // Format response
-      const checkInDate = new Date(updatedReservation.checkIn)
-      const checkOutDate = new Date(updatedReservation.checkOut)
-      const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
-      
-      const checkInStr = updatedReservation.checkIn.toISOString().split('T')[0]
-      const checkOutStr = updatedReservation.checkOut.toISOString().split('T')[0]
-      
-      return res.status(200).json({
-        id: updatedReservation.id,
-        firstName: updatedReservation.guestFirstName,
-        lastName: updatedReservation.guestLastName,
-        email: updatedReservation.guestEmail,
-        phone: updatedReservation.guestPhone,
-        checkIn: checkInStr,
-        checkOut: checkOutStr,
-        adults: updatedReservation.adults,
-        children: updatedReservation.children,
-        specialRequests: updatedReservation.specialRequests,
-        status: updatedReservation.status.toLowerCase(),
-        isOwnerReservation: updatedReservation.isOwnerReservation,
-        submittedAt: updatedReservation.submittedAt ? updatedReservation.submittedAt.toISOString() : null,
-        statusChangedAt: updatedReservation.statusChangedAt ? updatedReservation.statusChangedAt.toISOString() : null,
-        approvedAt: updatedReservation.status === 'APPROVED' && updatedReservation.statusChangedAt 
-          ? updatedReservation.statusChangedAt.toISOString() 
-          : null,
-        estimatedTotal: calculateEstimatedTotal(checkInStr, checkOutStr),
-        ownerNote: updatedReservation.isOwnerReservation ? updatedReservation.ownerNotes : null,
-        denialMessage: updatedReservation.denialMessage,
-        cancellationMessage: updatedReservation.cancellationMessage,
-      })
+      return res.status(200).json(serializeReservation(updatedReservation))
     } catch (error) {
-      console.error('Error updating reservation:', error)
-      return res.status(500).json({ 
-        error: 'Failed to update reservation'
-      })
+      const { statusCode, body } = getErrorResponse(error, 'Failed to update reservation')
+      return res.status(statusCode).json(body)
     }
   }
 
   // DELETE - Soft delete reservation
   if (req.method === 'DELETE') {
     try {
+      await requireRole(req, ['OWNER', 'ADMIN'])
       const existingReservation = await prisma.reservation.findUnique({
         where: { id }
       })

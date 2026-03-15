@@ -78,7 +78,7 @@ describe('Reports', () => {
     render(<Reports />)
     
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/api/reservations')
+      expect(fetch).toHaveBeenCalledWith('/api/reservations', { headers: {} })
     })
   })
 
@@ -115,12 +115,15 @@ describe('Reports', () => {
     render(<Reports />)
     
     await waitFor(() => {
-      const customButton = screen.getByText('Custom Range')
-      fireEvent.click(customButton)
+      expect(screen.getByText('Custom Range')).toBeInTheDocument()
     })
-    
-    const dateInputs = screen.getAllByDisplayValue('')
-    expect(dateInputs.length).toBeGreaterThanOrEqual(2)
+
+    fireEvent.click(screen.getByText('Custom Range'))
+
+    await waitFor(() => {
+      const dateInputs = screen.getAllByDisplayValue('')
+      expect(dateInputs.length).toBeGreaterThanOrEqual(2)
+    })
   })
 
   it('displays all 6 metric cards', async () => {
@@ -176,13 +179,15 @@ describe('Reports', () => {
     render(<Reports />)
     
     await waitFor(() => {
-      const checkbox = screen.getAllByRole('checkbox')[0]
-      const initialText = screen.getByText(/nights booked/)
-      
-      fireEvent.click(checkbox)
-      
-      // Metrics should recalculate
-      expect(initialText).toBeInTheDocument()
+      expect(screen.getAllByRole('checkbox').length).toBeGreaterThan(0)
+      expect(screen.getByText(/nights booked/)).toBeInTheDocument()
+    })
+
+    const checkbox = screen.getAllByRole('checkbox')[0]
+    fireEvent.click(checkbox)
+
+    await waitFor(() => {
+      expect(screen.getByText(/nights booked/)).toBeInTheDocument()
     })
   })
 
@@ -369,9 +374,11 @@ describe('Reports', () => {
     
     const customButton = screen.getByText('Custom Range')
     fireEvent.click(customButton)
-    
-    expect(customButton.classList.contains('active')).toBe(true)
-    expect(screen.getAllByDisplayValue('').length).toBeGreaterThan(0)
+
+    await waitFor(() => {
+      expect(customButton.classList.contains('active')).toBe(true)
+      expect(screen.getAllByDisplayValue('').length).toBeGreaterThan(0)
+    })
   })
 
   it('allows setting custom date range', async () => {
@@ -383,9 +390,12 @@ describe('Reports', () => {
     
     const customButton = screen.getByText('Custom Range')
     fireEvent.click(customButton)
-    
-    const dateInputs = screen.getAllByPlaceholderText(/date/i)
-    expect(dateInputs.length).toBeGreaterThan(0)
+
+    let dateInputs = []
+    await waitFor(() => {
+      dateInputs = screen.getAllByPlaceholderText(/date/i)
+      expect(dateInputs.length).toBeGreaterThan(0)
+    })
     
     if (dateInputs.length >= 2) {
       fireEvent.change(dateInputs[0], { target: { value: '2026-01-01' } })

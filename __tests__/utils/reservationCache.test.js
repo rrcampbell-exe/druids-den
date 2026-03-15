@@ -31,7 +31,9 @@ describe('reservationCache', () => {
 
       const result = await reservationCache.fetch()
 
-      expect(fetch).toHaveBeenCalledWith('/api/reservations')
+      expect(fetch).toHaveBeenCalledWith('/api/reservations', {
+        headers: undefined
+      })
       expect(result).toEqual(mockData.reservations)
     })
 

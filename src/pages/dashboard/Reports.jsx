@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 import { ResponsiveBar } from '@nivo/bar'
+import { buildAuthHeaders } from '../../utils/authHeaders'
 import './Reports.scss'
 
-const Reports = () => {
+const defaultGetToken = async () => null
+
+const Reports = ({ getToken = defaultGetToken }) => {
   const [reservations, setReservations] = useState([])
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState('ytd') // ytd, year, custom
@@ -14,21 +17,24 @@ const Reports = () => {
 
   useEffect(() => {
     // Fetch reservations from database
-    setLoading(true)
-    fetch('/api/reservations')
-      .then(res => {
+    const loadReservations = async () => {
+      setLoading(true)
+
+      try {
+        const headers = await buildAuthHeaders(getToken)
+        const res = await fetch('/api/reservations', { headers })
         if (!res.ok) throw new Error(`Failed to fetch reservations: ${res.status}`)
-        return res.json()
-      })
-      .then(data => {
+        const data = await res.json()
         setReservations(data.reservations || data)
-        setLoading(false)
-      })
-      .catch(err => {
+      } catch (err) {
         console.error('Error loading reservations:', err)
+      } finally {
         setLoading(false)
-      })
-  }, [])
+      }
+    }
+
+    loadReservations()
+  }, [getToken])
 
   // Filter reservations by time range and completed/approved status
   const filteredReservations = useMemo(() => {

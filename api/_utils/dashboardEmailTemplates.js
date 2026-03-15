@@ -407,3 +407,154 @@ ${message}
   
   return { subject, text, html }
 }
+
+  export function generateNewUserNotificationEmail(user) {
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'New guest'
+    const dashboardUrl = 'https://druidsdenwi.com/dashboard'
+
+    const subject = `New guest approval needed: ${fullName}`
+
+    const text = `
+  A new guest account is waiting for review.
+
+  Name: ${fullName}
+  Email: ${user.email}
+  Signed up: ${user.createdAt ? new Date(user.createdAt).toLocaleString() : 'Just now'}
+
+  Review this guest in the dashboard:
+  ${dashboardUrl}
+    `.trim()
+
+    const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #464645; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #BAB6A2;">
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <div style="background: linear-gradient(135deg, rgba(212, 185, 66, 0.9) 0%, rgba(212, 185, 66, 0.82) 100%); padding: 36px 28px; text-align: center; border-bottom: 3px solid #6b5a0f;">
+        <h1 style="margin: 0; font-size: 28px; color: #464645;">Guest Approval Needed</h1>
+      </div>
+      <div style="padding: 32px 28px; background: #fff;">
+        <p>A new guest account is waiting for review.</p>
+        <div style="background: rgba(212, 185, 66, 0.12); padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0 0 8px;"><strong>Name:</strong> ${fullName}</p>
+          <p style="margin: 0;"><strong>Email:</strong> ${user.email}</p>
+        </div>
+        <p>Review this guest in the dashboard when you're ready.</p>
+        <p style="margin-top: 24px;"><a href="${dashboardUrl}" style="display: inline-block; padding: 12px 20px; border-radius: 999px; background: #464645; color: #fff; text-decoration: none;">Open Dashboard</a></p>
+      </div>
+    </div>
+  </body>
+  </html>
+    `.trim()
+
+    return { subject, text, html }
+  }
+
+  export function generateAccountApprovedEmail(user) {
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'friend'
+
+    const subject = 'Your Druids Den guest account has been approved'
+
+    const text = `
+  Hi ${fullName},
+
+  Your guest account for The Druids Den has been approved.
+
+  You can now sign in and submit a reservation request.
+
+  Warmly,
+  Ryan and Lacey at The Druids Den
+    `.trim()
+
+    const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #464645; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #BAB6A2;">
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 36px 28px;">
+      <h1 style="margin-top: 0; color: #464645;">You're approved</h1>
+      <p>Hi ${fullName},</p>
+      <p>Your guest account for <strong>The Druids Den</strong> has been approved. You can now sign in and submit a reservation request.</p>
+      <p>Warmly,<br><strong>Ryan and Lacey</strong></p>
+    </div>
+  </body>
+  </html>
+    `.trim()
+
+    return { subject, text, html }
+  }
+
+  export function generateAccountDeniedEmail(user) {
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'friend'
+
+    const subject = 'Update on your Druids Den guest account'
+
+    const text = `
+  Hi ${fullName},
+
+  Thank you for your interest in staying at The Druids Den. At this time, your guest account has not been approved for reservations.
+
+  If you believe this was a mistake, please reach out to the owners directly.
+    `.trim()
+
+    const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #464645; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #BAB6A2;">
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 36px 28px;">
+      <h1 style="margin-top: 0; color: #464645;">Guest account update</h1>
+      <p>Hi ${fullName},</p>
+      <p>Thank you for your interest in staying at The Druids Den. At this time, your guest account has not been approved for reservations.</p>
+      <p>If you believe this was a mistake, please reach out to the owners directly.</p>
+    </div>
+  </body>
+  </html>
+    `.trim()
+
+    return { subject, text, html }
+  }
+
+  export function generateAccountRevokedEmail(user) {
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'friend'
+
+    const subject = 'Your Druids Den reservation access has changed'
+
+    const text = `
+  Hi ${fullName},
+
+  Your reservation access for The Druids Den has been revoked.
+
+  If you have questions, please contact the owners directly.
+    `.trim()
+
+    const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #464645; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #BAB6A2;">
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 36px 28px;">
+      <h1 style="margin-top: 0; color: #464645;">Reservation access update</h1>
+      <p>Hi ${fullName},</p>
+      <p>Your reservation access for The Druids Den has been revoked.</p>
+      <p>If you have questions, please contact the owners directly.</p>
+    </div>
+  </body>
+  </html>
+    `.trim()
+
+    return { subject, text, html }
+  }

@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
+import { useAuth, useUser } from '@clerk/react'
 import { Link } from 'react-router'
 import './Reservations.scss'
-import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal } from '../components'
+import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal, AuthHeader } from '../components'
 import { validateReservationForm } from '../utils/formValidation'
+import { buildAuthHeaders } from '../utils/authHeaders'
 
 const Reservations = () => {
+  const { getToken } = useAuth()
+  const { user } = useUser()
   const firstNameRef = useRef(null)
   const lastNameRef = useRef(null)
   const emailRef = useRef(null)
@@ -57,11 +61,23 @@ const Reservations = () => {
   }
 
   useEffect(() => {
-    // Fetch reservations from database (always fresh, no caching)
-    const fetchReservations = async () => {
+    if (!user) return
+
+    setFormData(prev => ({
+      ...prev,
+      firstName: prev.firstName || user.firstName || '',
+      lastName: prev.lastName || user.lastName || '',
+      email: user.primaryEmailAddress?.emailAddress || prev.email,
+      phone: prev.phone || user.primaryPhoneNumber?.phoneNumber || ''
+    }))
+  }, [user])
+
+  useEffect(() => {
+     // Fetch blocked date ranges from the public availability endpoint
+     const fetchAvailability = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/reservations')
+        const response = await fetch('/api/availability')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
@@ -75,7 +91,7 @@ const Reservations = () => {
       }
     }
 
-    fetchReservations()
+      fetchAvailability()
   }, [])
 
   // Validate fields when touched to show errors
@@ -110,9 +126,6 @@ const Reservations = () => {
     // Check if date falls within any approved or pending reservation
     // (including owner reservations)
     for (const reservation of reservations) {
-      // Skip cancelled or denied reservations
-      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
-      
       const checkIn = parseLocalDate(reservation.checkIn)
       const checkOut = parseLocalDate(reservation.checkOut)
       
@@ -141,9 +154,6 @@ const Reservations = () => {
       
       // Check if date falls within any approved or pending reservation
       for (const reservation of reservations) {
-        // Skip cancelled or denied reservations
-        if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
-        
         const checkIn = parseLocalDate(reservation.checkIn)
         const checkOut = parseLocalDate(reservation.checkOut)
         const checkDate = parseLocalDate(dateString)
@@ -166,9 +176,6 @@ const Reservations = () => {
     const blackoutDates = []
     
     for (const reservation of reservations) {
-      // Skip cancelled or denied reservations
-      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
-      
       const checkIn = parseLocalDate(reservation.checkIn)
       const checkOut = parseLocalDate(reservation.checkOut)
       const current = new Date(checkIn)
@@ -303,9 +310,9 @@ const Reservations = () => {
       // Send reservation email
       const response = await fetch('/api/send-reservation', {
         method: 'POST',
-        headers: {
+        headers: await buildAuthHeaders(getToken, {
           'Content-Type': 'application/json',
-        },
+        }),
         body: JSON.stringify({
           ...formData,
           submittedAt: new Date().toISOString()
@@ -343,7 +350,7 @@ const Reservations = () => {
         setShowErrorModal(true)
         // Refetch reservations to update calendar with the newly-booked dates
         try {
-          const reservationsResponse = await fetch('/api/reservations')
+          const reservationsResponse = await fetch('/api/availability')
           if (reservationsResponse.ok) {
             const reservationsData = await reservationsResponse.json()
             setReservations(reservationsData.reservations || [])
@@ -377,9 +384,12 @@ const Reservations = () => {
           <h2 className='subheading'>Your Northwoods Retreat Awaits</h2>
           <div className='bottom-border' />
         </div>
-        <Link to='/'>
-          <div className='back-navigation'><Awen /> Go Back</div> 
-        </Link>
+        <div>
+          <AuthHeader />
+          <Link to='/'>
+            <div className='back-navigation'><Awen /> Go Back</div> 
+          </Link>
+        </div>
       </div>
       
       <center>
@@ -444,8 +454,10 @@ const Reservations = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     onBlur={handleBlur}
+                    readOnly
                     required
                   />
+                  <small>Your reservation will be linked to this approved account email.</small>
                   {touchedFields.email && validationErrors.email && (
                     <span className='error-message'>{validationErrors.email}</span>
                   )}

@@ -5,8 +5,12 @@ import {
   generateDenialEmail,
   generateCancellationEmail,
   generateReservationModificationEmail,
-  generateCustomMessageEmail
-} from '../../api/utils/dashboardEmailTemplates'
+  generateCustomMessageEmail,
+  generateNewUserNotificationEmail,
+  generateAccountApprovedEmail,
+  generateAccountDeniedEmail,
+  generateAccountRevokedEmail
+} from '../../api/_utils/dashboardEmailTemplates'
 
 describe('dashboardEmailTemplates', () => {
   const mockReservation = {
@@ -18,6 +22,13 @@ describe('dashboardEmailTemplates', () => {
     checkOut: '2026-03-03',
     adults: 2,
     children: 0
+  }
+
+  const mockUser = {
+    firstName: 'Aster',
+    lastName: 'Bloom',
+    email: 'aster@example.com',
+    createdAt: '2026-03-15T10:30:00.000Z'
   }
 
   describe('generatePreArrivalEmail', () => {
@@ -252,6 +263,74 @@ describe('dashboardEmailTemplates', () => {
       expect(result.html).toContain('Ryan and Lacey')
     })
   })
+
+  describe('generateNewUserNotificationEmail', () => {
+    it('generates email with required fields', () => {
+      const result = generateNewUserNotificationEmail(mockUser)
+
+      expect(result).toHaveProperty('subject')
+      expect(result).toHaveProperty('text')
+      expect(result).toHaveProperty('html')
+    })
+
+    it('includes the guest details and dashboard link', () => {
+      const result = generateNewUserNotificationEmail(mockUser)
+
+      expect(result.subject).toContain('Aster Bloom')
+      expect(result.text).toContain('Aster Bloom')
+      expect(result.text).toContain('aster@example.com')
+      expect(result.text).toContain('https://druidsdenwi.com/dashboard')
+      expect(result.html).toContain('Guest Approval Needed')
+      expect(result.html).toContain('Open Dashboard')
+    })
+
+    it('falls back to New guest when no name is available', () => {
+      const result = generateNewUserNotificationEmail({ email: 'guest@example.com' })
+
+      expect(result.subject).toContain('New guest')
+      expect(result.text).toContain('Name: New guest')
+    })
+  })
+
+  describe('generateAccountApprovedEmail', () => {
+    it('includes approval messaging', () => {
+      const result = generateAccountApprovedEmail(mockUser)
+
+      expect(result.subject).toContain('approved')
+      expect(result.text).toContain('Aster Bloom')
+      expect(result.text).toContain('submit a reservation request')
+      expect(result.html).toContain("You're approved")
+    })
+
+    it('falls back to friend when no name is available', () => {
+      const result = generateAccountApprovedEmail({ email: 'guest@example.com' })
+
+      expect(result.text).toContain('Hi friend')
+    })
+  })
+
+  describe('generateAccountDeniedEmail', () => {
+    it('includes denial messaging', () => {
+      const result = generateAccountDeniedEmail(mockUser)
+
+      expect(result.subject).toContain('guest account')
+      expect(result.text).toContain('Aster Bloom')
+      expect(result.text).toContain('has not been approved')
+      expect(result.html).toContain('Guest account update')
+    })
+  })
+
+  describe('generateAccountRevokedEmail', () => {
+    it('includes revoked access messaging', () => {
+      const result = generateAccountRevokedEmail(mockUser)
+
+      expect(result.subject).toContain('access has changed')
+      expect(result.text).toContain('Aster Bloom')
+      expect(result.text).toContain('has been revoked')
+      expect(result.html).toContain('Reservation access update')
+    })
+  })
+
   describe('HTML email structure', () => {
     it('all HTML emails have proper structure with meta tags', () => {
       const emails = [
@@ -259,7 +338,11 @@ describe('dashboardEmailTemplates', () => {
         generatePostCheckoutEmail(mockReservation),
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
-        generateCustomMessageEmail(mockReservation, 'test')
+        generateCustomMessageEmail(mockReservation, 'test'),
+        generateNewUserNotificationEmail(mockUser),
+        generateAccountApprovedEmail(mockUser),
+        generateAccountDeniedEmail(mockUser),
+        generateAccountRevokedEmail(mockUser)
       ]
 
       emails.forEach(email => {
@@ -275,7 +358,11 @@ describe('dashboardEmailTemplates', () => {
         generatePostCheckoutEmail(mockReservation),
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
-        generateCustomMessageEmail(mockReservation, 'test')
+        generateCustomMessageEmail(mockReservation, 'test'),
+        generateNewUserNotificationEmail(mockUser),
+        generateAccountApprovedEmail(mockUser),
+        generateAccountDeniedEmail(mockUser),
+        generateAccountRevokedEmail(mockUser)
       ]
 
       emails.forEach(email => {
@@ -327,6 +414,13 @@ describe('dashboardEmailTemplates', () => {
       expect(result.html).toContain('white-space: pre-wrap')
     })
 
+    it('guest account emails use the expected headings', () => {
+      expect(generateNewUserNotificationEmail(mockUser).html).toContain('Guest Approval Needed')
+      expect(generateAccountApprovedEmail(mockUser).html).toContain("You're approved")
+      expect(generateAccountDeniedEmail(mockUser).html).toContain('Guest account update')
+      expect(generateAccountRevokedEmail(mockUser).html).toContain('Reservation access update')
+    })
+
     // Snapshot tests specifically for HTML template structure
     // These ensure template literals are properly formatted and don't break during refactoring
     describe('HTML template snapshots', () => {
@@ -352,6 +446,26 @@ describe('dashboardEmailTemplates', () => {
 
       it('custom message HTML structure matches snapshot', () => {
         const result = generateCustomMessageEmail(mockReservation, 'Test message')
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('new user notification HTML structure matches snapshot', () => {
+        const result = generateNewUserNotificationEmail(mockUser)
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('account approved HTML structure matches snapshot', () => {
+        const result = generateAccountApprovedEmail(mockUser)
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('account denied HTML structure matches snapshot', () => {
+        const result = generateAccountDeniedEmail(mockUser)
+        expect(result.html).toMatchSnapshot()
+      })
+
+      it('account revoked HTML structure matches snapshot', () => {
+        const result = generateAccountRevokedEmail(mockUser)
         expect(result.html).toMatchSnapshot()
       })
     })
@@ -440,7 +554,11 @@ describe('dashboardEmailTemplates', () => {
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
         generateReservationModificationEmail(mockReservation, { dates: true }),
-        generateCustomMessageEmail(mockReservation, 'test')
+        generateCustomMessageEmail(mockReservation, 'test'),
+        generateNewUserNotificationEmail(mockUser),
+        generateAccountApprovedEmail(mockUser),
+        generateAccountDeniedEmail(mockUser),
+        generateAccountRevokedEmail(mockUser)
       ]
 
       emails.forEach(email => {
@@ -458,7 +576,11 @@ describe('dashboardEmailTemplates', () => {
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
         generateReservationModificationEmail(mockReservation, { dates: true }),
-        generateCustomMessageEmail(mockReservation, 'test')
+        generateCustomMessageEmail(mockReservation, 'test'),
+        generateNewUserNotificationEmail(mockUser),
+        generateAccountApprovedEmail(mockUser),
+        generateAccountDeniedEmail(mockUser),
+        generateAccountRevokedEmail(mockUser)
       ]
 
       emails.forEach(email => {
@@ -473,13 +595,17 @@ describe('dashboardEmailTemplates', () => {
         generateDenialEmail(mockReservation, 'test'),
         generateCancellationEmail(mockReservation, 'test'),
         generateReservationModificationEmail(mockReservation, { dates: true }),
-        generateCustomMessageEmail(mockReservation, 'test')
+        generateCustomMessageEmail(mockReservation, 'test'),
+        generateNewUserNotificationEmail(mockUser),
+        generateAccountApprovedEmail(mockUser),
+        generateAccountDeniedEmail(mockUser),
+        generateAccountRevokedEmail(mockUser)
       ]
 
       emails.forEach(email => {
-        // Property name appears as "Druids Den" or "Druid's Den"
+        // Property branding appears as the property name or branded site URL
         const combined = email.subject.toLowerCase() + email.text.toLowerCase()
-        expect(combined).toMatch(/druid'?s den/)
+        expect(combined).toMatch(/druid'?s den|druidsdenwi\.com/)
       })
     })
   })

@@ -5,15 +5,12 @@ export default function handler(req, res) {
   }
 
   const { passcode, page } = req.body
-  
-  // Determine which passcode to check based on the page
-  const passcodeMap = {
-    'spooktoberfest': process.env.SPOOKTOBERFEST_PASSCODE,
-    'reservations': process.env.RESERVATIONS_PASSCODE,
-    'dashboard': process.env.DASHBOARD_PASSCODE
+
+  if (page !== 'spooktoberfest') {
+    return res.status(400).json({ error: 'Passcode auth is only available for Spooktoberfest' })
   }
   
-  const correctPasscode = passcodeMap[page]
+  const correctPasscode = process.env.SPOOKTOBERFEST_PASSCODE
   
   // Check if environment variable is set
   if (!correctPasscode) {

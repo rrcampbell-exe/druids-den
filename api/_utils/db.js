@@ -5,7 +5,7 @@ import { config } from 'dotenv'
 import { PrismaClient } from '@prisma/client'
 
 // Load environment variables from .env.local (for Vercel Dev)
-config({ path: '.env.local' })
+config({ path: '.env.local', override: true })
 
 export const prisma = globalThis.prisma ?? new PrismaClient({
   accelerateUrl: process.env.PRISMA_DATABASE_URL

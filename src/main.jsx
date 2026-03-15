@@ -2,9 +2,16 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import { Landing, WhatToExpect, Spooktoberfest, Reservations, Dashboard, Feedback } from './pages'
+import { ClerkProvider } from '@clerk/react'
+import { Landing, WhatToExpect, Spooktoberfest, Reservations, Dashboard, Feedback, AuthPage } from './pages'
 import { Navigate } from 'react-router'
-import { ProtectedRoute } from './components'
+import { ClerkAuthGate, ProtectedRoute } from './components'
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Add your Clerk Publishable Key to the .env file')
+}
 
 let router = createBrowserRouter([
   {
@@ -22,9 +29,9 @@ let router = createBrowserRouter([
   {
     path: '/reservations',
     element: (
-      <ProtectedRoute page='reservations'>
+      <ClerkAuthGate requireApproval>
         <Reservations />
-      </ProtectedRoute>
+      </ClerkAuthGate>
     )
   },
   {
@@ -34,10 +41,18 @@ let router = createBrowserRouter([
   {
     path: '/dashboard',
     element: (
-      <ProtectedRoute page='dashboard'>
+      <ClerkAuthGate requiredRoles={['OWNER', 'ADMIN']}>
         <Dashboard />
-      </ProtectedRoute>
+      </ClerkAuthGate>
     )
+  },
+  {
+    path: '/sign-in',
+    element: <AuthPage mode='sign-in' />,
+  },
+  {
+    path: '/sign-up',
+    element: <AuthPage mode='sign-up' />,
   },
   {
     path: '/feedback/:reservationId',
@@ -51,6 +66,8 @@ let router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl='/'>
+      <RouterProvider router={router} />
+    </ClerkProvider>
   </StrictMode>,
 )

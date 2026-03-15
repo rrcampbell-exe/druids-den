@@ -9,25 +9,10 @@ const PasscodePrompt = ({ onSuccess, page = 'spooktoberfest', storageKey }) => {
   const [error, setError] = useState('')
 
   const getPageContent = () => {
-    switch (page) {
-      case 'reservations':
-        return {
-          title: 'Reservations',
-          message: 'This page is for authorized guests only.',
-          prompt: 'Please enter your reservation access code.'
-        }
-      case 'dashboard':
-        return {
-          title: 'Owner Dashboard',
-          message: 'This area is restricted to property owners and administrators.',
-          prompt: 'Please enter your owner access code.'
-        }
-      default: // spooktoberfest
-        return {
-          title: 'Spooktoberfest',
-          message: 'This page is for invited guests only.',
-          prompt: 'Please enter the code from the back of your invitation.'
-        }
+    return {
+      title: 'Spooktoberfest',
+      message: 'This page is for invited guests only.',
+      prompt: 'Please enter the code from the back of your invitation.'
     }
   }
 

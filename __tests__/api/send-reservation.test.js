@@ -1,10 +1,29 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import handler from '../../api/send-reservation'
-import { prisma } from '../../api/utils/db.js'
+import { prisma } from '../../api/_utils/db.js'
 import { setupTestEnv } from '../helpers/testEnv'
 
+vi.mock('../../api/_utils/auth.js', () => ({
+  requireApprovedUser: vi.fn().mockResolvedValue({
+    user: {
+      id: 'guest-1',
+      email: 'john@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+      phone: '(555) 123-4567',
+      accountStatus: 'APPROVED',
+    },
+  }),
+  getErrorResponse: (error, fallbackMessage = 'Internal server error') => ({
+    statusCode: error?.statusCode || 500,
+    body: {
+      error: error?.message || fallbackMessage,
+    },
+  }),
+}))
+
 // Mock the database utility
-vi.mock('../../api/utils/db.js', () => ({
+vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     reservation: {
       findMany: vi.fn().mockResolvedValue([]), // No conflicts by default
@@ -211,6 +230,24 @@ describe('send-reservation API', () => {
       expect(prisma.reservation.findMany).toHaveBeenCalled()
       expect(prisma.reservation.create).toHaveBeenCalled()
       expect(res.status).toHaveBeenCalledWith(200)
+    })
+  })
+
+  describe('Approved user requirements', () => {
+    it('links the reservation to the approved user account', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: 'email-123' })
+      })
+
+      await handler(req, res)
+
+      expect(prisma.reservation.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          userId: 'guest-1',
+          guestEmail: 'john@example.com',
+        })
+      })
     })
   })
 

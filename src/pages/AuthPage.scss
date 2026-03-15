@@ -1,0 +1,25 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-shell {
+  width: min(70rem, 100%);
+}
+
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  color: #464645;
+  text-decoration: none;
+}
+
+.auth-shell-inner {
+  display: flex;
+  justify-content: center;
+}
