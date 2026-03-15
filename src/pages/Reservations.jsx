@@ -73,8 +73,8 @@ const Reservations = () => {
   }, [user])
 
   useEffect(() => {
-    // Fetch reservations from database (always fresh, no caching)
-    const fetchReservations = async () => {
+     // Fetch blocked date ranges from the public availability endpoint
+     const fetchAvailability = async () => {
       try {
         setLoading(true)
         const response = await fetch('/api/availability')
@@ -91,7 +91,7 @@ const Reservations = () => {
       }
     }
 
-    fetchReservations()
+      fetchAvailability()
   }, [])
 
   // Validate fields when touched to show errors
@@ -126,9 +126,6 @@ const Reservations = () => {
     // Check if date falls within any approved or pending reservation
     // (including owner reservations)
     for (const reservation of reservations) {
-      // Skip cancelled or denied reservations
-      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
-      
       const checkIn = parseLocalDate(reservation.checkIn)
       const checkOut = parseLocalDate(reservation.checkOut)
       
@@ -157,9 +154,6 @@ const Reservations = () => {
       
       // Check if date falls within any approved or pending reservation
       for (const reservation of reservations) {
-        // Skip cancelled or denied reservations
-        if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
-        
         const checkIn = parseLocalDate(reservation.checkIn)
         const checkOut = parseLocalDate(reservation.checkOut)
         const checkDate = parseLocalDate(dateString)
@@ -182,9 +176,6 @@ const Reservations = () => {
     const blackoutDates = []
     
     for (const reservation of reservations) {
-      // Skip cancelled or denied reservations
-      if (reservation.status === 'cancelled' || reservation.status === 'denied') continue
-      
       const checkIn = parseLocalDate(reservation.checkIn)
       const checkOut = parseLocalDate(reservation.checkOut)
       const current = new Date(checkIn)

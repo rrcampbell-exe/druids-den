@@ -77,11 +77,8 @@ describe('Reservations', () => {
       json: async () => ({
         reservations: [
           {
-            id: 1,
             checkIn: '2026-06-10',
             checkOut: '2026-06-12',
-            status: 'approved',
-            isOwnerReservation: false,
           },
         ],
       }),

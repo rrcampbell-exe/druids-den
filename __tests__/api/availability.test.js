@@ -27,11 +27,8 @@ describe('availability API', () => {
   it('returns reservation availability for approved and pending reservations', async () => {
     prisma.reservation.findMany.mockResolvedValue([
       {
-        id: 'res-1',
         checkIn: new Date('2026-06-01T00:00:00.000Z'),
         checkOut: new Date('2026-06-03T00:00:00.000Z'),
-        status: 'APPROVED',
-        isOwnerReservation: false,
       },
     ])
 
@@ -45,11 +42,8 @@ describe('availability API', () => {
         },
       },
       select: {
-        id: true,
         checkIn: true,
         checkOut: true,
-        status: true,
-        isOwnerReservation: true,
       },
       orderBy: {
         checkIn: 'asc',
@@ -59,11 +53,8 @@ describe('availability API', () => {
     expect(res.json).toHaveBeenCalledWith({
       reservations: [
         {
-          id: 'res-1',
           checkIn: '2026-06-01',
           checkOut: '2026-06-03',
-          status: 'approved',
-          isOwnerReservation: false,
         },
       ],
     })

@@ -57,9 +57,11 @@ export const reservationCache = {
   },
 
   /**
-   * Fetch reservations with caching and request deduplication
-   * @param {boolean} forceRefresh - Skip cache and fetch fresh data
-   */
+  * Fetch reservations with caching and request deduplication
+  * @param {Object} options
+  * @param {boolean} [options.forceRefresh=false] - Skip cache and fetch fresh data
+  * @param {Object} [options.headers] - Additional request headers (e.g. auth)
+  */
   async fetch(options = {}) {
     const { forceRefresh = false, headers } = options
 
