@@ -19,11 +19,13 @@ const AuthPage = ({ mode = 'sign-in' }) => {
         <div className='auth-shell-inner'>
           {mode === 'sign-up' ? (
             <SignUp
+              path='/sign-up'
               fallbackRedirectUrl={redirectPath}
               signInUrl={`/sign-in?redirect=${encodeURIComponent(redirectPath)}`}
             />
           ) : (
             <SignIn
+              path='/sign-in'
               fallbackRedirectUrl={redirectPath}
               signUpUrl={`/sign-up?redirect=${encodeURIComponent(redirectPath)}`}
             />
