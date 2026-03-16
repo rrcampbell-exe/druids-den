@@ -216,7 +216,7 @@ All endpoints are Vercel serverless functions under `/api/`.
 
 ## Rate Limiting
 
-Sensitive endpoints are protected by an in-memory, per-IP rate limiter. Limits are tuned to the site's expected traffic profile — relaxed for authenticated users, stricter for public and signup paths.
+Sensitive endpoints are protected by a per-IP rate limiter (`api/_utils/rateLimit.js`). Limits are tuned to the site's expected traffic profile — relaxed for authenticated users, stricter for public and signup paths.
 
 | Endpoint | Limit | Window |
 |---|---|---|
@@ -226,7 +226,13 @@ Sensitive endpoints are protected by an in-memory, per-IP rate limiter. Limits a
 | `webhooks/clerk` (all events) | 240 requests | 1 minute |
 | `webhooks/clerk` (user.created only) | 10 requests | 24 hours |
 
-Rate limiting is bypassed in the test environment. In production, exceeding a limit returns a `429` response with a descriptive message.
+The client IP is resolved via `x-vercel-forwarded-for` → `x-real-ip` → `x-forwarded-for` (rightmost valid entry), preventing clients from spoofing the forwarded header to evade limits.
+
+The webhook delivery limit fires **before** Svix signature verification so invalid-signature floods are rejected cheaply. The `user.created` signup limit fires after verification since it depends on the event type.
+
+The store is **in-memory and per-instance**. It is not shared across concurrent serverless instances or regions and resets on cold starts. This provides best-effort protection; for strict guarantees swap the store for a shared backend (Redis, Vercel KV, Upstash).
+
+Rate limiting is bypassed in the test environment. In production, exceeding a limit returns a `429` with a descriptive message.
 
 ---
 
