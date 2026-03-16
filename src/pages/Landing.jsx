@@ -13,7 +13,7 @@ const Landing = () => {
   // Check if current date is April 2026 or later
   const now = new Date()
   const showSpooktoberfest = now >= new Date('2026-04-01')
-  const showOwnerDashboard = isSignedIn && user?.role === 'OWNER'
+  const showOwnerDashboard = isSignedIn && (user?.role === 'OWNER' || user?.role === 'ADMIN')
 
   useEffect(() => {
     const img = new window.Image()
