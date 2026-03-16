@@ -32,6 +32,18 @@ vi.mock('@clerk/react', () => ({
   }),
 }))
 
+vi.mock('@vercel/analytics/react', () => ({
+  Analytics: () => null,
+}))
+
+vi.mock('@vercel/analytics', () => ({
+  track: vi.fn(),
+}))
+
+vi.mock('@vercel/speed-insights/react', () => ({
+  SpeedInsights: () => null,
+}))
+
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers)
 

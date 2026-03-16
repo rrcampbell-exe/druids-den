@@ -2,7 +2,7 @@
 
 The online hub for **The Druids Den**, a cabin rental in Vilas County, Wisconsin. Guests discover the property, book stays, and leave feedback. Owners manage reservations, approve guest accounts, and view revenue analytics — all from a single app deployed on Vercel.
 
-**Tech stack:** React 19 (Vite) · Vercel Serverless Functions · PostgreSQL (Prisma ORM + Accelerate) · Clerk Auth · Resend Email · WeatherAPI
+**Tech stack:** React 19 (Vite) · Vercel Serverless Functions · Vercel Web Analytics + Speed Insights · PostgreSQL (Prisma ORM + Accelerate) · Clerk Auth · Resend Email · WeatherAPI
 
 ---
 
@@ -60,8 +60,8 @@ npm run start:local
 
 | Script | Purpose |
 |---|---|
-| `npm start` | Full-stack dev server via `vercel dev` |
-| `npm run start:local` | Full-stack dev server with local-only Clerk overrides from `.env.clerk.local` |
+| `npm start` | Full-stack dev server via pinned local `vercel dev` |
+| `npm run start:local` | Full-stack dev server with local overrides (Clerk + dev DB URLs) |
 | `npm run dev` | Frontend only (Vite) |
 | `npm run build` | Production build (generates Prisma client + Vite bundle) |
 | `npm run lint` | ESLint check |
@@ -298,7 +298,7 @@ npm run db:reset
 | `OWNER_EMAIL` | Yes | Owner's email — used for auto-approval matching and admin notifications |
 | `SPOOKTOBERFEST_PASSCODE` | No | Numeric passcode for the Spooktoberfest page |
 
-For localhost Clerk development, keep your normal Vercel-pulled env values in `.env.local` and put only the test Clerk keys in `.env.clerk.local`. `npm run start:local` loads that file and maps the override values onto the standard Clerk variable names before starting `vercel dev`.
+For localhost development, keep your Vercel-pulled values in `.env.local` and put localhost-only Clerk keys in `.env.clerk.local`. `npm run start:local` maps local overrides onto standard runtime keys before starting `vercel dev`, including local Clerk keys and optional `DEV_DATABASE_URL` / `DEV_PRISMA_DATABASE_URL` safety overrides.
 
 ---
 
@@ -335,6 +335,10 @@ Global mocks (Clerk, fetch, localStorage, IntersectionObserver) are configured i
 The app deploys to [Vercel](https://vercel.com) with zero additional configuration beyond environment variables.
 
 - **Frontend:** Vite builds a static SPA; all non-API routes are rewritten to `index.html`.
+- **Observability:** Vercel Web Analytics and Vercel Speed Insights are mounted in `src/main.jsx` and report automatically in deployed environments.
+- **Custom analytics events:** Lightweight wrappers record frontend and backend events. Frontend examples: `reservation_page_viewed`, `reservation_dates_selected`, `reservation_submit_attempted`, `reservation_submit_succeeded`, `reservation_submit_conflict`, `reservation_submit_failed`, `auth_page_viewed`, `auth_gate_cta_clicked`. Backend examples: `reservation_api_created`, `reservation_api_conflict`, `reservation_api_failed`, `account_created`, `login_succeeded`, `clerk_webhook_processing_failed`.
 - **API:** Each file in `api/` becomes a serverless function (1024 MB memory, 10s max duration).
 - **Database:** Prisma Accelerate is recommended for production connection pooling. Run `npm run db:deploy` after provisioning a new database.
 - **Webhooks:** Register the deployed `/api/webhooks/clerk` URL in the Clerk dashboard and `/api/receive-email` in your Resend inbound routing settings.
+
+If Analytics or Speed Insights look empty after deployment, first verify traffic reached the deployment, then check for ad blockers or strict browser privacy settings that can suppress telemetry.

@@ -7,6 +7,7 @@ const {
   updateManyMock,
   generateNewUserNotificationEmailMock,
   checkRateLimitMock,
+  trackServerEventMock,
 } = vi.hoisted(() => ({
   verifyMock: vi.fn(),
   sendEmailMock: vi.fn(),
@@ -18,6 +19,7 @@ const {
     html: '<p>html body</p>',
   }),
   checkRateLimitMock: vi.fn(),
+  trackServerEventMock: vi.fn().mockResolvedValue(undefined),
 }))
 
 vi.mock('svix', () => ({
@@ -52,6 +54,10 @@ vi.mock('../../api/_utils/db.js', () => ({
 
 vi.mock('../../api/_utils/rateLimit.js', () => ({
   checkRateLimit: checkRateLimitMock,
+}))
+
+vi.mock('../../api/_utils/analytics.js', () => ({
+  trackServerEvent: trackServerEventMock,
 }))
 
 import handler from '../../api/webhooks/clerk'
@@ -169,6 +175,23 @@ describe('Clerk webhook API', () => {
     expect(upsertClerkUserMock).toHaveBeenCalledWith({ id: 'clerk-2' })
     expect(sendEmailMock).not.toHaveBeenCalled()
     expect(res.status).toHaveBeenCalledWith(200)
+  })
+
+  it('tracks session.created events as login success', async () => {
+    verifyMock.mockReturnValueOnce({
+      type: 'session.created',
+      data: { id: 'sess_1' },
+    })
+
+    await handler(req, res)
+
+    expect(trackServerEventMock).toHaveBeenCalledWith(
+      'login_succeeded',
+      { source: 'clerk_webhook' },
+      req,
+    )
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.json).toHaveBeenCalledWith({ received: true })
   })
 
   it('soft deletes users when Clerk sends user.deleted', async () => {

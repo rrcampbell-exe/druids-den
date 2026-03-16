@@ -17,6 +17,8 @@ const overrideMap = [
   ['VITE_LOCAL_CLERK_PUBLISHABLE_KEY', 'VITE_CLERK_PUBLISHABLE_KEY'],
   ['LOCAL_CLERK_SECRET_KEY', 'CLERK_SECRET_KEY'],
   ['LOCAL_CLERK_WEBHOOK_SIGNING_SECRET', 'CLERK_WEBHOOK_SIGNING_SECRET'],
+  ['DEV_DATABASE_URL', 'DATABASE_URL'],
+  ['DEV_PRISMA_DATABASE_URL', 'PRISMA_DATABASE_URL'],
 ]
 
 const appliedOverrides = []
@@ -32,7 +34,7 @@ for (const [sourceKey, targetKey] of overrideMap) {
 }
 
 if (appliedOverrides.length > 0) {
-  console.log('Applying local Clerk overrides:')
+  console.log('Applying local environment overrides:')
   for (const override of appliedOverrides) {
     console.log(`- ${override}`)
   }
@@ -41,7 +43,7 @@ if (appliedOverrides.length > 0) {
   console.log('Add .env.clerk.local to override Clerk keys for localhost.')
 }
 
-const vercel = spawn('npx', ['vercel', 'dev'], {
+const vercel = spawn('vercel', ['dev'], {
   cwd: rootDir,
   stdio: 'inherit',
   env: process.env,

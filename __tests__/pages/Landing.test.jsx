@@ -3,6 +3,12 @@ import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import Landing from '../../src/pages/Landing'
 
+const useCurrentAppUserMock = vi.fn()
+
+vi.mock('../../src/hooks/useCurrentAppUser', () => ({
+  useCurrentAppUser: () => useCurrentAppUserMock(),
+}))
+
 // Mock components to keep snapshots focused on page structure
 vi.mock('../../src/components', () => ({
   Coelbren: ({ children, className, renderAs }) => {
@@ -19,6 +25,12 @@ describe('Landing Page', () => {
   }
 
   beforeEach(() => {
+    useCurrentAppUserMock.mockReturnValue({
+      user: { role: 'OWNER' },
+      loading: false,
+      error: '',
+    })
+
     // Mock window.Image
     global.Image = class {
       constructor() {
@@ -54,6 +66,35 @@ describe('Landing Page', () => {
   it('renders Weather component', () => {
     renderWithRouter(<Landing />)
     expect(screen.getByTestId('weather')).toBeInTheDocument()
+  })
+
+  it('shows Owner Dashboard link for authenticated owners', () => {
+    renderWithRouter(<Landing />)
+    const link = screen.getByText('Owner Dashboard >')
+    expect(link.closest('a')).toHaveAttribute('href', '/dashboard')
+  })
+
+  it('shows Owner Dashboard link for authenticated admins', () => {
+    useCurrentAppUserMock.mockReturnValue({
+      user: { role: 'ADMIN' },
+      loading: false,
+      error: '',
+    })
+
+    renderWithRouter(<Landing />)
+    const link = screen.getByText('Owner Dashboard >')
+    expect(link.closest('a')).toHaveAttribute('href', '/dashboard')
+  })
+
+  it('hides Owner Dashboard link for non-owner users', () => {
+    useCurrentAppUserMock.mockReturnValue({
+      user: { role: 'GUEST' },
+      loading: false,
+      error: '',
+    })
+
+    renderWithRouter(<Landing />)
+    expect(screen.queryByText('Owner Dashboard >')).not.toBeInTheDocument()
   })
 
   describe('Spooktoberfest conditional rendering', () => {

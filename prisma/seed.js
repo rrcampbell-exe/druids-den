@@ -15,8 +15,16 @@ const { PrismaClient } = prismaPkg
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const databaseUrl = process.env.DATABASE_URL || process.env.DEV_DATABASE_URL
-const accelerateUrl = process.env.PRISMA_DATABASE_URL || process.env.DEV_PRISMA_DATABASE_URL
+const databaseUrl = process.env.DEV_DATABASE_URL || process.env.DATABASE_URL
+const accelerateUrl = process.env.DEV_PRISMA_DATABASE_URL || process.env.PRISMA_DATABASE_URL
+
+if (databaseUrl) {
+  process.env.DATABASE_URL = databaseUrl
+}
+
+if (accelerateUrl) {
+  process.env.PRISMA_DATABASE_URL = accelerateUrl
+}
 
 // Ensure DATABASE_URL is available
 if (!databaseUrl) {

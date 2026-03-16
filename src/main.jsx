@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { ClerkProvider } from '@clerk/react'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Landing, WhatToExpect, Spooktoberfest, Reservations, Dashboard, Feedback, AuthPage } from './pages'
 import { Navigate } from 'react-router'
 import { ClerkAuthGate, ProtectedRoute } from './components'
@@ -71,6 +73,8 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl='/'>
       <RouterProvider router={router} />
+      <Analytics />
+      <SpeedInsights />
     </ClerkProvider>
   </StrictMode>,
 )

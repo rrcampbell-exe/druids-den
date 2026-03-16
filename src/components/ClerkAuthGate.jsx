@@ -4,6 +4,7 @@ import PendingApproval from './PendingApproval'
 import { useCurrentAppUser } from '../hooks/useCurrentAppUser'
 import './ClerkAuthGate.scss'
 import { Flower, Leaf } from './'
+import { trackEvent } from '../utils/analytics'
 
 const ClerkAuthGate = ({ children, requireApproval = false, requiredRoles = [] }) => {
   const location = useLocation()
@@ -23,10 +24,28 @@ const ClerkAuthGate = ({ children, requireApproval = false, requiredRoles = [] }
           <h1>Sign in to continue</h1>
           <p>You need an approved guest account to access this part of The Druids Den.</p>
           <div className='clerk-auth-actions'>
-            <Link className='auth-link-button' to={`/sign-in?redirect=${redirect}`}>
+            <Link
+              className='auth-link-button'
+              to={`/sign-in?redirect=${redirect}`}
+              onClick={() => {
+                trackEvent('auth_gate_cta_clicked', {
+                  action: 'sign-in',
+                  source_path: location.pathname,
+                })
+              }}
+            >
               Sign In
             </Link>
-            <Link className='auth-link-button secondary' to={`/sign-up?redirect=${redirect}`}>
+            <Link
+              className='auth-link-button secondary'
+              to={`/sign-up?redirect=${redirect}`}
+              onClick={() => {
+                trackEvent('auth_gate_cta_clicked', {
+                  action: 'sign-up',
+                  source_path: location.pathname,
+                })
+              }}
+            >
               Create Account
             </Link>
           </div>

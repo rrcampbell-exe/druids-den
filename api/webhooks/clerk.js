@@ -4,6 +4,7 @@ import { generateNewUserNotificationEmail } from '../_utils/dashboardEmailTempla
 import { upsertClerkUser } from '../_utils/userSync.js'
 import { prisma } from '../_utils/db.js'
 import { checkRateLimit } from '../_utils/rateLimit.js'
+import { trackServerEvent } from '../_utils/analytics.js'
 
 const getWebhookHeaders = (req) => ({
   'svix-id': req.headers['svix-id'],
@@ -36,6 +37,9 @@ export default async function handler(req, res) {
   })
 
   if (deliveryLimit) {
+    void trackServerEvent('clerk_webhook_rate_limited', {
+      webhook_type: 'delivery',
+    }, req)
     return res.status(deliveryLimit.statusCode).json(deliveryLimit.body)
   }
 
@@ -48,6 +52,7 @@ export default async function handler(req, res) {
     event = webhook.verify(payload, headers)
   } catch (error) {
     console.error('Invalid Clerk webhook signature:', error)
+    void trackServerEvent('clerk_webhook_invalid_signature', {}, req)
     return res.status(400).json({ error: 'Invalid webhook signature' })
   }
 
@@ -60,6 +65,9 @@ export default async function handler(req, res) {
     })
 
     if (signupLimit) {
+      void trackServerEvent('clerk_webhook_rate_limited', {
+        webhook_type: 'user.created',
+      }, req)
       return res.status(signupLimit.statusCode).json(signupLimit.body)
     }
   }
@@ -67,6 +75,13 @@ export default async function handler(req, res) {
   try {
     if (event.type === 'user.created' || event.type === 'user.updated') {
       const syncedUser = await upsertClerkUser(event.data)
+
+      if (event.type === 'user.created') {
+        void trackServerEvent('account_created', {
+          role: syncedUser.role,
+          account_status: syncedUser.accountStatus,
+        }, req)
+      }
 
       if (event.type === 'user.created' && syncedUser.role === 'GUEST' && syncedUser.accountStatus === 'PENDING_APPROVAL' && process.env.OWNER_EMAIL) {
         const emailContent = generateNewUserNotificationEmail(syncedUser)
@@ -96,9 +111,18 @@ export default async function handler(req, res) {
       }
     }
 
+    if (event.type === 'session.created') {
+      void trackServerEvent('login_succeeded', {
+        source: 'clerk_webhook',
+      }, req)
+    }
+
     return res.status(200).json({ received: true })
   } catch (error) {
     console.error('Error processing Clerk webhook:', error)
+    void trackServerEvent('clerk_webhook_processing_failed', {
+      event_type: event?.type || 'unknown',
+    }, req)
     return res.status(500).json({ error: 'Failed to process Clerk webhook' })
   }
 }
