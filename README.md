@@ -38,7 +38,7 @@ The online hub for **The Druids Den**, a cabin rental in Vilas County, Wisconsin
 
 ## Getting Started
 
-**Prerequisites:** Node.js ≥ 20.9, a PostgreSQL database, and accounts for [Clerk](https://clerk.com), [Resend](https://resend.com), and optionally [WeatherAPI](https://www.weatherapi.com).
+**Prerequisites:** Node.js ≥ 24, a PostgreSQL database, and accounts for [Clerk](https://clerk.com), [Resend](https://resend.com), and optionally [WeatherAPI](https://www.weatherapi.com).
 
 ```bash
 # Install dependencies
