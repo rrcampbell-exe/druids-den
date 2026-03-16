@@ -2,6 +2,14 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/verify-passcode'
 import { setupTestEnv } from '../helpers/testEnv'
 
+const { checkRateLimitMock } = vi.hoisted(() => ({
+  checkRateLimitMock: vi.fn(),
+}))
+
+vi.mock('../../api/_utils/rateLimit.js', () => ({
+  checkRateLimit: checkRateLimitMock,
+}))
+
 describe('verify-passcode API', () => {
   let req, res
 
@@ -10,6 +18,8 @@ describe('verify-passcode API', () => {
   })
 
   beforeEach(() => {
+    checkRateLimitMock.mockReturnValue(null)
+
     // Mock request object
     req = {
       method: 'POST',
@@ -60,6 +70,22 @@ describe('verify-passcode API', () => {
       
       // Should not return 405
       expect(res.status).not.toHaveBeenCalledWith(405)
+    })
+  })
+
+  describe('Rate limiting', () => {
+    it('returns 429 when passcode attempts exceed limit', () => {
+      checkRateLimitMock.mockReturnValueOnce({
+        statusCode: 429,
+        body: { error: 'Too many passcode attempts. Please wait before trying again.' },
+      })
+
+      handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(429)
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Too many passcode attempts. Please wait before trying again.',
+      })
     })
   })
 

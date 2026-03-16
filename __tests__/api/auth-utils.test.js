@@ -58,6 +58,18 @@ describe('auth utils', () => {
     expect(result).toEqual({ sub: 'clerk-1' })
   })
 
+  it('prefers the local Clerk secret override when present', async () => {
+    process.env.CLERK_SECRET_KEY = 'sk_live'
+    process.env.LOCAL_CLERK_SECRET_KEY = 'sk_test_local'
+
+    const { verifyAuth } = await import('../../api/_utils/auth.js')
+    verifyTokenMock.mockResolvedValueOnce({ sub: 'clerk-local' })
+
+    await verifyAuth({ headers: { authorization: 'Bearer local-token' } })
+
+    expect(verifyTokenMock).toHaveBeenCalledWith('local-token', { secretKey: 'sk_test_local' })
+  })
+
   it('rejects missing config, missing tokens, and invalid tokens', async () => {
     process.env.CLERK_SECRET_KEY = ''
     let authModule = await import('../../api/_utils/auth.js')

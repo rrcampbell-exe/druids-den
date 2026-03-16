@@ -30,6 +30,7 @@ vi.mock('../../src/components', () => ({
   Leaf: () => <div>Leaf</div>,
   Awen: () => <span>Awen</span>,
   PageNav: () => <nav>PageNav</nav>,
+  LoadingState: ({ message }) => <div>{message || 'Loading...'}</div>,
   DatePicker: ({ label, checkInValue, checkOutValue, onCheckInChange, onCheckOutChange }) => (
     <div>
       <label htmlFor='checkIn'>{label} Check In</label>
@@ -54,6 +55,15 @@ const renderReservations = async () => {
   await waitFor(() => {
     expect(global.fetch).toHaveBeenCalledWith('/api/availability')
   })
+
+  await screen.findByLabelText('First Name *')
+}
+
+const waitForReservationForm = async () => {
+  await waitFor(() => {
+    expect(global.fetch).toHaveBeenCalledWith('/api/availability')
+  })
+  await screen.findByLabelText('First Name *')
 }
 
 // Convenience: set both date fields via fireEvent (controlled inputs)
@@ -108,6 +118,20 @@ describe('Reservations', () => {
     expect(screen.getByLabelText('Last Name *')).toBeInTheDocument()
     expect(screen.getByLabelText('Email Address *')).toBeInTheDocument()
     expect(screen.getByLabelText('Phone Number *')).toBeInTheDocument()
+  })
+
+  it('shows a themed loading state before reservation content is ready', () => {
+    fetchSpy.mockReset()
+    fetchSpy.mockImplementation(() => new Promise(() => {}))
+
+    render(
+      <BrowserRouter>
+        <Reservations />
+      </BrowserRouter>,
+    )
+
+    expect(screen.getByText('Asking the forest to confirm open reservation dates...')).toBeInTheDocument()
+    expect(screen.queryByText('Reservations')).not.toBeInTheDocument()
   })
 
   it('loads public availability on mount', async () => {
@@ -173,6 +197,8 @@ describe('Reservations', () => {
       </BrowserRouter>,
     )
 
+    await waitForReservationForm()
+
     const phoneInput = screen.getByLabelText('Phone Number *')
     await user.clear(phoneInput)
     await user.type(phoneInput, '5551234567')
@@ -188,6 +214,8 @@ describe('Reservations', () => {
       </BrowserRouter>,
     )
 
+    await waitForReservationForm()
+
     const phoneInput = screen.getByLabelText('Phone Number *')
     await user.type(phoneInput, '123')
     await user.tab()
@@ -202,6 +230,8 @@ describe('Reservations', () => {
         <Reservations />
       </BrowserRouter>,
     )
+
+    await waitForReservationForm()
 
     const phoneInput = screen.getByLabelText('Phone Number *')
     await user.type(phoneInput, '5551234567')
@@ -219,6 +249,8 @@ describe('Reservations', () => {
         <Reservations />
       </BrowserRouter>,
     )
+
+    await waitForReservationForm()
 
     const firstNameInput = screen.getByLabelText('First Name *')
     const lastNameInput = screen.getByLabelText('Last Name *')
@@ -239,6 +271,8 @@ describe('Reservations', () => {
       </BrowserRouter>,
     )
 
+    await waitForReservationForm()
+
     const adultsInput = screen.getByLabelText('Adults *')
     const childrenInput = screen.getByLabelText('Children')
     await user.clear(adultsInput)
@@ -258,6 +292,8 @@ describe('Reservations', () => {
       </BrowserRouter>,
     )
 
+    await waitForReservationForm()
+
     const textarea = screen.getByLabelText(/Anything else we should know/)
     await user.type(textarea, 'Early check-in please')
 
@@ -271,6 +307,8 @@ describe('Reservations', () => {
         <Reservations />
       </BrowserRouter>,
     )
+
+    await waitForReservationForm()
 
     await user.clear(screen.getByLabelText('First Name *'))
     await user.clear(screen.getByLabelText('Last Name *'))
@@ -291,6 +329,8 @@ describe('Reservations', () => {
         <Reservations />
       </BrowserRouter>,
     )
+
+    await waitForReservationForm()
 
     const phoneInput = screen.getByLabelText('Phone Number *')
     await user.clear(phoneInput)
@@ -536,6 +576,8 @@ describe('Reservations', () => {
         </BrowserRouter>,
       )
 
+      await waitForReservationForm()
+
       const textarea = screen.getByLabelText(/Anything else we should know/)
       await user.type(textarea, 'Please provide extra pillows')
 
@@ -558,6 +600,8 @@ describe('Reservations', () => {
         </BrowserRouter>,
       )
 
+      await waitForReservationForm()
+
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '1234567890')
 
@@ -571,6 +615,8 @@ describe('Reservations', () => {
           <Reservations />
         </BrowserRouter>,
       )
+
+      await waitForReservationForm()
 
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '(555) 123-4567')
@@ -586,6 +632,8 @@ describe('Reservations', () => {
         </BrowserRouter>,
       )
 
+      await waitForReservationForm()
+
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '12345678901234')
 
@@ -599,6 +647,8 @@ describe('Reservations', () => {
           <Reservations />
         </BrowserRouter>,
       )
+
+      await waitForReservationForm()
 
       const phoneInput = screen.getByLabelText('Phone Number *')
       await user.type(phoneInput, '555')

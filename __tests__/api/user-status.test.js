@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/user/status'
 
+const { checkRateLimitMock } = vi.hoisted(() => ({
+  checkRateLimitMock: vi.fn(),
+}))
+
 vi.mock('../../api/_utils/auth.js', () => ({
   getCurrentUser: vi.fn(),
   getErrorResponse: (error, fallbackMessage = 'Internal server error') => ({
@@ -11,6 +15,10 @@ vi.mock('../../api/_utils/auth.js', () => ({
   }),
 }))
 
+vi.mock('../../api/_utils/rateLimit.js', () => ({
+  checkRateLimit: checkRateLimitMock,
+}))
+
 import { getCurrentUser } from '../../api/_utils/auth.js'
 
 describe('user status API', () => {
@@ -19,6 +27,7 @@ describe('user status API', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    checkRateLimitMock.mockReturnValue(null)
     req = { method: 'GET' }
     res = {
       status: vi.fn().mockReturnThis(),
@@ -74,5 +83,20 @@ describe('user status API', () => {
 
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ error: 'Authentication required' })
+  })
+
+  it('returns 429 when rate limit is exceeded', async () => {
+    checkRateLimitMock.mockReturnValueOnce({
+      statusCode: 429,
+      body: { error: 'Too many account status checks. Please try again shortly.' },
+    })
+
+    await handler(req, res)
+
+    expect(getCurrentUser).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(429)
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Too many account status checks. Please try again shortly.',
+    })
   })
 })

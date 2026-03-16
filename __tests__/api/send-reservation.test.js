@@ -3,6 +3,10 @@ import handler from '../../api/send-reservation'
 import { prisma } from '../../api/_utils/db.js'
 import { setupTestEnv } from '../helpers/testEnv'
 
+const { checkRateLimitMock } = vi.hoisted(() => ({
+  checkRateLimitMock: vi.fn(),
+}))
+
 vi.mock('../../api/_utils/auth.js', () => ({
   requireApprovedUser: vi.fn().mockResolvedValue({
     user: {
@@ -46,6 +50,10 @@ vi.mock('../../api/_utils/db.js', () => ({
   }
 }))
 
+vi.mock('../../api/_utils/rateLimit.js', () => ({
+  checkRateLimit: checkRateLimitMock,
+}))
+
 describe('send-reservation API', () => {
   let req, res, fetchSpy
 
@@ -54,6 +62,8 @@ describe('send-reservation API', () => {
   })
 
   beforeEach(() => {
+    checkRateLimitMock.mockReturnValue(null)
+
     // Mock request object
     req = {
       method: 'POST',
@@ -118,6 +128,24 @@ describe('send-reservation API', () => {
       await handler(req, res)
       
       expect(res.status).not.toHaveBeenCalledWith(405)
+    })
+  })
+
+  describe('Rate limiting', () => {
+    it('returns 429 when reservation attempts exceed limit', async () => {
+      checkRateLimitMock.mockReturnValueOnce({
+        statusCode: 429,
+        body: { error: 'Too many reservation attempts. Please wait and try again.' },
+      })
+
+      await handler(req, res)
+
+      expect(prisma.reservation.findMany).not.toHaveBeenCalled()
+      expect(prisma.reservation.create).not.toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(429)
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Too many reservation attempts. Please wait and try again.',
+      })
     })
   })
 

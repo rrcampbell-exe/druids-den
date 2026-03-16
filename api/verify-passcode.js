@@ -1,7 +1,20 @@
+import { checkRateLimit } from './_utils/rateLimit.js'
+
 export default function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  const limit = checkRateLimit(req, {
+    keyPrefix: 'verify-passcode',
+    maxRequests: 10,
+    windowMs: 10 * 60 * 1000,
+    message: 'Too many passcode attempts. Please wait before trying again.',
+  })
+
+  if (limit) {
+    return res.status(limit.statusCode).json(limit.body)
   }
 
   const { passcode, page } = req.body

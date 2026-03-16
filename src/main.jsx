@@ -7,7 +7,10 @@ import { Landing, WhatToExpect, Spooktoberfest, Reservations, Dashboard, Feedbac
 import { Navigate } from 'react-router'
 import { ClerkAuthGate, ProtectedRoute } from './components'
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const isLocalDev = import.meta.env.DEV && typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
+const PUBLISHABLE_KEY = isLocalDev
+  ? import.meta.env.VITE_LOCAL_CLERK_PUBLISHABLE_KEY || import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+  : import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 if (!PUBLISHABLE_KEY) {
   throw new Error('Add your Clerk Publishable Key to the .env file')

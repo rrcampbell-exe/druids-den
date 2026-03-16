@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth, useUser } from '@clerk/react'
 import { Link } from 'react-router'
 import './Reservations.scss'
-import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal, AuthHeader } from '../components'
+import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal, AuthHeader, LoadingState } from '../components'
 import { validateReservationForm } from '../utils/formValidation'
 import { buildAuthHeaders } from '../utils/authHeaders'
 
@@ -370,6 +370,17 @@ const Reservations = () => {
     }
   }
 
+  if (loading) {
+    return (
+      <div className='reservations-page'>
+        <LoadingState
+          title='The Druids Den'
+          message='Asking the forest to confirm open reservation dates...'
+        />
+      </div>
+    )
+  }
+
   return (
     <div className='reservations-page'>
       <div className='page-header'>
@@ -398,7 +409,7 @@ const Reservations = () => {
         <p>Please note that reservations submitted here are subject to availability and confirmation. If we're unable to accommodate your request, you'll receive a refund via the same payment method used when you submit this form.</p>
         <Leaf />
       </center>
-      
+
       <div className='page-content-wrapper nav-right'>
         <PageNav items={navItems} />
         

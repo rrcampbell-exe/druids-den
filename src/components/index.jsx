@@ -12,5 +12,6 @@ import Modal from './Modal'
 import ClerkAuthGate from './ClerkAuthGate'
 import PendingApproval from './PendingApproval'
 import AuthHeader from './AuthHeader'
+import LoadingState from './LoadingState'
 
-export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute, DatePicker, Modal, ClerkAuthGate, PendingApproval, AuthHeader }
+export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute, DatePicker, Modal, ClerkAuthGate, PendingApproval, AuthHeader, LoadingState }

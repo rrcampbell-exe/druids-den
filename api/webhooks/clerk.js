@@ -3,6 +3,7 @@ import { sendEmail } from '../_utils/emailService.js'
 import { generateNewUserNotificationEmail } from '../_utils/dashboardEmailTemplates.js'
 import { upsertClerkUser } from '../_utils/userSync.js'
 import { prisma } from '../_utils/db.js'
+import { checkRateLimit } from '../_utils/rateLimit.js'
 
 const getWebhookHeaders = (req) => ({
   'svix-id': req.headers['svix-id'],
@@ -15,7 +16,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const webhookSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET
+  const webhookSecret = process.env.LOCAL_CLERK_WEBHOOK_SIGNING_SECRET || process.env.CLERK_WEBHOOK_SIGNING_SECRET
 
   if (!webhookSecret) {
     return res.status(500).json({ error: 'Clerk webhook secret is not configured' })
@@ -25,6 +26,17 @@ export default async function handler(req, res) {
 
   if (!headers['svix-id'] || !headers['svix-timestamp'] || !headers['svix-signature']) {
     return res.status(400).json({ error: 'Missing Svix headers' })
+  }
+
+  const deliveryLimit = checkRateLimit(req, {
+    keyPrefix: 'clerk-webhook',
+    maxRequests: 240,
+    windowMs: 60 * 1000,
+    message: 'Too many webhook deliveries. Please retry shortly.',
+  })
+
+  if (deliveryLimit) {
+    return res.status(deliveryLimit.statusCode).json(deliveryLimit.body)
   }
 
   const payload = typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
@@ -37,6 +49,19 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Invalid Clerk webhook signature:', error)
     return res.status(400).json({ error: 'Invalid webhook signature' })
+  }
+
+  if (event.type === 'user.created') {
+    const signupLimit = checkRateLimit(req, {
+      keyPrefix: 'clerk-webhook-user-created',
+      maxRequests: 10,
+      windowMs: 24 * 60 * 60 * 1000,
+      message: 'Too many signup attempts. Please try again later.',
+    })
+
+    if (signupLimit) {
+      return res.status(signupLimit.statusCode).json(signupLimit.body)
+    }
   }
 
   try {

@@ -34,12 +34,10 @@ const PendingApproval = ({ accountStatus = 'PENDING_APPROVAL' }) => {
         <p>{content.detail}</p>
 
         <div className='pending-approval-actions'>
-          <button type='button' onClick={() => signOut()}>
+          <button type='button' className='pending-action-button' onClick={() => signOut()}>
             Sign Out
           </button>
-          <Link to='/'>
-            <div className='back-navigation'><Awen /> Return Home</div>
-          </Link>
+          <Link className='pending-action-button secondary' to='/'><Awen /> Return Home</Link>
         </div>
         <Leaf />
       </div>
