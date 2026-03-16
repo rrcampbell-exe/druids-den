@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   })
 
   if (limit) {
-    await trackServerEvent('reservation_api_rate_limited', {
+    void trackServerEvent('reservation_api_rate_limited', {
       route: '/api/send-reservation',
     }, req)
     return res.status(limit.statusCode).json(limit.body)
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
   // Check for any validation errors
   if (Object.keys(errors).length > 0) {
-    await trackServerEvent('reservation_api_validation_failed', {
+    void trackServerEvent('reservation_api_validation_failed', {
       error_count: Object.keys(errors).length,
     }, req)
     return res.status(400).json({ 
@@ -48,7 +48,7 @@ export default async function handler(req, res) {
 
   // Ensure required fields passed validation
   if (!sanitized.firstName || !sanitized.email || !sanitized.checkIn) {
-    await trackServerEvent('reservation_api_validation_failed', {
+    void trackServerEvent('reservation_api_validation_failed', {
       reason: 'missing_required_fields',
     }, req)
     return res.status(400).json({ error: 'Missing required fields' })
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
     })
     
     if (conflictingReservations.length > 0) {
-      await trackServerEvent('reservation_api_conflict', {
+      void trackServerEvent('reservation_api_conflict', {
         reason: 'date_overlap',
       }, req)
       return res.status(409).json({ 
@@ -165,7 +165,7 @@ export default async function handler(req, res) {
     const serviceConfigured = results.some(r => r.provider !== 'none')
 
     if (!serviceConfigured) {
-      await trackServerEvent('reservation_api_created', {
+      void trackServerEvent('reservation_api_created', {
         email_provider_configured: false,
       }, req)
       return res.status(200).json({
@@ -177,7 +177,7 @@ export default async function handler(req, res) {
     }
 
     if (allSuccessful) {
-      await trackServerEvent('reservation_api_created', {
+      void trackServerEvent('reservation_api_created', {
         email_provider_configured: true,
         email_delivery_status: 'all_success',
       }, req)
@@ -193,7 +193,7 @@ export default async function handler(req, res) {
     }
 
     // Partial success - some emails sent, some failed
-    await trackServerEvent('reservation_api_created', {
+    void trackServerEvent('reservation_api_created', {
       email_provider_configured: true,
       email_delivery_status: 'partial_failure',
     }, req)
@@ -208,7 +208,7 @@ export default async function handler(req, res) {
     })
 
   } catch (error) {
-    await trackServerEvent('reservation_api_failed', {
+    void trackServerEvent('reservation_api_failed', {
       reason: 'handler_exception',
     }, req)
     const { statusCode, body } = getErrorResponse(error, 'Failed to process reservation request')
