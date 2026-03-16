@@ -5,6 +5,7 @@ import './Reservations.scss'
 import { Coelbren, Flower, Leaf, Awen, PageNav, DatePicker, Modal, AuthHeader, LoadingState } from '../components'
 import { validateReservationForm } from '../utils/formValidation'
 import { buildAuthHeaders } from '../utils/authHeaders'
+import { trackEvent } from '../utils/analytics'
 
 const Reservations = () => {
   const { getToken } = useAuth()
@@ -45,6 +46,7 @@ const Reservations = () => {
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const lastTrackedDateRangeRef = useRef('')
 
   const navItems = [
     { label: 'Your Information', href: '#your-information' },
@@ -93,6 +95,12 @@ const Reservations = () => {
 
       fetchAvailability()
   }, [])
+
+  useEffect(() => {
+    trackEvent('reservation_page_viewed', {
+      is_signed_in: Boolean(user),
+    })
+  }, [user])
 
   // Validate fields when touched to show errors
   useEffect(() => {
@@ -237,10 +245,28 @@ const Reservations = () => {
       return
     }
     
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'number' ? parseInt(value) || 0 : value
-    }))
+    const nextValue = type === 'number' ? parseInt(value) || 0 : value
+
+    setFormData(prev => {
+      const nextState = {
+        ...prev,
+        [name]: nextValue
+      }
+
+      if ((name === 'checkIn' || name === 'checkOut') && nextState.checkIn && nextState.checkOut) {
+        const rangeKey = `${nextState.checkIn}:${nextState.checkOut}`
+
+        if (rangeKey !== lastTrackedDateRangeRef.current) {
+          lastTrackedDateRangeRef.current = rangeKey
+          trackEvent('reservation_dates_selected', {
+            check_in: nextState.checkIn,
+            check_out: nextState.checkOut,
+          })
+        }
+      }
+
+      return nextState
+    })
   }
   
   const handleBlur = (e) => {
@@ -258,8 +284,21 @@ const Reservations = () => {
     
     // Validate entire form
     const validation = validateReservationForm(formData)
+
+    trackEvent('reservation_submit_attempted', {
+      has_check_in: Boolean(formData.checkIn),
+      has_check_out: Boolean(formData.checkOut),
+      adults: formData.adults,
+      children: formData.children,
+    })
     
     if (!validation.valid) {
+      const errorFields = Object.keys(validation.errors)
+      trackEvent('reservation_submit_validation_failed', {
+        error_count: errorFields.length,
+        first_error_field: errorFields[0] || '',
+      })
+
       // Set all validation errors
       setValidationErrors(validation.errors)
       
@@ -291,6 +330,9 @@ const Reservations = () => {
     
     // Validate check-in date is not blacked out
     if (isDateBlackedOut(formData.checkIn)) {
+      trackEvent('reservation_submit_blocked', {
+        reason: 'checkin_unavailable',
+      })
       setErrorMessage('The selected check-in date is not available. Please choose another date.')
       setShowErrorModal(true)
       return
@@ -299,6 +341,9 @@ const Reservations = () => {
     // Validate no blackout dates in range (excluding check-in and check-out dates)
     const blackedOutInRange = hasBlackoutDatesInRange(formData.checkIn, formData.checkOut)
     if (blackedOutInRange.length > 0) {
+      trackEvent('reservation_submit_blocked', {
+        reason: 'range_conflict',
+      })
       setErrorMessage(`Your selected dates conflict with other reservations. Please select a different date range.`)
       setShowErrorModal(true)
       return
@@ -322,6 +367,10 @@ const Reservations = () => {
       const data = await response.json()
 
       if (response.ok && data.success) {
+        trackEvent('reservation_submit_succeeded', {
+          adults: formData.adults,
+          children: formData.children,
+        })
         setShowSuccessModal(true)
         // Reset form
         setFormData({
@@ -345,6 +394,9 @@ const Reservations = () => {
           phone: false
         })
       } else if (response.status === 409) {
+        trackEvent('reservation_submit_conflict', {
+          reason: 'api_date_conflict',
+        })
         // Date conflict - refetch reservations to update calendar
         setErrorMessage(data.message || 'These dates are no longer available. Please select different dates.')
         setShowErrorModal(true)
@@ -362,6 +414,9 @@ const Reservations = () => {
         throw new Error(data.error || 'Failed to submit reservation')
       }
     } catch (error) {
+      trackEvent('reservation_submit_failed', {
+        reason: 'network_or_server_error',
+      })
       console.error('Error submitting reservation:', error)
       setErrorMessage('There was an error submitting your reservation. Please try again or contact us directly at grovekeeper@druidsdenwi.com.')
       setShowErrorModal(true)

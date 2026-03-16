@@ -54,6 +54,10 @@ vi.mock('../../api/_utils/rateLimit.js', () => ({
   checkRateLimit: checkRateLimitMock,
 }))
 
+vi.mock('../../api/_utils/analytics.js', () => ({
+  trackServerEvent: vi.fn().mockResolvedValue(undefined),
+}))
+
 describe('send-reservation API', () => {
   let req, res, fetchSpy
 

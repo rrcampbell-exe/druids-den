@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link, useLocation } from 'react-router'
 import { SignIn, SignUp } from '@clerk/react'
 import './AuthPage.scss'
 import { Awen } from '../components'
+import { trackEvent } from '../utils/analytics'
 
 const clerkAppearance = {
   variables: {
@@ -37,6 +38,13 @@ const AuthPage = ({ mode = 'sign-in' }) => {
     const params = new URLSearchParams(location.search)
     return params.get('redirect') || '/reservations'
   }, [location.search])
+
+  useEffect(() => {
+    trackEvent('auth_page_viewed', {
+      mode,
+      redirect_path: redirectPath,
+    })
+  }, [mode, redirectPath])
 
   return (
     <div className='auth-page'>
