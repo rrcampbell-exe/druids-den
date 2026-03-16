@@ -2,13 +2,18 @@ import { useEffect, useRef } from 'react'
 import './Landing.scss'
 import { Coelbren, Awen, Weather } from '../components'
 import { Link } from 'react-router'
+import { useAuth } from '@clerk/react'
+import { useCurrentAppUser } from '../hooks/useCurrentAppUser'
 
 const Landing = () => {
   const ref = useRef()
+  const { isSignedIn } = useAuth()
+  const { user } = useCurrentAppUser()
 
   // Check if current date is April 2026 or later
   const now = new Date()
   const showSpooktoberfest = now >= new Date('2026-04-01')
+  const showOwnerDashboard = isSignedIn && user?.role === 'OWNER'
 
   useEffect(() => {
     const img = new window.Image()
@@ -33,6 +38,11 @@ const Landing = () => {
       {showSpooktoberfest && (
         <Link to='/spooktoberfest' className='landing-cta'>
           Spooktoberfest 2026 &gt;
+        </Link>
+      )}
+      {showOwnerDashboard && (
+        <Link to='/dashboard' className='landing-cta'>
+          Owner Dashboard &gt;
         </Link>
       )}
       <Weather />

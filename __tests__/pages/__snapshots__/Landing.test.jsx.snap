@@ -36,6 +36,13 @@ exports[`Landing Page > matches snapshot 1`] = `
   >
     Begin Your Northwoods Adventure &gt;
   </a>
+  <a
+    class="landing-cta"
+    data-discover="true"
+    href="/dashboard"
+  >
+    Owner Dashboard &gt;
+  </a>
   <div
     data-testid="weather"
   >
