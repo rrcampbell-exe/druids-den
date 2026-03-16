@@ -7,11 +7,23 @@ import {
 import { sanitizeReservationData } from './_utils/sanitize.js'
 import { calculateEstimatedTotal } from './_utils/pricing.js'
 import { requireApprovedUser, getErrorResponse } from './_utils/auth.js'
+import { checkRateLimit } from './_utils/rateLimit.js'
 
 export default async function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  const limit = checkRateLimit(req, {
+    keyPrefix: 'send-reservation',
+    maxRequests: 20,
+    windowMs: 60 * 1000,
+    message: 'Too many reservation attempts. Please wait and try again.',
+  })
+
+  if (limit) {
+    return res.status(limit.statusCode).json(limit.body)
   }
 
   const rawReservationData = req.body

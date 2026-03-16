@@ -3,6 +3,7 @@ import { sendEmail } from '../_utils/emailService.js'
 import { generateNewUserNotificationEmail } from '../_utils/dashboardEmailTemplates.js'
 import { upsertClerkUser } from '../_utils/userSync.js'
 import { prisma } from '../_utils/db.js'
+import { checkRateLimit } from '../_utils/rateLimit.js'
 
 const getWebhookHeaders = (req) => ({
   'svix-id': req.headers['svix-id'],
@@ -13,6 +14,17 @@ const getWebhookHeaders = (req) => ({
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  const limit = checkRateLimit(req, {
+    keyPrefix: 'clerk-webhook',
+    maxRequests: 120,
+    windowMs: 60 * 1000,
+    message: 'Too many webhook deliveries. Please retry shortly.',
+  })
+
+  if (limit) {
+    return res.status(limit.statusCode).json(limit.body)
   }
 
   const webhookSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET

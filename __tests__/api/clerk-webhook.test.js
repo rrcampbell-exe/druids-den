@@ -6,6 +6,7 @@ const {
   upsertClerkUserMock,
   updateManyMock,
   generateNewUserNotificationEmailMock,
+  checkRateLimitMock,
 } = vi.hoisted(() => ({
   verifyMock: vi.fn(),
   sendEmailMock: vi.fn(),
@@ -16,6 +17,7 @@ const {
     text: 'text body',
     html: '<p>html body</p>',
   }),
+  checkRateLimitMock: vi.fn(),
 }))
 
 vi.mock('svix', () => ({
@@ -48,6 +50,10 @@ vi.mock('../../api/_utils/db.js', () => ({
   },
 }))
 
+vi.mock('../../api/_utils/rateLimit.js', () => ({
+  checkRateLimit: checkRateLimitMock,
+}))
+
 import handler from '../../api/webhooks/clerk'
 
 describe('Clerk webhook API', () => {
@@ -57,6 +63,7 @@ describe('Clerk webhook API', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    checkRateLimitMock.mockReturnValue(null)
     process.env.CLERK_WEBHOOK_SIGNING_SECRET = 'whsec_test'
     process.env.OWNER_EMAIL = 'owner@example.com'
     req = {
@@ -177,5 +184,20 @@ describe('Clerk webhook API', () => {
 
     expect(res.status).toHaveBeenCalledWith(500)
     expect(res.json).toHaveBeenCalledWith({ error: 'Failed to process Clerk webhook' })
+  })
+
+  it('returns 429 when webhook delivery exceeds limit', async () => {
+    checkRateLimitMock.mockReturnValueOnce({
+      statusCode: 429,
+      body: { error: 'Too many webhook deliveries. Please retry shortly.' },
+    })
+
+    await handler(req, res)
+
+    expect(verifyMock).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(429)
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Too many webhook deliveries. Please retry shortly.',
+    })
   })
 })
