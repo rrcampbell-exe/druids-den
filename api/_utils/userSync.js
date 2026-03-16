@@ -49,11 +49,21 @@ export function normalizeClerkUser(userData) {
 
 export async function upsertClerkUser(userData) {
   const normalized = normalizeClerkUser(userData)
-  const existingUser = await prisma.user.findUnique({
+  const existingUserByClerkId = await prisma.user.findUnique({
     where: {
       clerkId: normalized.clerkId,
     },
   })
+
+  const existingUserByEmail = existingUserByClerkId
+    ? null
+    : await prisma.user.findUnique({
+      where: {
+        email: normalized.email,
+      },
+    })
+
+  const existingUser = existingUserByClerkId || existingUserByEmail
 
   const isOwner = ownerEmail && normalized.email === ownerEmail
   const nextRole = isOwner ? 'OWNER' : existingUser?.role || 'GUEST'
@@ -65,31 +75,38 @@ export async function upsertClerkUser(userData) {
     ? existingUser?.accountStatusChangedBy || 'system-owner-bootstrap'
     : existingUser?.accountStatusChangedBy || null
 
-  return prisma.user.upsert({
-    where: {
-      clerkId: normalized.clerkId,
-    },
-    update: {
-      email: normalized.email,
-      firstName: normalized.firstName,
-      lastName: normalized.lastName,
-      phone: normalized.phone,
-      role: nextRole,
-      accountStatus: nextAccountStatus,
-      accountStatusChangedAt: nextStatusChangedAt,
-      accountStatusChangedBy: nextStatusChangedBy,
-      deletedAt: null,
-    },
-    create: {
-      clerkId: normalized.clerkId,
-      email: normalized.email,
-      firstName: normalized.firstName,
-      lastName: normalized.lastName,
-      phone: normalized.phone,
-      role: nextRole,
-      accountStatus: nextAccountStatus,
-      accountStatusChangedAt: nextStatusChangedAt,
-      accountStatusChangedBy: nextStatusChangedBy,
-    },
+  const nextData = {
+    clerkId: normalized.clerkId,
+    email: normalized.email,
+    firstName: normalized.firstName,
+    lastName: normalized.lastName,
+    phone: normalized.phone,
+    role: nextRole,
+    accountStatus: nextAccountStatus,
+    accountStatusChangedAt: nextStatusChangedAt,
+    accountStatusChangedBy: nextStatusChangedBy,
+    deletedAt: null,
+  }
+
+  if (existingUserByClerkId) {
+    return prisma.user.update({
+      where: {
+        clerkId: normalized.clerkId,
+      },
+      data: nextData,
+    })
+  }
+
+  if (existingUserByEmail) {
+    return prisma.user.update({
+      where: {
+        email: normalized.email,
+      },
+      data: nextData,
+    })
+  }
+
+  return prisma.user.create({
+    data: nextData,
   })
 }

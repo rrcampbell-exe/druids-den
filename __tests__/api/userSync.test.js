@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 const findUniqueMock = vi.fn()
-const upsertMock = vi.fn()
+const updateMock = vi.fn()
+const createMock = vi.fn()
 
 vi.mock('../../api/_utils/db.js', () => ({
   prisma: {
     user: {
       findUnique: findUniqueMock,
-      upsert: upsertMock,
+      update: updateMock,
+      create: createMock,
     },
   },
 }))
@@ -72,7 +74,8 @@ describe('userSync utils', () => {
   it('bootstraps the owner account as approved', async () => {
     const { upsertClerkUser } = await import('../../api/_utils/userSync.js')
     findUniqueMock.mockResolvedValueOnce(null)
-    upsertMock.mockResolvedValueOnce({ id: 'owner-1' })
+    findUniqueMock.mockResolvedValueOnce(null)
+    createMock.mockResolvedValueOnce({ id: 'owner-1' })
 
     await upsertClerkUser({
       id: 'clerk-owner',
@@ -82,17 +85,12 @@ describe('userSync utils', () => {
       lastName: 'Owner',
     })
 
-    expect(upsertMock).toHaveBeenCalledWith(expect.objectContaining({
-      where: { clerkId: 'clerk-owner' },
-      update: expect.objectContaining({
+    expect(createMock).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
         role: 'OWNER',
         accountStatus: 'APPROVED',
         accountStatusChangedAt: expect.any(Date),
         accountStatusChangedBy: 'system-owner-bootstrap',
-      }),
-      create: expect.objectContaining({
-        role: 'OWNER',
-        accountStatus: 'APPROVED',
       }),
     }))
   })
@@ -105,7 +103,7 @@ describe('userSync utils', () => {
       accountStatusChangedAt: new Date('2026-03-01T00:00:00.000Z'),
       accountStatusChangedBy: 'owner-1',
     })
-    upsertMock.mockResolvedValueOnce({ id: 'guest-1' })
+    updateMock.mockResolvedValueOnce({ id: 'guest-1' })
 
     await upsertClerkUser({
       id: 'clerk-guest',
@@ -115,15 +113,12 @@ describe('userSync utils', () => {
       lastName: 'User',
     })
 
-    expect(upsertMock).toHaveBeenCalledWith(expect.objectContaining({
-      update: expect.objectContaining({
+    expect(updateMock).toHaveBeenCalledWith(expect.objectContaining({
+      where: { clerkId: 'clerk-guest' },
+      data: expect.objectContaining({
         role: 'GUEST',
         accountStatus: 'DENIED',
         accountStatusChangedBy: 'owner-1',
-      }),
-      create: expect.objectContaining({
-        role: 'GUEST',
-        accountStatus: 'DENIED',
       }),
     }))
   })
@@ -131,7 +126,8 @@ describe('userSync utils', () => {
   it('defaults new non-owner accounts to pending approval', async () => {
     const { upsertClerkUser } = await import('../../api/_utils/userSync.js')
     findUniqueMock.mockResolvedValueOnce(null)
-    upsertMock.mockResolvedValueOnce({ id: 'guest-2' })
+    findUniqueMock.mockResolvedValueOnce(null)
+    createMock.mockResolvedValueOnce({ id: 'guest-2' })
 
     await upsertClerkUser({
       id: 'clerk-pending',
@@ -139,12 +135,44 @@ describe('userSync utils', () => {
       emailAddresses: [{ id: 'email_1', emailAddress: 'pending@example.com' }],
     })
 
-    expect(upsertMock).toHaveBeenCalledWith(expect.objectContaining({
-      create: expect.objectContaining({
+    expect(createMock).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
         role: 'GUEST',
         accountStatus: 'PENDING_APPROVAL',
         accountStatusChangedAt: null,
         accountStatusChangedBy: null,
+      }),
+    }))
+  })
+
+  it('claims an existing email when clerk id differs', async () => {
+    const { upsertClerkUser } = await import('../../api/_utils/userSync.js')
+    findUniqueMock
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        id: 'seed-owner',
+        clerkId: 'seeded_clerk',
+        email: 'owner@example.com',
+        role: 'OWNER',
+        accountStatus: 'APPROVED',
+        accountStatusChangedAt: new Date('2026-01-01T00:00:00.000Z'),
+        accountStatusChangedBy: 'seed',
+      })
+    updateMock.mockResolvedValueOnce({ id: 'seed-owner' })
+
+    await upsertClerkUser({
+      id: 'clerk-owner-real',
+      primaryEmailAddressId: 'email_1',
+      emailAddresses: [{ id: 'email_1', emailAddress: 'owner@example.com' }],
+      firstName: 'Ryan',
+      lastName: 'Campbell',
+    })
+
+    expect(updateMock).toHaveBeenCalledWith(expect.objectContaining({
+      where: { email: 'owner@example.com' },
+      data: expect.objectContaining({
+        clerkId: 'clerk-owner-real',
+        email: 'owner@example.com',
       }),
     }))
   })
