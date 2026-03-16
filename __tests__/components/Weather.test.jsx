@@ -7,17 +7,13 @@ describe('Weather', () => {
     // Reset mocks
     vi.clearAllMocks()
     global.fetch.mockClear()
-    
-    // Mock environment variable
-    vi.stubGlobal('import.meta', {
-      env: {
-        VITE_WEATHER_API_KEY: 'test_api_key',
-      },
-    })
+
+    // Mock Vite environment variable used by the component.
+    vi.stubEnv('VITE_WEATHER_API_KEY', 'test_api_key')
   })
 
   afterEach(() => {
-    vi.unstubAllGlobals()
+    vi.unstubAllEnvs()
   })
 
   it('renders null while loading', () => {
@@ -131,15 +127,7 @@ describe('Weather', () => {
   })
 
   it('does not fetch when API key is missing', async () => {
-    // Clear all previous mocks
-    vi.clearAllMocks()
-    vi.unstubAllGlobals()
-    
-    vi.stubGlobal('import.meta', {
-      env: {
-        VITE_WEATHER_API_KEY: undefined,
-      },
-    })
+    vi.stubEnv('VITE_WEATHER_API_KEY', '')
 
     const { container } = render(<Weather />)
 
@@ -152,15 +140,7 @@ describe('Weather', () => {
   })
 
   it('does not fetch when API key is demo_key', async () => {
-    // Clear all previous mocks
-    vi.clearAllMocks()
-    vi.unstubAllGlobals()
-    
-    vi.stubGlobal('import.meta', {
-      env: {
-        VITE_WEATHER_API_KEY: 'demo_key',
-      },
-    })
+    vi.stubEnv('VITE_WEATHER_API_KEY', 'demo_key')
 
     const { container } = render(<Weather />)
 
