@@ -46,18 +46,22 @@ npm install
 
 # Copy and populate environment variables (see Environment Variables section)
 cp .env.example .env.local
+cp .env.clerk.local.example .env.clerk.local
 
-# Run database migrations and seed test data
+# Generate the Prisma client, run database migrations, and seed test data
+npx prisma generate
 npx prisma migrate deploy
 npm run db:seed
 
 # Start the full-stack dev server (Vite + Vercel Functions)
-npm start
+# Use start:local if Vercel Development env vars conflict with localhost Clerk auth
+npm run start:local
 ```
 
 | Script | Purpose |
 |---|---|
 | `npm start` | Full-stack dev server via `vercel dev` |
+| `npm run start:local` | Full-stack dev server with local-only Clerk overrides from `.env.clerk.local` |
 | `npm run dev` | Frontend only (Vite) |
 | `npm run build` | Production build (generates Prisma client + Vite bundle) |
 | `npm run lint` | ESLint check |
@@ -276,6 +280,7 @@ npm run db:reset
 | Variable | Required | Purpose |
 |---|---|---|
 | `VITE_CLERK_PUBLISHABLE_KEY` | Yes | Clerk authentication public key |
+| `VITE_LOCAL_CLERK_PUBLISHABLE_KEY` | Local only | Optional localhost override used by `npm run start:local` |
 | `VITE_WEATHER_API_KEY` | No | WeatherAPI.com key; falls back to mock data in dev |
 
 ### Backend (Node.js — server-side only)
@@ -286,10 +291,14 @@ npm run db:reset
 | `PRISMA_DATABASE_URL` | No | Prisma Accelerate proxy URL (overrides `DATABASE_URL` if set) |
 | `CLERK_SECRET_KEY` | Yes | Clerk backend secret for token verification |
 | `CLERK_WEBHOOK_SIGNING_SECRET` | Yes | Svix key for verifying Clerk webhook payloads |
+| `LOCAL_CLERK_SECRET_KEY` | Local only | Optional localhost override used by `npm run start:local` |
+| `LOCAL_CLERK_WEBHOOK_SIGNING_SECRET` | Local only | Optional localhost override used by `npm run start:local` |
 | `RESEND_API_KEY` | No | Resend email service key; emails log to console if unset |
 | `RESEND_WEBHOOK_SECRET` | No | Svix key for verifying inbound email webhooks |
 | `OWNER_EMAIL` | Yes | Owner's email — used for auto-approval matching and admin notifications |
 | `SPOOKTOBERFEST_PASSCODE` | No | Numeric passcode for the Spooktoberfest page |
+
+For localhost Clerk development, keep your normal Vercel-pulled env values in `.env.local` and put only the test Clerk keys in `.env.clerk.local`. `npm run start:local` loads that file and maps the override values onto the standard Clerk variable names before starting `vercel dev`.
 
 ---
 

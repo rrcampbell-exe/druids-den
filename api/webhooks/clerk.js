@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const webhookSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET
+  const webhookSecret = process.env.LOCAL_CLERK_WEBHOOK_SIGNING_SECRET || process.env.CLERK_WEBHOOK_SIGNING_SECRET
 
   if (!webhookSecret) {
     return res.status(500).json({ error: 'Clerk webhook secret is not configured' })

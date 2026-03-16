@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prestart": "prisma generate",
     "start": "vercel dev",
+    "prestart:local": "prisma generate",
+    "start:local": "node scripts/start-local.js",
     "dev": "vite",
     "build": "prisma generate && vite build",
     "lint": "eslint .",

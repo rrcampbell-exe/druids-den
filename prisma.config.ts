@@ -4,6 +4,6 @@ require('dotenv').config({ path: '.env' })
 
 module.exports = {
   datasource: {
-    url: process.env.DATABASE_URL
+    url: process.env.DATABASE_URL || process.env.DEV_DATABASE_URL
   }
 }

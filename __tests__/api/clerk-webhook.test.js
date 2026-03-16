@@ -116,6 +116,19 @@ describe('Clerk webhook API', () => {
     expect(res.json).toHaveBeenCalledWith({ error: 'Invalid webhook signature' })
   })
 
+  it('prefers the local Clerk webhook secret override when present', async () => {
+    process.env.CLERK_WEBHOOK_SIGNING_SECRET = 'whsec_live'
+    process.env.LOCAL_CLERK_WEBHOOK_SIGNING_SECRET = 'whsec_local'
+
+    verifyMock.mockImplementationOnce(() => {
+      throw new Error('invalid signature')
+    })
+
+    await handler(req, res)
+
+    expect(res.status).toHaveBeenCalledWith(400)
+  })
+
   it('syncs created users and emails the owner for pending guests', async () => {
     verifyMock.mockReturnValueOnce({
       type: 'user.created',

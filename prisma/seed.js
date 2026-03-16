@@ -5,17 +5,21 @@ import { config } from "dotenv"
 config({ path: ".env.local" })
 config({ path: ".env" })
 
-import { PrismaClient } from '@prisma/client'
+import prismaPkg from '@prisma/client'
 import { faker } from '@faker-js/faker'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+const { PrismaClient } = prismaPkg
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+const databaseUrl = process.env.DATABASE_URL || process.env.DEV_DATABASE_URL
+const accelerateUrl = process.env.PRISMA_DATABASE_URL || process.env.DEV_PRISMA_DATABASE_URL
 
 // Ensure DATABASE_URL is available
-if (!process.env.DATABASE_URL) {
+if (!databaseUrl) {
   console.error('ERROR: DATABASE_URL environment variable is not set!')
   console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('DATABASE')))
   process.exit(1)
@@ -25,7 +29,7 @@ console.log('Using DATABASE_URL from environment (value redacted)')
 
 // Prisma 7 with Accelerate requires accelerateUrl in constructor
 const prisma = new PrismaClient({
-  accelerateUrl: process.env.PRISMA_DATABASE_URL || process.env.DEV_PRISMA_DATABASE_URL
+  accelerateUrl
 })
 
 // Helper to add days to a date

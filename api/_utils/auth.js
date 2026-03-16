@@ -2,7 +2,7 @@ import { createClerkClient, verifyToken } from '@clerk/backend'
 import { prisma } from './db.js'
 import { upsertClerkUser } from './userSync.js'
 
-const clerkSecretKey = process.env.CLERK_SECRET_KEY
+const clerkSecretKey = process.env.LOCAL_CLERK_SECRET_KEY || process.env.CLERK_SECRET_KEY
 const clerkClient = clerkSecretKey
   ? createClerkClient({ secretKey: clerkSecretKey })
   : null
