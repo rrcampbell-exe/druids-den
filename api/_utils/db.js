@@ -9,7 +9,16 @@ const { PrismaClient } = prismaPkg
 // Load environment variables from .env.local (for Vercel Dev)
 config({ path: '.env.local', override: true })
 
-const accelerateUrl = process.env.PRISMA_DATABASE_URL || process.env.DEV_PRISMA_DATABASE_URL
+// In local/dev, prefer explicit DEV_* database vars when both are present.
+if (process.env.DEV_DATABASE_URL?.trim()) {
+  process.env.DATABASE_URL = process.env.DEV_DATABASE_URL
+}
+
+if (process.env.DEV_PRISMA_DATABASE_URL?.trim()) {
+  process.env.PRISMA_DATABASE_URL = process.env.DEV_PRISMA_DATABASE_URL
+}
+
+const accelerateUrl = process.env.PRISMA_DATABASE_URL
 
 export const prisma = globalThis.prisma ?? new PrismaClient({
   accelerateUrl
