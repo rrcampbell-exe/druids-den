@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  color: var(--color-iron-ore);
 }
 
 .auth-shell {
@@ -15,11 +16,79 @@
   align-items: center;
   gap: 0.4rem;
   margin-bottom: 1rem;
-  color: #464645;
+  color: var(--color-iron-ore);
+  font-family: inherit;
+  font-weight: 600;
   text-decoration: none;
+
+  &:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
 }
 
 .auth-shell-inner {
   display: flex;
   justify-content: center;
+}
+
+.auth-clerk-root {
+  width: min(28rem, 100%);
+}
+
+.auth-clerk-card {
+  border: 2px solid rgba(70, 70, 69, 0.15);
+  box-shadow: 0 1.5rem 3rem rgba(70, 70, 69, 0.12);
+}
+
+.auth-clerk-title {
+  color: var(--color-iron-ore);
+  font-weight: 400;
+}
+
+.auth-clerk-subtitle {
+  color: rgba(70, 70, 69, 0.8);
+}
+
+.auth-clerk-social-button,
+.auth-clerk-primary-button {
+  border: 1px solid var(--color-iron-ore);
+  background: var(--color-iron-ore);
+  color: var(--color-shiitake);
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #5a5a59;
+  }
+}
+
+.auth-clerk-input {
+  border: 1px solid rgba(70, 70, 69, 0.35);
+  color: var(--color-iron-ore);
+}
+
+.auth-clerk-label {
+  color: var(--color-iron-ore);
+  font-family: inherit;
+}
+
+.auth-clerk-link {
+  color: var(--color-iron-ore);
+  font-family: inherit;
+  font-weight: 600;
+
+  &:hover {
+    color: var(--color-iron-ore);
+    opacity: 0.8;
+  }
+}
+
+.auth-clerk-divider-line {
+  background: rgba(70, 70, 69, 0.2);
+}
+
+.auth-clerk-divider-text {
+  color: rgba(70, 70, 69, 0.6);
 }

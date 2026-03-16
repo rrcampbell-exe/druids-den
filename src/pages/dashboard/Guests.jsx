@@ -111,7 +111,7 @@ const Guests = ({ getToken = defaultGetToken }) => {
           <button
             key={status}
             type='button'
-            className={activeStatus === status ? 'active' : ''}
+            className={`status-tab ${activeStatus === status ? 'active' : ''}`}
             onClick={() => setActiveStatus(status)}
           >
             {label} ({counts[status] || 0})
@@ -157,12 +157,12 @@ const Guests = ({ getToken = defaultGetToken }) => {
                     </button>
                   )}
                   {user.accountStatus !== 'DENIED' && (
-                    <button type='button' disabled={isUpdating} className='secondary' onClick={() => updateUserStatus(user.id, 'DENIED')}>
+                    <button type='button' disabled={isUpdating} className='secondary danger' onClick={() => updateUserStatus(user.id, 'DENIED')}>
                       Deny
                     </button>
                   )}
                   {user.accountStatus === 'APPROVED' && (
-                    <button type='button' disabled={isUpdating} className='secondary' onClick={() => updateUserStatus(user.id, 'REVOKED')}>
+                    <button type='button' disabled={isUpdating} className='secondary danger' onClick={() => updateUserStatus(user.id, 'REVOKED')}>
                       Revoke
                     </button>
                   )}
