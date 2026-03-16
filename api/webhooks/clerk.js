@@ -16,17 +16,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const limit = checkRateLimit(req, {
-    keyPrefix: 'clerk-webhook',
-    maxRequests: 120,
-    windowMs: 60 * 1000,
-    message: 'Too many webhook deliveries. Please retry shortly.',
-  })
-
-  if (limit) {
-    return res.status(limit.statusCode).json(limit.body)
-  }
-
   const webhookSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET
 
   if (!webhookSecret) {
@@ -49,6 +38,30 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Invalid Clerk webhook signature:', error)
     return res.status(400).json({ error: 'Invalid webhook signature' })
+  }
+
+  const deliveryLimit = checkRateLimit(req, {
+    keyPrefix: 'clerk-webhook',
+    maxRequests: 240,
+    windowMs: 60 * 1000,
+    message: 'Too many webhook deliveries. Please retry shortly.',
+  })
+
+  if (deliveryLimit) {
+    return res.status(deliveryLimit.statusCode).json(deliveryLimit.body)
+  }
+
+  if (event.type === 'user.created') {
+    const signupLimit = checkRateLimit(req, {
+      keyPrefix: 'clerk-webhook-user-created',
+      maxRequests: 10,
+      windowMs: 24 * 60 * 60 * 1000,
+      message: 'Too many signup attempts. Please try again later.',
+    })
+
+    if (signupLimit) {
+      return res.status(signupLimit.statusCode).json(signupLimit.body)
+    }
   }
 
   try {

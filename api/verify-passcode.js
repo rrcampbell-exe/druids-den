@@ -8,8 +8,8 @@ export default function handler(req, res) {
 
   const limit = checkRateLimit(req, {
     keyPrefix: 'verify-passcode',
-    maxRequests: 15,
-    windowMs: 5 * 60 * 1000,
+    maxRequests: 10,
+    windowMs: 10 * 60 * 1000,
     message: 'Too many passcode attempts. Please wait before trying again.',
   })
 

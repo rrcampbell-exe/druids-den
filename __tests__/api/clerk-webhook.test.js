@@ -187,6 +187,10 @@ describe('Clerk webhook API', () => {
   })
 
   it('returns 429 when webhook delivery exceeds limit', async () => {
+    verifyMock.mockReturnValueOnce({
+      type: 'user.updated',
+      data: { id: 'clerk-5' },
+    })
     checkRateLimitMock.mockReturnValueOnce({
       statusCode: 429,
       body: { error: 'Too many webhook deliveries. Please retry shortly.' },
@@ -194,10 +198,32 @@ describe('Clerk webhook API', () => {
 
     await handler(req, res)
 
-    expect(verifyMock).not.toHaveBeenCalled()
+    expect(verifyMock).toHaveBeenCalled()
+    expect(upsertClerkUserMock).not.toHaveBeenCalled()
     expect(res.status).toHaveBeenCalledWith(429)
     expect(res.json).toHaveBeenCalledWith({
       error: 'Too many webhook deliveries. Please retry shortly.',
+    })
+  })
+
+  it('returns 429 when user.created signup attempts exceed limit', async () => {
+    verifyMock.mockReturnValueOnce({
+      type: 'user.created',
+      data: { id: 'clerk-6' },
+    })
+    checkRateLimitMock
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce({
+        statusCode: 429,
+        body: { error: 'Too many signup attempts. Please try again later.' },
+      })
+
+    await handler(req, res)
+
+    expect(upsertClerkUserMock).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(429)
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Too many signup attempts. Please try again later.',
     })
   })
 })

@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   const limit = checkRateLimit(req, {
     keyPrefix: 'send-reservation',
-    maxRequests: 20,
+    maxRequests: 60,
     windowMs: 60 * 1000,
     message: 'Too many reservation attempts. Please wait and try again.',
   })

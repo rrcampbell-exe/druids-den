@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   const limit = checkRateLimit(req, {
     keyPrefix: 'user-status',
-    maxRequests: 120,
+    maxRequests: 600,
     windowMs: 60 * 1000,
     message: 'Too many account status checks. Please try again shortly.',
   })
