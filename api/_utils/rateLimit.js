@@ -1,3 +1,10 @@
+import { isIP } from 'net'
+
+// NOTE: This store is in-memory and scoped to a single server instance.
+// In serverless/multi-instance deployments it is not shared across instances or
+// regions and resets on cold starts. Treat this as best-effort protection.
+// For strong production guarantees swap the store for a shared backend such as
+// Redis, Vercel KV, or Upstash.
 const store = globalThis.__rateLimitStore ?? new Map()
 
 if (!globalThis.__rateLimitStore) {
@@ -5,16 +12,32 @@ if (!globalThis.__rateLimitStore) {
 }
 
 const getClientIp = (req) => {
-  const forwardedFor = req?.headers?.['x-forwarded-for'] || req?.headers?.['X-Forwarded-For']
+  const headers = req?.headers || {}
 
-  if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
-    return forwardedFor.split(',')[0].trim()
+  const parseIp = (value) => {
+    if (typeof value !== 'string' || !value.trim()) return null
+    const parts = value.split(',').map((p) => p.trim()).filter(Boolean)
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (isIP(parts[i])) return parts[i]
+    }
+    return null
   }
 
-  return req?.socket?.remoteAddress || 'unknown'
+  return (
+    parseIp(headers['x-vercel-forwarded-for']) ||
+    parseIp(headers['x-real-ip']) ||
+    parseIp(headers['x-forwarded-for'] || headers['X-Forwarded-For']) ||
+    req?.socket?.remoteAddress ||
+    'unknown'
+  )
 }
 
+const CLEANUP_INTERVAL_MS = 1_000
+let lastCleanupTime = 0
+
 const cleanupExpiredEntries = (now) => {
+  if (now - lastCleanupTime < CLEANUP_INTERVAL_MS) return
+  lastCleanupTime = now
   for (const [key, value] of store.entries()) {
     if (value.resetAt <= now) {
       store.delete(key)

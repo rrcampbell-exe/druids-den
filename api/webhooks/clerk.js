@@ -28,6 +28,17 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing Svix headers' })
   }
 
+  const deliveryLimit = checkRateLimit(req, {
+    keyPrefix: 'clerk-webhook',
+    maxRequests: 240,
+    windowMs: 60 * 1000,
+    message: 'Too many webhook deliveries. Please retry shortly.',
+  })
+
+  if (deliveryLimit) {
+    return res.status(deliveryLimit.statusCode).json(deliveryLimit.body)
+  }
+
   const payload = typeof req.body === 'string' ? req.body : JSON.stringify(req.body)
   const webhook = new Webhook(webhookSecret)
 
@@ -38,17 +49,6 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Invalid Clerk webhook signature:', error)
     return res.status(400).json({ error: 'Invalid webhook signature' })
-  }
-
-  const deliveryLimit = checkRateLimit(req, {
-    keyPrefix: 'clerk-webhook',
-    maxRequests: 240,
-    windowMs: 60 * 1000,
-    message: 'Too many webhook deliveries. Please retry shortly.',
-  })
-
-  if (deliveryLimit) {
-    return res.status(deliveryLimit.statusCode).json(deliveryLimit.body)
   }
 
   if (event.type === 'user.created') {
