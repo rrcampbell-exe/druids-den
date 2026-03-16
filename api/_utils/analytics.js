@@ -1,6 +1,23 @@
 import { track } from '@vercel/analytics/server'
 
 const ALLOWED_TYPES = new Set(['string', 'number', 'boolean'])
+// Only forward non-sensitive request headers needed for attribution.
+const ALLOWED_HEADER_NAMES = new Set([
+  'user-agent',
+  'referer',
+  'referrer',
+  'x-forwarded-for',
+  'x-real-ip',
+  'accept-language',
+])
+const SENSITIVE_HEADER_NAMES = new Set([
+  'cookie',
+  'set-cookie',
+  'authorization',
+  'proxy-authorization',
+  'x-api-key',
+  'x-auth-token',
+])
 
 const sanitizePayload = (payload = {}) => {
   if (!payload || typeof payload !== 'object') {
@@ -30,13 +47,26 @@ const buildHeadersFromRequest = (req) => {
   const headers = {}
 
   for (const [key, value] of Object.entries(req.headers)) {
+    const normalizedKey = String(key).toLowerCase()
+
+    if (SENSITIVE_HEADER_NAMES.has(normalizedKey)) {
+      continue
+    }
+
+    if (!ALLOWED_HEADER_NAMES.has(normalizedKey)) {
+      continue
+    }
+
     if (Array.isArray(value)) {
-      headers[key] = value.filter((entry) => typeof entry === 'string')
+      const filtered = value.filter((entry) => typeof entry === 'string')
+      if (filtered.length > 0) {
+        headers[normalizedKey] = filtered
+      }
       continue
     }
 
     if (typeof value === 'string') {
-      headers[key] = value
+      headers[normalizedKey] = value
     }
   }
 
