@@ -74,6 +74,18 @@ describe('Landing Page', () => {
     expect(link.closest('a')).toHaveAttribute('href', '/dashboard')
   })
 
+  it('shows Owner Dashboard link for authenticated admins', () => {
+    useCurrentAppUserMock.mockReturnValue({
+      user: { role: 'ADMIN' },
+      loading: false,
+      error: '',
+    })
+
+    renderWithRouter(<Landing />)
+    const link = screen.getByText('Owner Dashboard >')
+    expect(link.closest('a')).toHaveAttribute('href', '/dashboard')
+  })
+
   it('hides Owner Dashboard link for non-owner users', () => {
     useCurrentAppUserMock.mockReturnValue({
       user: { role: 'GUEST' },
