@@ -17,7 +17,7 @@ const Landing = () => {
 
   useEffect(() => {
     const img = new window.Image()
-    img.src = '/assets/images/druids_den_welcome_sign.jpg'
+    img.src = '/assets/images/druids_den_summer_daisies_evening.jpg'
     img.onload = () => {
       if (ref.current) {
         ref.current.classList.add('image-loaded')
