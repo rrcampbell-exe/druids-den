@@ -364,7 +364,7 @@ Ryan and Lacey
 export function generateCustomMessageEmail(reservation, message) {
   const { firstName } = reservation
   
-  const subject = 'Message from Druid\'s Den'
+  const subject = 'Message from The Druids Den'
   
   const text = `
 Hi ${firstName},
