@@ -240,21 +240,26 @@ const localGuideSections = [
   {
     icon: 'buck.png',
     title: 'Woods & trails',
-    text: 'Hike, bike, ride, or simply take the private road until the trees rearrange your thoughts. Bring sturdy shoes: mud and snow have their own opinions.',
-    links: [{ label: 'Vilas County trails', href: 'https://www.vilascountywi.gov/' }],
+    text: 'Hike, bike, ride, or meander the back lot until the trees rearrange your thoughts. Bring sturdy shoes: mud and snow have their own opinions.',
+    links: [
+      { label: 'Vilas County hiking', href: 'https://www.vilascountywi.gov/' },
+      { label: 'Biking the northwoods', href: 'https://biketheheart.org/bike-trail-map/' },
+    ],
   },
   {
     icon: 'duck.png',
     title: 'Lakes & water',
-    text: 'Eagle River is the local hub for the Chain of 28 Lakes. Pioneer Lake, North Twin, and South Twin are nearby options for water time.',
-    links: [{ label: 'Explore the Eagle River Chain', href: 'https://northwoodswisconsin.com/northern-wisconsin-recreation/eagle-river-chain-of-lakes/' }],
+    text: 'Eagle River is the local hub for the Chain of 28 Lakes. Pioneer Lake, North Twin, and South Twin are even more nearby options for time on the water.',
+    links: [
+      { label: 'Explore the Eagle River Chain', href: 'https://northwoodswisconsin.com/northern-wisconsin-recreation/eagle-river-chain-of-lakes/' },
+      { label: 'Rentals made easy at Boat Sport', href: 'https://www.boatsport.com/' },
+    ],
   },
   {
     icon: 'turkey.png',
-    title: 'Supper club weather',
-    text: 'A Friday night fish fry is not a backup plan. It is one of the region\'s oldest and most dependable rituals. Buckshot\'s, The Craftsman, and Brew\'s Pub are good places to begin.',
+    title: 'Supper club season',
+    text: 'A Friday night fish fry is one of the region\'s oldest and most dependable rituals. The Craftsman and Brew\'s Pub are good places to begin.',
     links: [
-      { label: "Buckshot's Saloon & Eatery", href: 'https://buckshotseagleriver.com/' },
       { label: 'The Craftsman American Tavern', href: 'https://www.thecraftsmanamericantavern.com/' },
       { label: "Brew's Pub", href: 'https://www.facebook.com/brewspublando/' },
     ],
@@ -263,7 +268,10 @@ const localGuideSections = [
     icon: 'great-horned-owl.png',
     title: 'When the weather turns',
     text: 'Winter brings snowmobiling, ice fishing, cross-country skiing, and clear nights. Rain brings the projector, board games, and permission to stay in.',
-    links: [{ label: 'World Championship Derby Complex', href: 'https://derbycomplex.com/' }],
+    links: [
+      { label: 'World Championship Derby Complex', href: 'https://derbycomplex.com/' },
+      { label: 'Vilas County snowmobile trails', href: 'https://www.vilascountywi.gov/departments/services/parks_and_recreation/trails___recreational_opportunities/snowmobile_trails.php' },
+    ],
   },
 ]
 
@@ -272,16 +280,16 @@ export const Northwoods = () => (
     <Meta title='The Northwoods | The Druids Den' description='An opinionated Northwoods field guide for guests of The Druids Den: trails, lakes, food, towns, winter, and rainy-day plans.' />
     <main>
       <PublicHero
-        eyebrow='A field guide, with opinions'
+        eyebrow='A field guide for the curious'
         title={<>The <span className='hero-title-word'>Northwoods</span></>}
         coelbren='The Northwoods'
-        description='Water, woods, supper clubs, and the places we actually send people we like.'
+        description='Water, woods, supper clubs—the places where new memories await.'
         image='druids_den_summer_sun_in_foliage.jpg'
         alt='Sunlight filtering through summer foliage near the Den'
       />
       <section className='northwoods-intro page-section'>
-        <SectionMarker eyebrow='Begin here' title='The Den is the basecamp, not the whole story.' />
-        <p className='large-copy'>Eagle River is about 15 minutes south. Michigan's Upper Peninsula is about 20 minutes north. Between them: lakes, forest roads, trails, food, and a pleasing lack of urgency.</p>
+        <SectionMarker eyebrow='Begin here' title='The Den is the basecamp for your next story.' />
+        <p className='large-copy'>Eagle River to the south. Michigan's Upper Peninsula to the north. Between them: lakes, forest roads, trails, food, and an alluring lack of urgency.</p>
       </section>
       <section className='northwoods-guide'>
         <div className='northwoods-guide-heading'>
@@ -313,10 +321,9 @@ export const Northwoods = () => (
           <dl>
             <DetailRow label='Conover'>The Den's home base: small, quiet, close to the water.</DetailRow>
             <DetailRow label='Eagle River'>15 minutes south for groceries, dining, events, and supplies.</DetailRow>
-            <DetailRow label="Land O' Lakes">Worth the drive north for a different view of the region and a good meal.</DetailRow>
             <DetailRow label='Michigan U.P.'>About 20 minutes north for waterfalls, trails, and a change of state.</DetailRow>
           </dl>
-          <p className='small-note'>Pick 'n Save and Trig's in Eagle River cover a proper grocery run. Energy Mart is closer for gas, drinks, meat, and the thing you forgot.</p>
+          <p className='small-note'>Pick 'n Save or Trig's in Eagle River make for a proper grocery run. Energy Mart is closer for gas, drinks, meat, and the thing you forgot.</p>
         </div>
       </section>
       <section className='northwoods-neighbors'>
@@ -325,7 +332,7 @@ export const Northwoods = () => (
             <span className='section-number'>Field notes / 02</span>
             <h2>Other locals.</h2>
           </div>
-          <p>The Northwoods is busy when you pay attention. Look for small movement, listen for the tapping, and leave the wild residents room to carry on.</p>
+          <p>The Northwoods is busy when you pay attention. Look for small movement and listen for their calls, but leave the wild residents room to carry on.</p>
         </div>
         <div className='northwoods-neighbor-list'>
           <article>
@@ -338,7 +345,7 @@ export const Northwoods = () => (
           </article>
           <article>
             <AssetIcon name='owl.png' alt='' />
-            <div><h3>Owl / after dark</h3><p>The night shift starts after the fire goes low.</p></div>
+            <div><h3>Owls / after dark</h3><p>The barred owls' night shifts begin after the fire goes low.</p></div>
           </article>
           <article>
             <AssetIcon name='porcupine.png' alt='' />
@@ -357,7 +364,7 @@ export const Northwoods = () => (
       <section className='northwoods-season'>
         <div>
           <span className='section-number'>Field notes / 03</span>
-          <h2>Bring the right kind of curious.</h2>
+          <h2>Be curious, but exercise care.</h2>
           <p>Wear blaze orange during fall deer and turkey hunts. Assume wildlife is nearby. Check for ticks. In winter, bring AWD or 4WD and let the road take the time it takes.</p>
           <ArrowLink to='/the-den'>Read the cabin notes</ArrowLink>
         </div>
