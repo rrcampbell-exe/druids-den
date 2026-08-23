@@ -98,11 +98,11 @@ exports[`WhatToExpect Page > matches snapshot 1`] = `
           data-testid="captioned-image"
         >
           <img
-            alt="The Druids Den's welcome sign at the driveway entrance"
-            src="/assets/images/druids_den_welcome_sign.jpg"
+            alt="The illuminated Druids Den welcome sign at the driveway entrance"
+            src="/assets/images/evening-shot-of-welcome-sign.jpeg"
           />
           <figcaption>
-            The Druids Den's welcome sign at the driveway entrance
+            The illuminated Druids Den welcome sign at the driveway entrance
           </figcaption>
         </figure>
         <p>
@@ -325,11 +325,11 @@ exports[`WhatToExpect Page > matches snapshot 1`] = `
             data-testid="captioned-image"
           >
             <img
-              alt="Summer foliage on a trail behind The Druids Den"
-              src="/assets/images/druids_den_summer_sun_in_foliage.jpg"
+              alt="A pontoon boat on the Eagle River Chain of Lakes"
+              src="/assets/images/renting-a-boat-and-riding-the-chain-of-lakes.jpeg"
             />
             <figcaption>
-              Summer foliage on a trail behind The Druids Den
+              A pontoon boat on the Eagle River Chain of Lakes
             </figcaption>
           </figure>
           <div

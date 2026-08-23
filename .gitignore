@@ -34,3 +34,4 @@ dist-ssr
 coverage/
 
 /src/generated/prisma
+.playwright-mcp/

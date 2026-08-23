@@ -29,7 +29,7 @@ describe('PasscodePrompt', () => {
   it('renders the passcode form', () => {
     renderWithRouter(<PasscodePrompt onSuccess={mockOnSuccess} />)
     
-    expect(screen.getByText('Spooktoberfest')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Spooktoberfest', level: 1 })).toBeInTheDocument()
     expect(screen.getByText('This page is for invited guests only.')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Enter passcode')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Enter' })).toBeInTheDocument()

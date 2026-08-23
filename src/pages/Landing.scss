@@ -1,59 +1,824 @@
-@use '../variables' as *;
+@keyframes den-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .landing-page {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  width: 100%;
-  height: 100vh;
-  min-height: 100vh;
-  min-width: 100vw;
-  background-image: url('/assets/images/druids_den_summer_daisies_evening.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  position: relative;
-  z-index: 1;
+  min-width: 320px;
+  overflow: hidden;
+  color: var(--color-iron-ore);
+  background: var(--color-shiitake);
   opacity: 0;
-  transition: var(--transition-fade);
+  transition: opacity 700ms ease;
 }
 
 .landing-page.image-loaded {
   opacity: 1;
 }
 
-.landing-page::before {
-  content: '';
+.landing-page main {
+  overflow: hidden;
+}
+
+.home-hero {
+  position: relative;
+  display: flex;
+  min-height: min(860px, 100svh);
+  align-items: flex-end;
+  isolation: isolate;
+  color: var(--color-paper);
+  background: var(--color-forest);
+}
+
+.home-hero-image,
+.home-hero-grain {
   position: absolute;
   inset: 0;
-  background: var(--color-shiitake-85);
-  z-index: 0;
+}
+
+.home-hero-image {
+  z-index: -3;
+  background-image: url('/assets/images/druids_den_summer_daisies_evening.jpg');
+  background-position: center 58%;
+  background-size: cover;
+  transform: scale(1.01);
+}
+
+.home-hero::after {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(90deg, rgba(14, 24, 20, 0.88) 0%, rgba(14, 24, 20, 0.42) 47%, rgba(14, 24, 20, 0.1) 100%), linear-gradient(0deg, rgba(14, 24, 20, 0.75) 0%, transparent 45%);
+  content: '';
+}
+
+.home-hero-grain {
+  z-index: -1;
+  opacity: 0.12;
+  background-image: radial-gradient(rgba(246, 240, 223, 0.35) 0.6px, transparent 0.6px);
+  background-size: 5px 5px;
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 
-.landing-page > * {
-  position: relative;
-  z-index: 1;
+.home-hero-content {
+  width: min(48rem, 80%);
+  padding: clamp(8rem, 18vh, 11rem) clamp(1.25rem, 8vw, 8rem) clamp(5rem, 10vh, 8rem);
 }
 
-.landing-page .landing-title {
-  white-space: normal;
+.home-hero-kicker,
+.home-hero-meta,
+.home-text-link,
+.home-photo figcaption,
+.home-hero-intro,
+.home-body-copy,
+.home-introduction-side-note p,
+.home-den-preview-copy p,
+.home-northwoods-copy p,
+.home-tradition-copy p,
+.home-stay-cta-copy p {
+  font-family: var(--font-sans);
+}
+
+.home-hero-kicker {
+  margin: 0 0 1.1rem;
+  color: var(--color-saffron);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  animation: den-rise 800ms both;
+}
+
+.landing-title {
+  margin: 0;
+  color: var(--color-paper);
+  animation: den-rise 800ms 100ms both;
+}
+
+.landing-title-plain {
+  display: block;
+  max-width: 8ch;
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 10vw, 9rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.83;
+}
+
+.landing-title-coelbren {
+  display: block;
+  margin-top: 1.2rem;
+  color: var(--color-saffron);
+  font-family: var(--font-coelbren);
+  font-size: clamp(1.2rem, 2.4vw, 2rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.three-rays {
+  display: block;
+  margin: 1.25rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 1.6rem;
+  line-height: 0.5;
+}
+
+.three-rays .awen-symbol {
+  font-size: inherit;
+}
+
+.home-hero-intro {
+  max-width: 29rem;
+  margin: 2rem 0 0;
+  color: rgba(246, 240, 223, 0.88);
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  line-height: 1.55;
+  animation: den-rise 800ms 220ms both;
+}
+
+.home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.3rem 1.6rem;
+  margin-top: 2.2rem;
+  animation: den-rise 800ms 320ms both;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 2.9rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-2px);
+}
+
+.button-light {
+  color: var(--color-forest);
+  background: var(--color-paper);
+}
+
+.button-light:hover,
+.button-light:focus-visible {
+  color: var(--color-forest);
+  background: var(--color-saffron);
+}
+
+.button-dark {
+  color: var(--color-paper);
+  background: var(--color-forest);
+  border-color: var(--color-forest);
+}
+
+.button-dark:hover,
+.button-dark:focus-visible {
+  color: var(--color-forest);
+  background: var(--color-saffron);
+  border-color: var(--color-saffron);
+}
+
+.home-text-link {
+  color: var(--color-paper);
+  font-size: 0.72rem;
+  text-decoration: none;
+}
+
+.home-text-link span {
+  margin-left: 0.25rem;
+  color: var(--color-saffron);
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.home-hero-meta {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4.75rem);
+  bottom: 1.6rem;
+  left: clamp(1.25rem, 4vw, 4.75rem);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgba(246, 240, 223, 0.7);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.home-scroll-note b {
+  display: inline-block;
+  margin-left: 0.35rem;
+  color: var(--color-saffron);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.site-band {
+  padding: clamp(5rem, 10vw, 9rem) clamp(1.25rem, 8vw, 8rem);
+}
+
+.home-introduction {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.55fr) minmax(0, 1.4fr) minmax(10rem, 0.55fr);
+  gap: clamp(2rem, 7vw, 8rem);
+  background: var(--color-paper);
+}
+
+.home-introduction-marker {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.home-introduction-marker .asset-icon {
+  width: 2.8rem;
+  height: 2.8rem;
+  filter: invert(19%) sepia(11%) saturate(484%) hue-rotate(95deg) brightness(86%);
+}
+
+.home-introduction-copy {
+  max-width: 42rem;
+}
+
+.home-display-copy {
+  margin: 0;
+  color: var(--color-forest);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 4rem);
+  letter-spacing: -0.025em;
+  line-height: 1.03;
+}
+
+.home-body-copy {
+  max-width: 29rem;
+  margin: 2rem 0 2.1rem;
+  color: var(--color-muted);
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+.home-introduction .arrow-link,
+.home-photo-note .arrow-link,
+.home-northwoods .arrow-link,
+.home-stay-cta .arrow-link {
+  color: var(--color-forest);
+}
+
+.home-introduction-side-note {
+  align-self: end;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.home-introduction-side-note .coelbren-label {
+  color: var(--color-moss);
+  font-size: 1rem;
+}
+
+.home-introduction-side-note p {
+  margin: 0.8rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.home-glance {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.65fr) 1.35fr;
+  gap: 3rem;
+  padding: 1.1rem clamp(1.25rem, 8vw, 8rem) 1.3rem;
+  color: var(--color-paper);
+  background: var(--color-moss);
+}
+
+.home-glance-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.section-number {
+  color: var(--color-saffron);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.home-glance h2 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+
+.home-glance-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.home-glance-list > div {
+  display: grid;
+  gap: 0.2rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(246, 240, 223, 0.35);
+}
+
+.home-glance-list strong {
+  color: var(--color-saffron);
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.home-glance-list span {
+  color: rgba(246, 240, 223, 0.78);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  line-height: 1.35;
+}
+
+.home-photo-story {
+  padding: clamp(5rem, 10vw, 9rem) clamp(1.25rem, 8vw, 8rem);
+  background: var(--color-shiitake);
+}
+
+.home-photo-story-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 3.2rem;
+}
+
+.home-photo-story-heading h2 {
+  margin: 0;
+  color: var(--color-forest);
+  font-family: var(--font-serif);
+  font-size: clamp(2.7rem, 6vw, 6.5rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 0.8;
+}
+
+.home-photo-story-heading .coelbren-label {
+  color: var(--color-moss);
+}
+
+.home-photo-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(10rem, 0.62fr) minmax(10rem, 0.7fr);
+  align-items: end;
+  gap: clamp(1rem, 3vw, 3rem);
+}
+
+.home-photo img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+}
+
+.home-photo-large img {
+  height: clamp(22rem, 49vw, 42rem);
+}
+
+.home-photo-small {
+  margin-bottom: 4rem;
+}
+
+.home-photo-small img {
+  height: clamp(13rem, 27vw, 23rem);
+}
+
+.home-photo figcaption {
+  margin-top: 0.7rem;
+  color: var(--color-muted);
+  font-size: 0.63rem;
+  line-height: 1.35;
+}
+
+.home-photo-note {
+  display: grid;
+  align-content: end;
+  justify-items: start;
+  min-height: 12rem;
+  padding: 0 0 1rem 1.5rem;
+  border-left: 1px solid var(--color-border);
+}
+
+.home-photo-note .asset-icon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  filter: invert(19%) sepia(11%) saturate(484%) hue-rotate(95deg) brightness(86%);
+}
+
+.home-photo-note p {
+  max-width: 14rem;
+  margin: 0 0 1.6rem;
+  color: var(--color-forest);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.site-band-dark {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 8vw, 9rem);
+  color: var(--color-paper);
+  background: var(--color-forest);
+}
+
+.home-den-preview-copy {
+  align-self: center;
+}
+
+.home-den-preview-copy h2 {
+  margin: 1.2rem 0 0.7rem;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 5vw, 5.8rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.home-den-preview-copy .coelbren-label {
+  color: var(--color-saffron);
+}
+
+.home-den-preview-copy p {
+  max-width: 25rem;
+  margin: 2rem 0 2.1rem;
+  color: rgba(246, 240, 223, 0.76);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.home-den-preview-copy .arrow-link,
+.home-tradition-copy .arrow-link {
+  color: var(--color-saffron);
+}
+
+.home-den-preview-photo {
+  margin: 0;
+}
+
+.home-den-preview-photo img {
+  display: block;
+  width: 100%;
+  height: clamp(22rem, 48vw, 43rem);
+  object-fit: cover;
+  object-position: center 60%;
+}
+
+.home-den-preview-photo figcaption {
+  margin-top: 0.75rem;
+  color: rgba(246, 240, 223, 0.62);
+  font-family: var(--font-sans);
+  font-size: 0.63rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.home-constellation {
+  position: absolute;
+  right: -3rem;
+  bottom: 2rem;
+  width: clamp(7rem, 15vw, 12rem);
+  height: clamp(7rem, 15vw, 12rem);
+  opacity: 0.34;
+  object-fit: contain;
+}
+
+.home-northwoods {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.75fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  background: var(--color-paper);
+}
+
+.home-northwoods-image {
+  position: relative;
+  min-height: clamp(20rem, 39vw, 35rem);
+}
+
+.home-northwoods-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center 52%;
+}
+
+.home-northwoods-image span {
+  position: absolute;
+  right: -1px;
+  bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  color: var(--color-paper);
+  background: var(--color-forest);
+  font-family: var(--font-coelbren);
+  font-size: 1rem;
+}
+
+.home-northwoods-copy h2,
+.home-tradition-copy h2,
+.home-stay-cta h2 {
+  margin: 1.2rem 0 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 5vw, 5.5rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.home-northwoods-copy h2,
+.home-stay-cta h2 {
+  color: var(--color-forest);
+}
+
+.home-northwoods-copy p,
+.home-tradition-copy p,
+.home-stay-cta-copy p {
+  max-width: 23rem;
+  margin: 2rem 0 2.1rem;
+  color: var(--color-muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.home-tradition {
+  display: grid;
+  grid-template-columns: minmax(0, 1.07fr) minmax(0, 0.93fr);
+  color: var(--color-paper);
+  background: var(--color-sienna);
+}
+
+.home-tradition-image {
+  min-height: 32rem;
+}
+
+.home-tradition-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center 55%;
+}
+
+.home-tradition-copy {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(3rem, 7vw, 7rem) clamp(1.25rem, 7vw, 7rem);
 }
 
-.landing-page .landing-title p {
-  margin: 0.75rem;
+.home-tradition-copy h2 {
+  color: var(--color-paper);
+  font-size: clamp(2.7rem, 5vw, 5.8rem);
 }
 
-.landing-page .landing-title .the {
-  font-size: 1.5rem;
+.home-tradition-copy .coelbren-label {
+  margin-top: 0.85rem;
+  color: var(--color-saffron);
 }
 
-.landing-page .landing-title .three-rays {
-  font-size: 1.17rem;
+.home-tradition-copy p {
+  color: rgba(246, 240, 223, 0.82);
+}
+
+.home-tradition-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.home-owner-link {
+  color: rgba(246, 240, 223, 0.65);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.home-stay-cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(12rem, 0.8fr);
+  align-items: end;
+  gap: 3rem;
+  padding: clamp(5rem, 9vw, 8rem) clamp(1.25rem, 8vw, 8rem);
+  background: var(--color-saffron);
+}
+
+.home-stay-cta .coelbren-label {
+  color: var(--color-forest);
+}
+
+.home-stay-cta h2 {
+  max-width: 11ch;
+}
+
+.home-stay-cta-copy p {
+  color: var(--color-forest);
+}
+
+.home-weather-dock {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 4;
+  max-width: 8rem;
+  opacity: 0.92;
+}
+
+@media (max-width: 850px) {
+  .home-introduction,
+  .home-glance,
+  .home-northwoods,
+  .home-stay-cta {
+    grid-template-columns: 1fr;
+  }
+
+  .home-introduction-side-note {
+    max-width: 15rem;
+  }
+
+  .home-glance-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .home-photo-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(10rem, 0.85fr);
+  }
+
+  .home-photo-note {
+    grid-column: 1 / -1;
+    min-height: 0;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--color-border);
+    border-left: 0;
+  }
+
+  .home-photo-note .asset-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .home-photo-note p {
+    max-width: 24rem;
+  }
+
+  .home-constellation {
+    right: -2rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .home-hero {
+    min-height: 740px;
+  }
+
+  .home-hero-content {
+    width: 100%;
+    padding: 8rem 1.25rem 6.7rem;
+  }
+
+  .landing-title-plain {
+    font-size: clamp(3.8rem, 19vw, 6.6rem);
+  }
+
+  .home-hero-meta {
+    display: grid;
+    gap: 0.45rem;
+    bottom: 1.25rem;
+  }
+
+  .home-scroll-note {
+    display: none;
+  }
+
+  .home-introduction,
+  .home-photo-story,
+  .site-band {
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+  }
+
+  .home-photo-story-heading {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 2.4rem;
+  }
+
+  .home-photo-story-heading h2 {
+    font-size: clamp(3rem, 16vw, 5rem);
+  }
+
+  .home-photo-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .home-photo-large img,
+  .home-photo-small img {
+    height: 24rem;
+  }
+
+  .home-photo-small {
+    width: 74%;
+    margin: 1rem 0 0 auto;
+  }
+
+  .site-band-dark {
+    gap: 2.5rem;
+  }
+
+  .home-den-preview-photo img {
+    height: 26rem;
+  }
+
+  .home-constellation {
+    right: -3rem;
+    bottom: 19rem;
+    width: 9rem;
+    height: 9rem;
+  }
+
+  .home-tradition {
+    grid-template-columns: 1fr;
+  }
+
+  .home-tradition-image {
+    min-height: 19rem;
+  }
+
+  .home-tradition-copy {
+    padding: 4rem 1.25rem 4.5rem;
+  }
+
+  .home-stay-cta {
+    gap: 0;
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+  }
+
+  .home-stay-cta h2 {
+    font-size: clamp(2.8rem, 15vw, 5rem);
+  }
+
+  .home-weather-dock {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page,
+  .landing-page * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

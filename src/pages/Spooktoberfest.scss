@@ -1,3 +1,415 @@
 @use '../variables' as *;
 
-/* Page-specific styles for Spooktoberfest */
+.public-page.spooktoberfest-page {
+	min-width: 320px;
+	padding: 0;
+	overflow: hidden;
+	color: var(--color-iron-ore);
+	background: var(--color-paper);
+}
+
+.spooktoberfest-page main {
+	overflow: hidden;
+}
+
+.spooktoberfest-page main > section {
+	margin: 0;
+}
+
+.spooktoberfest-hero {
+	position: relative;
+	display: flex;
+	min-height: min(760px, 90svh);
+	align-items: flex-end;
+	isolation: isolate;
+	overflow: hidden;
+	color: var(--color-paper);
+	background: var(--color-forest);
+}
+
+.spooktoberfest-hero-image {
+	position: absolute;
+	z-index: -2;
+	inset: 0;
+	background-image: linear-gradient(90deg, rgba(17, 30, 25, 0.9), rgba(17, 30, 25, 0.2) 78%), linear-gradient(0deg, rgba(17, 30, 25, 0.82), transparent 56%), url('/assets/images/spooktoberfest_fire_pit_2025.jpg');
+	background-position: center;
+	background-size: cover;
+	filter: saturate(0.84);
+	transform: scale(1.02);
+}
+
+.spooktoberfest-hero-copy {
+	width: min(56rem, 78%);
+	padding: 9rem clamp(1.25rem, 8vw, 8rem) 6rem;
+}
+
+.spooktoberfest-eyebrow,
+.spooktoberfest-section-kicker {
+	display: block;
+	color: var(--color-saffron);
+	font-family: var(--font-sans);
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.spooktoberfest-section#what-to-expect .spooktoberfest-section-kicker,
+.spooktoberfest-section#more-to-come .spooktoberfest-section-kicker {
+	color: var(--color-forest);
+}
+
+.spooktoberfest-hero h1 {
+	max-width: 9ch;
+	margin: 1rem 0 0;
+	color: var(--color-paper);
+	font-family: var(--font-serif);
+	font-size: clamp(4rem, 10vw, 9.2rem);
+	font-weight: 400;
+	letter-spacing: -0.07em;
+	line-height: 0.8;
+	overflow-wrap: normal;
+	word-break: normal;
+}
+
+.spooktoberfest-hero .coelbren-subheading {
+	margin: 1.35rem 0 0;
+	color: var(--color-saffron);
+	font-family: var(--font-coelbren);
+	font-size: clamp(1rem, 2vw, 1.5rem);
+	font-weight: 400;
+	line-height: 1;
+  z-index: 1;
+}
+
+.spooktoberfest-hero .subheading {
+	margin: 1.2rem 0 0;
+	color: rgba(246, 240, 223, 0.84);
+	font-family: var(--font-sans);
+	font-size: clamp(0.85rem, 1.7vw, 1.15rem);
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.spooktoberfest-hero .bottom-border {
+	width: min(10rem, 30%);
+	margin-top: 1.5rem;
+	border-bottom: 1px dashed rgba(246, 240, 223, 0.55);
+}
+
+.spooktoberfest-back-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.65rem;
+	margin-top: 2.2rem;
+	color: var(--color-paper);
+	font-family: var(--font-sans);
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+.spooktoberfest-back-link:hover,
+.spooktoberfest-back-link:focus-visible {
+	color: var(--color-saffron);
+}
+
+.spooktoberfest-hero-mark {
+	position: absolute;
+	right: clamp(1.25rem, 8vw, 8rem);
+	bottom: 2rem;
+	display: grid;
+	justify-items: end;
+	gap: 0.75rem;
+	color: var(--color-saffron);
+	font-family: var(--font-sans);
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-align: right;
+	text-transform: uppercase;
+}
+
+.spooktoberfest-hero-mark .asset-icon {
+	width: 7rem;
+	height: 7rem;
+	filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.spooktoberfest-intro {
+	display: grid;
+	grid-template-columns: minmax(2rem, 1fr) minmax(0, 52rem) minmax(2rem, 1fr);
+	align-items: center;
+	gap: clamp(1rem, 4vw, 4rem);
+	padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 8vw, 8rem);
+	color: var(--color-forest);
+	background: var(--color-shiitake);
+}
+
+.spooktoberfest-intro > p {
+	margin: 0;
+	color: var(--color-forest);
+	font-family: var(--font-serif);
+	font-size: clamp(1.45rem, 3vw, 2.45rem);
+	line-height: 1.18;
+	text-align: center;
+}
+
+.spooktoberfest-intro > p:first-child,
+.spooktoberfest-intro > p:last-child {
+	color: var(--color-copper);
+	font-family: var(--font-coelbren);
+	font-size: clamp(1.5rem, 3vw, 2.8rem);
+	line-height: 1;
+	text-align: center;
+}
+
+.spooktoberfest-content {
+	background: var(--color-paper);
+}
+
+.spooktoberfest-page .spooktoberfest-section {
+	display: grid;
+	grid-template-columns: minmax(12rem, 0.62fr) minmax(0, 1.38fr);
+	gap: clamp(2rem, 8vw, 9rem);
+	margin: 0;
+	padding: clamp(5rem, 10vw, 9rem) clamp(1.25rem, 8vw, 8rem);
+}
+
+.spooktoberfest-section + .spooktoberfest-section {
+	border-top: 1px solid var(--color-border);
+}
+
+.spooktoberfest-section-heading {
+	align-self: start;
+}
+
+.spooktoberfest-section-heading h2 {
+	max-width: 8ch;
+	margin: 1.1rem 0 0;
+	padding: 0;
+	color: var(--color-forest);
+	border: 0;
+	font-family: var(--font-serif);
+	font-size: clamp(2.8rem, 5.5vw, 6rem);
+	font-weight: 400;
+	letter-spacing: -0.055em;
+	line-height: 0.85;
+}
+
+.spooktoberfest-section-body {
+	min-width: 0;
+	max-width: 48rem;
+}
+
+.spooktoberfest-section-body p {
+	max-width: 42rem;
+	margin: 0 0 1.5rem;
+	color: var(--color-muted);
+	font-family: var(--font-sans);
+	font-size: 0.95rem;
+	line-height: 1.78;
+}
+
+.spooktoberfest-section-body p:last-child {
+	margin-bottom: 0;
+}
+
+.spooktoberfest-subsection + .spooktoberfest-subsection,
+.spooktoberfest-day-list {
+	margin-top: 4rem;
+}
+
+.spooktoberfest-section-body h3 {
+	margin: 0 0 1.25rem;
+	color: var(--color-forest);
+	font-family: var(--font-serif);
+	font-size: clamp(1.7rem, 3vw, 2.8rem);
+	font-weight: 400;
+	letter-spacing: -0.03em;
+	line-height: 1;
+}
+
+.spooktoberfest-day-list h4 {
+	margin: 2.2rem 0 0.8rem;
+	color: var(--color-copper);
+	font-family: var(--font-sans);
+	font-size: 0.74rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.spooktoberfest-day-list h4:first-child {
+	margin-top: 0;
+}
+
+.spooktoberfest-day-list ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.spooktoberfest-day-list li {
+	padding: 0.8rem 0 0.8rem 1rem;
+	color: var(--color-muted);
+	border-top: 1px solid var(--color-border);
+	font-family: var(--font-sans);
+	font-size: 0.88rem;
+	line-height: 1.55;
+}
+
+.spooktoberfest-day-list li::before {
+	display: inline-block;
+	width: 0.8rem;
+	margin-left: -0.8rem;
+	color: var(--color-saffron);
+	content: '+';
+}
+
+.spooktoberfest-page .what-to-expect-image {
+	width: 100%;
+	margin: 1.8rem 0 2rem;
+	background: var(--color-shiitake);
+	border: 0;
+	border-radius: 0;
+	opacity: 1;
+	overflow: hidden;
+	transform: none;
+}
+
+.spooktoberfest-page .what-to-expect-image:hover {
+	opacity: 1;
+}
+
+.spooktoberfest-page .what-to-expect-image img {
+	display: block;
+	width: 100%;
+	height: clamp(16rem, 34vw, 30rem);
+	border-radius: 0;
+	filter: saturate(0.88);
+	object-fit: cover;
+}
+
+.spooktoberfest-section-sienna {
+	color: var(--color-paper);
+	background: var(--color-sienna);
+}
+
+.spooktoberfest-section-moss {
+	color: var(--color-paper);
+	background: var(--color-moss);
+}
+
+.spooktoberfest-section-shiitake {
+	background: var(--color-shiitake);
+}
+
+.spooktoberfest-section-sienna .spooktoberfest-section-heading h2,
+.spooktoberfest-section-moss .spooktoberfest-section-heading h2 {
+	color: var(--color-paper);
+}
+
+.spooktoberfest-section-sienna .spooktoberfest-section-body p,
+.spooktoberfest-section-moss .spooktoberfest-section-body p,
+.spooktoberfest-section-sienna .spooktoberfest-day-list li,
+.spooktoberfest-section-moss .spooktoberfest-day-list li {
+	color: rgba(246, 240, 223, 0.78);
+}
+
+.spooktoberfest-section-sienna .spooktoberfest-section-body h3,
+.spooktoberfest-section-moss .spooktoberfest-section-body h3 {
+	color: var(--color-paper);
+}
+
+.spooktoberfest-section-sienna .spooktoberfest-section-kicker,
+.spooktoberfest-section-moss .spooktoberfest-section-kicker {
+	color: var(--color-saffron);
+}
+
+.spooktoberfest-section-sienna .spooktoberfest-day-list li,
+.spooktoberfest-section-moss .spooktoberfest-day-list li {
+	border-color: rgba(246, 240, 223, 0.25);
+}
+
+.spooktoberfest-section-sienna .what-to-expect-image,
+.spooktoberfest-section-moss .what-to-expect-image {
+	background: transparent;
+}
+
+.spooktoberfest-section-sienna .what-to-expect-image figcaption,
+.spooktoberfest-section-moss .what-to-expect-image figcaption {
+	color: rgba(246, 240, 223, 0.68);
+}
+
+@media (max-width: 1000px) {
+	.spooktoberfest-page .spooktoberfest-section {
+		grid-template-columns: 1fr;
+		gap: 2.5rem;
+	}
+
+	.spooktoberfest-section-heading h2 {
+		max-width: 12ch;
+	}
+}
+
+@media (max-width: 640px) {
+	.spooktoberfest-hero {
+		min-height: 700px;
+	}
+
+	.spooktoberfest-hero-copy {
+		width: 100%;
+		padding: 8rem 1.25rem 6.5rem;
+	}
+
+	.spooktoberfest-hero h1 {
+		max-width: none;
+		font-size: clamp(3.1rem, 15.5vw, 6.5rem);
+	}
+
+	.spooktoberfest-hero-mark {
+		right: 1.25rem;
+		bottom: 1.25rem;
+	}
+
+	.spooktoberfest-hero-mark .asset-icon {
+		width: 5rem;
+		height: 5rem;
+	}
+
+	.spooktoberfest-intro {
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+		padding-top: 4.5rem;
+		padding-bottom: 4.5rem;
+	}
+
+	.spooktoberfest-section {
+		padding-top: 4.5rem;
+		padding-bottom: 4.5rem;
+	}
+
+	.spooktoberfest-section-heading h2 {
+		font-size: clamp(2.8rem, 14vw, 5.5rem);
+	}
+
+	.spooktoberfest-section-body p {
+		font-size: 0.9rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spooktoberfest-page *,
+	.spooktoberfest-gate-page * {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+	}
+}

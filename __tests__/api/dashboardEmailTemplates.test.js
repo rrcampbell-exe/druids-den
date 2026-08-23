@@ -253,7 +253,7 @@ describe('dashboardEmailTemplates', () => {
       const result = generateCustomMessageEmail(mockReservation, 'Test message')
       
       expect(result.subject).toContain('Message')
-      expect(result.subject).toContain('Druid\'s Den')
+      expect(result.subject).toContain('The Druids Den')
     })
 
     it('is signed by owners', () => {
@@ -605,7 +605,7 @@ describe('dashboardEmailTemplates', () => {
       emails.forEach(email => {
         // Property branding appears as the property name or branded site URL
         const combined = email.subject.toLowerCase() + email.text.toLowerCase()
-        expect(combined).toMatch(/druid'?s den|druidsdenwi\.com/)
+        expect(combined).toMatch(/druids den|druidsdenwi\.com/)
       })
     })
   })

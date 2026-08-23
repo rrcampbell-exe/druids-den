@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import './PasscodePrompt.scss'
 import { Flower, Leaf, Awen } from './'
+import { PageFrame } from './site/SiteComponents'
 
 const PasscodePrompt = ({ onSuccess, page = 'spooktoberfest', storageKey }) => {
   const [passcode, setPasscode] = useState('')
@@ -51,37 +52,38 @@ const PasscodePrompt = ({ onSuccess, page = 'spooktoberfest', storageKey }) => {
   }
 
   return (
-    <div className='passcode-prompt-page'>
-      <div className='passcode-container'>
-        <Flower />
-        <h1>{pageTitle}</h1>
-        <p>{pageMessage}</p>
-        <p>{promptMessage}</p>
-        
-        <form onSubmit={handleSubmit}>
-          <input
-            type='password'
-            value={passcode}
-            onChange={(e) => setPasscode(e.target.value)}
-            placeholder='Enter passcode'
-            disabled={isLoading}
-            autoFocus
-          />
-          
-          {error && <p className='error-message'>{error}</p>}
-          
-          <button type='submit' disabled={isLoading || !passcode}>
-            {isLoading ? 'Verifying...' : 'Enter'}
-          </button>
-        </form>
-        
-        
-        <Link to='/'>
-          <div className='back-navigation'><Awen /> Go Back</div>
-        </Link>
-        <Leaf />
-      </div>
-    </div>
+    <PageFrame className='spooktoberfest-gate-page'>
+      <main className='passcode-prompt-page'>
+        <div className='passcode-container'>
+          <Flower />
+          <h1>{pageTitle}</h1>
+          <p>{pageMessage}</p>
+          <p>{promptMessage}</p>
+
+          <form onSubmit={handleSubmit}>
+            <input
+              type='password'
+              value={passcode}
+              onChange={(e) => setPasscode(e.target.value)}
+              placeholder='Enter passcode'
+              disabled={isLoading}
+              autoFocus
+            />
+
+            {error && <p className='error-message'>{error}</p>}
+
+            <button type='submit' disabled={isLoading || !passcode}>
+              {isLoading ? 'Verifying...' : 'Enter'}
+            </button>
+          </form>
+
+          <Link to='/'>
+            <div className='back-navigation'><Awen /> Go Back</div>
+          </Link>
+          <Leaf />
+        </div>
+      </main>
+    </PageFrame>
   )
 }
 

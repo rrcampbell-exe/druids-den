@@ -44,10 +44,10 @@ const WhatToExpect = () => {
         <section className='cabin-overview' id='the-cabin'>
           <h2>The Cabin</h2>
           <CaptionedImage 
-            src='/assets/images/druids_den_welcome_sign.jpg' 
-            alt="The Druids Den's welcome sign at the driveway entrance" 
+            src='/assets/images/evening-shot-of-welcome-sign.jpeg'
+            alt='The illuminated Druids Den welcome sign at the driveway entrance'
             className='cabin-exterior'
-            style={{ objectPosition: 'center 45%' }}
+            style={{ objectPosition: 'center 50%' }}
           />
           <p>The Druids Den comfortably sleeps up to six guests (two in the primary bedroom, two in the loft, and up to two more on an air mattress in the living room). The cabin features:</p>
           <ul>
@@ -146,10 +146,10 @@ const WhatToExpect = () => {
           <h2>Summer</h2>
           <div className='season-content'>
             <CaptionedImage 
-              src='/assets/images/druids_den_summer_sun_in_foliage.jpg' 
-              alt='Summer foliage on a trail behind The Druids Den' 
+              src='/assets/images/renting-a-boat-and-riding-the-chain-of-lakes.jpeg'
+              alt='A pontoon boat on the Eagle River Chain of Lakes'
               className='summer-photo'
-              style={{ objectPosition: 'center 58%' }}
+              style={{ objectPosition: 'center 52%' }}
             />
             <div className='season-details'>
               <h3>What to Expect</h3>
