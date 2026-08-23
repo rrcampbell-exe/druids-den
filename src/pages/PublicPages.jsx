@@ -44,14 +44,14 @@ export const TheDen = () => (
   <PageFrame className='public-page-den'>
     <Meta
       title='The Den | The Druids Den'
-      description='See what it is actually like to stay at The Druids Den in Conover, Wisconsin: sleeping arrangements, rooms, amenities, and seasonal notes.'
+      description="See what it's actually like to stay at The Druids Den in Conover, Wisconsin: sleeping arrangements, rooms, amenities, and seasonal notes."
     />
     <main>
       <PublicHero
         eyebrow='A closer look'
         title='The Den'
         coelbren='The Den'
-        description='A warm, practical cabin for six people who came to be in the woods, not merely look at them.'
+        description="An inviting space for up to six people who've come to commune with the woods, the fire, and one another."
         image='druids_den_autumn_evening_fire_pit.jpg'
         alt='The Druids Den glowing beneath autumn trees'
       >
@@ -59,7 +59,7 @@ export const TheDen = () => (
       </PublicHero>
 
       <section className='den-intro page-section'>
-        <SectionMarker eyebrow='The short version' title='Comfort, with a little weather in it.' />
+        <SectionMarker eyebrow='The short version' title='All of the amenities. None of the distractions.' />
         <div className='den-intro-copy'>
           <p className='large-copy'>Nestled on 5½ secluded acres of private forest in Conover, The Druids Den is a basecamp for both stillness and getting out of the house.</p>
           <p>The cabin sleeps up to six: two in the primary bedroom, two in the loft, and up to two more on an air mattress in the living room. There is a full kitchen, radiant in-floor heating, an indoor gas fireplace, a projector, laundry, a covered porch, and a fire pit waiting out back.</p>
@@ -77,7 +77,7 @@ export const TheDen = () => (
           <DetailRow label='Grounds'>5½ acres of private forest</DetailRow>
           <DetailRow label='Heat'>Radiant in-floor heating and gas fireplace</DetailRow>
           <DetailRow label='Outside'>Covered porch, back patio, grill, and fire pit</DetailRow>
-          <DetailRow label='Connection'>Wi-Fi, with cell reception that can be spotty</DetailRow>
+          <DetailRow label='Connection'>Fiber internet, though cell reception that can be spotty</DetailRow>
         </dl>
       </section>
 
@@ -91,7 +91,6 @@ export const TheDen = () => (
         <div className='den-sleep-copy'>
           <SectionMarker eyebrow='Sleeping arrangements' title='Everyone gets a corner.' />
           <p>The primary bedroom holds two. The loft holds two more and feels especially good on rainy afternoons. The living room can take an air mattress for the final two guests, if needed.</p>
-          <p className='small-note'>The loft means stairs and a lower ceiling. Please plan sleeping arrangements with the people in your party in mind.</p>
           <Link to='/guide#arrival' className='text-link'>Already invited? Read the guest guide -&gt;</Link>
         </div>
       </section>
@@ -110,12 +109,12 @@ export const TheDen = () => (
           <article>
             <AssetIcon name='moon.png' alt='' />
             <h3>Living room</h3>
-            <p>Settle in by the gas fireplace, put on a DVD, or let the projector turn a blank wall into movie night.</p>
+            <p>Settle in by the gas fireplace, put on a DVD, and let the projector turn a blank wall into movie night.</p>
           </article>
           <article>
             <AssetIcon name='raven.png' alt='' />
             <h3>Outside</h3>
-            <p>The covered porch, back patio, and fire pit extend the cabin into the trees. Deer and turkeys are regular neighbors.</p>
+            <p>The covered porch, back patio, gas grill, and fire pit extend the cabin into the trees. Deer and turkeys are regular neighbors.</p>
           </article>
         </div>
       </section>
