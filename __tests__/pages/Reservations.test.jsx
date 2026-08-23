@@ -80,6 +80,8 @@ describe('Reservations', () => {
   let fetchSpy
 
   beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-01-15T12:00:00'))
     Element.prototype.scrollIntoView = vi.fn()
     fetchSpy = vi.spyOn(global, 'fetch')
     fetchSpy.mockResolvedValue({
@@ -98,6 +100,7 @@ describe('Reservations', () => {
   afterEach(() => {
     fetchSpy.mockClear()
     vi.restoreAllMocks()
+    vi.useRealTimers()
   })
 
   it('renders the reservation form for signed-in guests', async () => {

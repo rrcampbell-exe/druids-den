@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import {
   validateEmail,
   validatePhone,
@@ -11,6 +11,15 @@ import {
 } from '../../src/utils/formValidation'
 
 describe('Form Validation Utilities', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-01-15T12:00:00'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   describe('validateEmail', () => {
     it('accepts valid email addresses', () => {
       const result = validateEmail('john@example.com')
