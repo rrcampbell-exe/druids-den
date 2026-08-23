@@ -1171,6 +1171,7 @@
   .stay-details,
   .story-opening,
   .traditions-next,
+  .den-sleep,
   .den-season,
   .northwoods-towns,
   .northwoods-season,
@@ -1217,6 +1218,10 @@
 
   .stay-inquiry > div:last-child {
     align-self: start;
+  }
+
+  .den-sleep-photo {
+    order: -1;
   }
 }
 
