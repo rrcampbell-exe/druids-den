@@ -7,20 +7,27 @@
 
 /* CSS Custom Properties */
 :root {
-  /* Color variables */
   --color-iron-ore: #464645;
   --color-shiitake: hsl(35, 21%, 73%);
   --color-shiitake-85: hsla(35, 21%, 73%, 0.85);
   --color-shiitake-90: hsla(35, 21%, 73%, 0.9);
-  
-  /* Animation variables */
-  --transition-fade: opacity 3s ease;
-  
-  font-family: 'Coelbren', sans-serif;
+  --color-paper: #f6f0df;
+  --color-forest: #172a24;
+  --color-moss: #365449;
+  --color-sienna: #684338;
+  --color-copper: #a95438;
+  --color-saffron: #e4a24c;
+  --color-muted: #68716a;
+  --color-border: rgba(70, 70, 69, 0.28);
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-sans: 'Avenir Next', 'Gill Sans', 'Helvetica Neue', sans-serif;
+  --font-coelbren: 'Coelbren', sans-serif;
+  --transition-fade: opacity 700ms ease;
+
+  font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
   color: var(--color-iron-ore);
   background-color: var(--color-shiitake);
 
@@ -28,6 +35,47 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: var(--color-shiitake);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-copper);
+  outline-offset: 3px;
+}
+
+body a {
+  color: inherit;
+}
+
+body h1,
+body h2,
+body h3,
+body h4,
+body p {
+  overflow-wrap: break-word;
 }
 
 /* COMMON STYLES - Shared page header styles */
@@ -203,16 +251,6 @@
 }
 
 /* Global link and button styles */
-body a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-body a:hover {
-  color: #535bf2;
-}
-
 body button {
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -232,7 +270,7 @@ html {
 html, body {
   margin: 0;
   min-width: 320px;
-  height: 100dvh;
+  min-height: 100%;
 }
 
 body h1 {

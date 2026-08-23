@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://druidsdenwi.com/sitemap.xml

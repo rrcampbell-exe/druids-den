@@ -1,6 +1,6 @@
 # The Druids Den
 
-The online hub for **The Druids Den**, a cabin rental in Vilas County, Wisconsin. Guests discover the property, book stays, and leave feedback. Owners manage reservations, approve guest accounts, and view revenue analytics — all from a single app deployed on Vercel.
+The online hub for **The Druids Den**, a private cabin in Conover, Wisconsin. The public site is an invitation-first way to explore the cabin, its Northwoods setting, its photo journal, and the traditions taking shape there. Invited guests can open a practical guest guide, approved users can request reservations, and owners manage reservations, guest accounts, and revenue analytics — all from a single app deployed on Vercel.
 
 **Tech stack:** React 19 (Vite) · Vercel Serverless Functions · Vercel Web Analytics + Speed Insights · PostgreSQL (Prisma ORM + Accelerate) · Clerk Auth · Resend Email · WeatherAPI
 
@@ -10,9 +10,15 @@ The online hub for **The Druids Den**, a cabin rental in Vilas County, Wisconsin
 
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
-- [Public Pages](#public-pages)
+- [Public Site](#public-site)
   - [Landing Page](#landing-page)
-  - [What to Expect](#what-to-expect)
+  - [The Den](#the-den)
+  - [Gallery](#gallery)
+  - [Northwoods](#northwoods)
+  - [The Story](#the-story)
+  - [Traditions](#traditions)
+  - [Stay & Inquiries](#stay--inquiries)
+  - [Guest Guide](#guest-guide)
   - [Spooktoberfest](#spooktoberfest)
 - [Authentication & Accounts](#authentication--accounts)
   - [Sign-Up / Sign-In](#sign-up--sign-in)
@@ -86,8 +92,11 @@ npm run start:local
 ├── public/                 # Static assets & images
 ├── src/
 │   ├── components/         # Reusable React components
+│   │   └── site/            # Public-site header, footer, metadata, and content primitives
 │   ├── hooks/              # Custom React hooks
 │   ├── pages/              # Route-level page components
+│   │   ├── PublicPages.jsx  # The Den, Gallery, Northwoods, Story, Traditions, and Stay
+│   │   ├── Guide.jsx        # Invitation-oriented guest guide
 │   │   └── dashboard/      # Owner dashboard sub-views
 │   └── utils/              # Client-side helpers
 ├── __tests__/              # Mirrors src/ and api/ structure
@@ -97,19 +106,60 @@ npm run start:local
 
 ---
 
-## Public Pages
+## Public Site
 
 ### Landing Page
 
-The home page at `/`. Displays the cabin's branding with a custom Celtic font (Coelbren), the Awen symbol, a live weather widget for Conover, WI, and a call-to-action linking to the information page. A promotional link to Spooktoberfest appears automatically starting April 1.
+The home page at `/` is the public front door. It introduces the cabin, links into the photo journal, cabin details, Northwoods field guide, traditions, and private-stay inquiry, and includes the live weather widget for Conover, WI. A Spooktoberfest 2026 link appears starting April 1, 2026. The site uses a custom Celtic font (Coelbren), the Awen symbol, the new public-site navigation, and responsive editorial layouts.
 
-### What to Expect
+### The Den
 
-An informational guide at `/what-to-expect`. Covers cabin amenities, sleeping capacity (6 guests), house guidelines, parking, seasonal packing tips, and nearby attractions. Uses a floating sidebar navigation (PageNav) for jumping between sections.
+The cabin overview at `/the-den` covers sleeping arrangements, amenities, the grounds, connectivity, and seasonal preparation. `/what-to-expect` remains as a compatibility alias to the same page while existing links are phased over to `/the-den`.
+
+### Gallery
+
+The visual journal at `/gallery` presents cabin, landscape, wildlife, and Spooktoberfest photography. Visitors can filter the collection by category and open any image in an accessible lightbox; the images are served from `public/assets/images/`.
+
+### Northwoods
+
+The regional field guide at `/northwoods` collects practical notes about trails, lakes, nearby towns, winter conditions, wildlife, rainy-day plans, and local food. Links to regional resources open in a new tab.
+
+### The Story
+
+The origin and design point of view for the property lives at `/story`. It explains the meaning behind the name, the preference for useful beauty over polish, and the traditions that are still being written.
+
+### Traditions
+
+The traditions page at `/traditions` is deployed but intentionally unlinked while the collection grows. It currently introduces Spooktoberfest and leaves room for future seasonal rituals.
+
+### Stay & Inquiries
+
+The invitation-first stay page at `/stay` is the public booking boundary for the current phase of the site. There is no public calendar or instant booking widget yet. Visitors are directed to email `grovekeeper@druidsdenwi.com` with their dates, group, and plans. The page reserves a future location for a Lodgify booking area.
+
+### Guest Guide
+
+The practical guide at `/guide` is intended to be shared with invited guests. It includes copyable arrival details, Wi-Fi fields, heat and fireplace guidance, kitchen and septic notes, fire safety, local links, emergency information, and checkout steps. The address and Wi-Fi values can be supplied through `VITE_GUIDE_ADDRESS`, `VITE_GUIDE_WIFI_NAME`, and `VITE_GUIDE_WIFI_PASSWORD`; unset values fall back to a placeholder message.
+
+The guide route is invitation-oriented but is not currently an authentication boundary. `VITE_` values are bundled into the browser, so those settings must not be treated as secret storage.
 
 ### Spooktoberfest
 
-A passcode-protected event page at `/spooktoberfest` for an annual October gathering. Guests enter a numeric passcode which is validated server-side. On success a token is stored in the browser and grants access for the session. The page details the multi-day itinerary, sleeping arrangements, and food logistics.
+A passcode-protected event page at `/spooktoberfest` for the October 8–11, 2026 gathering. Guests enter the passcode, which is validated server-side. On success a token is stored in the browser and grants access for the session. The page details the multi-day itinerary, sleeping arrangements, and food logistics.
+
+### Route Map
+
+| Route | Surface | Access / purpose |
+|---|---|---|
+| `/` | Landing | Public home page |
+| `/the-den` | The Den | Public cabin overview |
+| `/what-to-expect` | The Den | Compatibility alias |
+| `/gallery` | Gallery | Public photo journal with filters and lightbox |
+| `/northwoods` | Northwoods | Public regional field guide |
+| `/story` | The Story | Public property story and design principles |
+| `/traditions` | Traditions | Deployed, currently unlinked |
+| `/stay` | Stay | Invitation-only inquiry flow; no instant booking |
+| `/guide` | Guest guide | Intended for invited guests; currently route-accessible |
+| `/spooktoberfest` | Spooktoberfest | Passcode-protected event page |
 
 ---
 
@@ -282,6 +332,9 @@ npm run db:reset
 | `VITE_CLERK_PUBLISHABLE_KEY` | Yes | Clerk authentication public key |
 | `VITE_LOCAL_CLERK_PUBLISHABLE_KEY` | Local only | Optional localhost override used by `npm run start:local` |
 | `VITE_WEATHER_API_KEY` | No | WeatherAPI.com key; falls back to mock data in dev |
+| `VITE_GUIDE_ADDRESS` | No | Optional address shown in the invitation-oriented guest guide |
+| `VITE_GUIDE_WIFI_NAME` | No | Optional Wi-Fi network name shown in the guest guide |
+| `VITE_GUIDE_WIFI_PASSWORD` | No | Optional Wi-Fi password shown in the guest guide; bundled into the browser |
 
 ### Backend (Node.js — server-side only)
 

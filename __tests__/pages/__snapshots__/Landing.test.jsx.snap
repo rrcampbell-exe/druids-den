@@ -4,49 +4,723 @@ exports[`Landing Page > matches snapshot 1`] = `
 <div
   class="landing-page"
 >
-  <h1
-    class="landing-title"
+  <header
+    class="site-header "
   >
-    <p
-      class="the"
-      data-testid="coelbren"
-    >
-      The
-    </p>
-    <p
-      class="druids-den"
-      data-testid="coelbren"
-    >
-      Druids Den
-    </p>
-    <p
-      class="three-rays"
+    <a
+      aria-label="The Druids Den home"
+      class="site-wordmark"
+      data-discover="true"
+      href="/"
     >
       <span
-        data-testid="awen"
+        aria-hidden="true"
+        class="site-wordmark-symbol"
       >
-        Awen
+        <span
+          class="site-wordmark-awen"
+        >
+          <span
+            aria-hidden="true"
+            class="awen-symbol"
+          >
+            
+          </span>
+        </span>
       </span>
-    </p>
-  </h1>
-  <a
-    class="landing-cta"
-    data-discover="true"
-    href="/what-to-expect"
+      <span>
+        <strong>
+          The Druids Den
+        </strong>
+        <small>
+          Conover, Wisconsin
+        </small>
+      </span>
+    </a>
+    <button
+      aria-controls="primary-navigation"
+      aria-expanded="false"
+      class="site-menu-toggle"
+      type="button"
+    >
+      <span>
+        Menu
+      </span>
+      <span
+        aria-hidden="true"
+        class="site-menu-lines"
+      >
+        <i />
+        <i />
+      </span>
+    </button>
+    <nav
+      aria-label="Primary navigation"
+      class="site-navigation "
+      id="primary-navigation"
+    >
+      <a
+        data-discover="true"
+        href="/the-den"
+      >
+        The Den
+      </a>
+      <a
+        data-discover="true"
+        href="/gallery"
+      >
+        Gallery
+      </a>
+      <a
+        data-discover="true"
+        href="/northwoods"
+      >
+        Northwoods
+      </a>
+      <a
+        data-discover="true"
+        href="/story"
+      >
+        The Story
+      </a>
+      <a
+        data-discover="true"
+        href="/spooktoberfest"
+      >
+        Spooktoberfest
+      </a>
+      <a
+        class="site-navigation-guide-link"
+        data-discover="true"
+        href="/guide"
+      >
+        Guest guide
+      </a>
+      <a
+        class="site-navigation-cta"
+        data-discover="true"
+        href="/stay"
+      >
+        Plan a private stay
+      </a>
+    </nav>
+  </header>
+  <main>
+    <section
+      aria-labelledby="home-title"
+      class="home-hero"
+    >
+      <div
+        aria-hidden="true"
+        class="home-hero-image"
+      />
+      <div
+        aria-hidden="true"
+        class="home-hero-grain"
+      />
+      <div
+        class="home-hero-content"
+      >
+        <p
+          class="home-hero-kicker"
+        >
+          A private cabin in Wisconsin's Northwoods
+        </p>
+        <h1
+          class="landing-title"
+          id="home-title"
+        >
+          <span
+            class="landing-title-plain"
+          >
+            The Druids Den
+          </span>
+          <p
+            class="landing-title-coelbren"
+            data-testid="coelbren"
+          >
+            Druids Den
+          </p>
+          <span
+            aria-hidden="true"
+            class="three-rays"
+          >
+            <span
+              data-testid="awen"
+            >
+              Awen
+            </span>
+          </span>
+        </h1>
+        <p
+          class="home-hero-intro"
+        >
+          Five and a half acres of private forest, a warm cabin, and the kind of quiet that makes room for a story.
+        </p>
+        <div
+          class="home-hero-actions"
+        >
+          <a
+            class="button button-light landing-cta"
+            data-discover="true"
+            href="/what-to-expect"
+          >
+            Begin Your Northwoods Adventure &gt;
+          </a>
+          <a
+            class="home-text-link"
+            data-discover="true"
+            href="/guide"
+          >
+            Already arriving?
+            <span>
+              Open the guide
+            </span>
+          </a>
+        </div>
+      </div>
+      <div
+        class="home-hero-meta"
+      >
+        <span>
+          46° 04' N / 89° 15' W
+        </span>
+        <span>
+          Conover, WI
+        </span>
+        <span
+          class="home-scroll-note"
+        >
+          Scroll to wander
+          <b
+            aria-hidden="true"
+          >
+            ↓
+          </b>
+        </span>
+      </div>
+    </section>
+    <section
+      class="home-introduction site-band"
+    >
+      <div
+        class="home-introduction-marker"
+      >
+        <img
+          alt=""
+          class="asset-icon "
+          loading="lazy"
+          src="/assets/iconography/crow.png"
+        />
+        <span>
+          01 / The invitation
+        </span>
+      </div>
+      <div
+        class="home-introduction-copy"
+      >
+        <p
+          class="home-display-copy"
+        >
+          The Druids Den is your cozy woodland basecamp for exploring the beautiful Northwoods of Wisconsin and Michigan's Upper Peninsula.
+        </p>
+        <p
+          class="home-body-copy"
+        >
+          A place for slow mornings, deep breaths, long dinners, and the rituals you discover when nobody is rushing you along. Come for the forest. Stay for the solitude.
+        </p>
+        <a
+          class="arrow-link "
+          data-discover="true"
+          href="/the-den"
+        >
+          See what staying here is like
+          <span
+            aria-hidden="true"
+            class="arrow-link-mark"
+          >
+            -&gt;
+          </span>
+        </a>
+      </div>
+      <div
+        class="home-introduction-side-note"
+      >
+        <span
+          class="coelbren-label"
+          data-testid="coelbren"
+        >
+          Keep close to the fire
+        </span>
+        <p>
+          No lobby. No itinerary required.
+        </p>
+      </div>
+    </section>
+    <section
+      class="home-glance"
+    >
+      <div
+        class="home-glance-heading"
+      >
+        <span
+          class="section-number"
+        >
+          02
+        </span>
+        <h2>
+          The cabin at a glance
+        </h2>
+      </div>
+      <div
+        class="home-glance-list"
+      >
+        <div>
+          <strong>
+            6
+          </strong>
+          <span>
+            guests, 4 comfortably
+          </span>
+        </div>
+        <div>
+          <strong>
+            5½
+          </strong>
+          <span>
+            acres of private forest
+          </span>
+        </div>
+        <div>
+          <strong>
+            4
+          </strong>
+          <span>
+            seasons worth arriving for
+          </span>
+        </div>
+        <div>
+          <strong>
+            1
+          </strong>
+          <span>
+            projector, many movie nights
+          </span>
+        </div>
+      </div>
+    </section>
+    <section
+      class="home-photo-story"
+    >
+      <div
+        class="home-photo-story-heading"
+      >
+        <span
+          class="coelbren-label "
+        >
+          <span
+            class="sr-only"
+          >
+            Small signs of life
+          </span>
+          <span
+            aria-hidden="true"
+          >
+               
+          </span>
+        </span>
+        <h2>
+          Look a little closer.
+        </h2>
+      </div>
+      <div
+        class="home-photo-layout"
+      >
+        <figure
+          class="home-photo home-photo-large"
+        >
+          <img
+            alt="The Druids Den welcome sign at the edge of the woods"
+            loading="lazy"
+            src="/assets/images/druids_den_welcome_sign.jpg"
+          />
+          <figcaption>
+            Find the sign. Follow the road.
+          </figcaption>
+        </figure>
+        <figure
+          class="home-photo home-photo-small"
+        >
+          <img
+            alt="A mushroom growing from a tree at the Den"
+            loading="lazy"
+            src="/assets/images/druids_den_mushroom_on_tree.jpg"
+          />
+          <figcaption>
+            There is always something growing.
+          </figcaption>
+        </figure>
+        <div
+          class="home-photo-note"
+        >
+          <img
+            alt=""
+            class="asset-icon "
+            loading="lazy"
+            src="/assets/iconography/single-mushroom.png"
+          />
+          <p>
+            Where the woods are your nearest neighbor.
+          </p>
+          <a
+            class="arrow-link "
+            data-discover="true"
+            href="/gallery"
+          >
+            Enter the photo journal
+            <span
+              aria-hidden="true"
+              class="arrow-link-mark"
+            >
+              -&gt;
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+    <section
+      class="home-den-preview site-band site-band-dark"
+    >
+      <div
+        class="home-den-preview-copy"
+      >
+        <span
+          class="section-number"
+        >
+          03
+        </span>
+        <h2>
+          Inside the Den
+        </h2>
+        <span
+          class="coelbren-label "
+        >
+          <span
+            class="sr-only"
+          >
+            What makes it work
+          </span>
+          <span
+            aria-hidden="true"
+          >
+               
+          </span>
+        </span>
+        <p>
+          Radiant floors, a gas fireplace, a full kitchen, a covered porch, and enough room for four people to find their own corner.
+        </p>
+        <a
+          class="arrow-link "
+          data-discover="true"
+          href="/the-den"
+        >
+          Tour the cabin
+          <span
+            aria-hidden="true"
+            class="arrow-link-mark"
+          >
+            -&gt;
+          </span>
+        </a>
+      </div>
+      <figure
+        class="home-den-preview-photo"
+      >
+        <img
+          alt="The primary bedroom with green walls and a wood-paneled ceiling"
+          loading="lazy"
+          src="/assets/images/druids_den_winter_bedroom.jpg"
+        />
+        <figcaption>
+          Winter bedroom / warm floor / one good book
+        </figcaption>
+      </figure>
+      <img
+        alt=""
+        class="asset-icon home-constellation"
+        loading="lazy"
+        src="/assets/iconography/01-constellation.png"
+      />
+    </section>
+    <section
+      class="home-northwoods site-band"
+    >
+      <div
+        class="home-northwoods-image"
+      >
+        <img
+          alt="Sky framed by the trees around the Druids Den"
+          loading="lazy"
+          src="/assets/images/druids_den_sky_image.jpg"
+        />
+        <span>
+          North of ordinary
+        </span>
+      </div>
+      <div
+        class="home-northwoods-copy"
+      >
+        <span
+          class="section-number"
+        >
+          04
+        </span>
+        <h2>
+          The Northwoods, unedited.
+        </h2>
+        <p>
+          Water, woods, supper clubs, winter roads, and the places we send friends. A regional field guide for before you arrive and while you're here.
+        </p>
+        <a
+          class="arrow-link "
+          data-discover="true"
+          href="/northwoods"
+        >
+          Read the field guide
+          <span
+            aria-hidden="true"
+            class="arrow-link-mark"
+          >
+            -&gt;
+          </span>
+        </a>
+      </div>
+    </section>
+    <section
+      class="home-tradition"
+    >
+      <div
+        class="home-tradition-image"
+      >
+        <img
+          alt="Fire glowing beneath the trees during Spooktoberfest"
+          loading="lazy"
+          src="/assets/images/spooktoberfest_fire_pit_2025.jpg"
+        />
+      </div>
+      <div
+        class="home-tradition-copy"
+      >
+        <span
+          class="section-number"
+        >
+          05 / A tradition
+        </span>
+        <h2>
+          Spooktoberfest
+        </h2>
+        <span
+          class="coelbren-label "
+        >
+          <span
+            class="sr-only"
+          >
+            When the leaves turn
+          </span>
+          <span
+            aria-hidden="true"
+          >
+               
+          </span>
+        </span>
+        <p>
+          One weekend, one fire pit, an unreasonable amount of autumn. Explore the Den's existing seasonal tradition, then see what else is taking shape.
+        </p>
+        <div
+          class="home-tradition-actions"
+        >
+          <a
+            class="button button-dark landing-cta"
+            data-discover="true"
+            href="/spooktoberfest"
+          >
+            Spooktoberfest 2026 &gt;
+          </a>
+          <a
+            class="home-owner-link landing-cta"
+            data-discover="true"
+            href="/dashboard"
+          >
+            Owner Dashboard &gt;
+          </a>
+        </div>
+      </div>
+    </section>
+    <section
+      class="home-stay-cta"
+    >
+      <div>
+        <span
+          class="coelbren-label "
+        >
+          <span
+            class="sr-only"
+          >
+            Stay with us
+          </span>
+          <span
+            aria-hidden="true"
+          >
+              
+          </span>
+        </span>
+        <h2>
+          Come see what the quiet is for.
+        </h2>
+      </div>
+      <div
+        class="home-stay-cta-copy"
+      >
+        <p>
+          The Den is for friends, family, and invited guests while we learn the shape of a great stay.
+        </p>
+        <a
+          class="arrow-link "
+          data-discover="true"
+          href="/stay"
+        >
+          Family? Friends? Reach out here
+          <span
+            aria-hidden="true"
+            class="arrow-link-mark"
+          >
+            -&gt;
+          </span>
+        </a>
+      </div>
+    </section>
+  </main>
+  <aside
+    aria-label="Current weather"
+    class="home-weather-dock"
   >
-    Begin Your Northwoods Adventure &gt;
-  </a>
-  <a
-    class="landing-cta"
-    data-discover="true"
-    href="/dashboard"
+    <div
+      data-testid="weather"
+    >
+      Weather Widget
+    </div>
+  </aside>
+  <footer
+    class="site-footer"
   >
-    Owner Dashboard &gt;
-  </a>
-  <div
-    data-testid="weather"
-  >
-    Weather Widget
-  </div>
+    <div
+      class="site-footer-mark"
+    >
+      <span
+        aria-hidden="true"
+        class="site-wordmark-symbol"
+      >
+        <span
+          class="site-wordmark-awen"
+        >
+          <span
+            aria-hidden="true"
+            class="awen-symbol"
+          >
+            
+          </span>
+        </span>
+      </span>
+      <div>
+        <span
+          class="coelbren-label "
+        >
+          <span
+            class="sr-only"
+          >
+            Return to the woods
+          </span>
+          <span
+            aria-hidden="true"
+          >
+               
+          </span>
+        </span>
+        <p>
+          The Druids Den
+        </p>
+      </div>
+    </div>
+    <div
+      class="site-footer-links"
+    >
+      <div>
+        <span
+          class="footer-label"
+        >
+          Find your way
+        </span>
+        <a
+          data-discover="true"
+          href="/the-den"
+        >
+          The Den
+        </a>
+        <a
+          data-discover="true"
+          href="/gallery"
+        >
+          Gallery
+        </a>
+        <a
+          data-discover="true"
+          href="/northwoods"
+        >
+          Northwoods
+        </a>
+        <a
+          data-discover="true"
+          href="/guide"
+        >
+          Guest guide
+        </a>
+      </div>
+      <div>
+        <span
+          class="footer-label"
+        >
+          Ask the keepers
+        </span>
+        <a
+          href="mailto:grovekeeper@druidsdenwi.com"
+        >
+          grovekeeper@druidsdenwi.com
+        </a>
+        <span>
+          Conover, Wisconsin
+        </span>
+      </div>
+    </div>
+    <div
+      class="site-footer-bottom"
+    >
+      <span>
+        Private hospitality by invitation
+      </span>
+      <span>
+        ©
+        <span
+          class="site-footer-year"
+        >
+          2026
+        </span>
+        <span
+          class="site-footer-title"
+        >
+          The Druids Den
+        </span>
+      </span>
+    </div>
+  </footer>
 </div>
 `;

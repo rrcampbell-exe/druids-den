@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import { ClerkProvider } from '@clerk/react'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
-import { Landing, WhatToExpect, Spooktoberfest, Reservations, Dashboard, Feedback, AuthPage } from './pages'
+import { Landing, TheDen, Gallery, Northwoods, Story, Traditions, Stay, Guide, Spooktoberfest, Reservations, Dashboard, Feedback, AuthPage } from './pages'
 import { Navigate } from 'react-router'
 import { ClerkAuthGate, ProtectedRoute } from './components'
 
@@ -40,8 +40,37 @@ let router = createBrowserRouter([
     )
   },
   {
+    path: '/the-den',
+    Component: TheDen
+  },
+  {
     path: '/what-to-expect',
-    Component: WhatToExpect
+    Component: TheDen
+  },
+  {
+    path: '/gallery',
+    Component: Gallery
+  },
+  {
+    path: '/northwoods',
+    Component: Northwoods
+  },
+  {
+    path: '/story',
+    Component: Story
+  },
+  // Keep traditions deployed but unlinked as dark prod until more traditions are ready.
+  {
+    path: '/traditions',
+    Component: Traditions
+  },
+  {
+    path: '/stay',
+    Component: Stay
+  },
+  {
+    path: '/guide',
+    Component: Guide
   },
   {
     path: '/dashboard',

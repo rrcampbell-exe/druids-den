@@ -1,0 +1,1376 @@
+.public-page {
+  min-width: 320px;
+  overflow: hidden;
+  color: var(--color-iron-ore);
+  background: var(--color-paper);
+}
+
+.public-page main {
+  overflow: hidden;
+}
+
+.public-hero {
+  position: relative;
+  display: flex;
+  min-height: min(760px, 90svh);
+  align-items: flex-end;
+  isolation: isolate;
+  color: var(--color-paper);
+  background: var(--color-forest);
+}
+
+.public-hero-image,
+.public-hero-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.public-hero-image {
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+}
+
+.public-hero-overlay {
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(17, 30, 25, 0.87), rgba(17, 30, 25, 0.18) 75%), linear-gradient(0deg, rgba(17, 30, 25, 0.76), transparent 52%);
+}
+
+.public-hero-content {
+  width: min(54rem, 78%);
+  padding: 9rem clamp(1.25rem, 8vw, 8rem) 6rem;
+}
+
+.public-hero-eyebrow,
+.page-heading-eyebrow {
+  display: block;
+  margin-bottom: 1.15rem;
+  color: var(--color-saffron);
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.public-hero-content .coelbren-label {
+  color: var(--color-saffron);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+
+.public-hero h1,
+.story-hero h1,
+.stay-hero h1 {
+  margin: 1rem 0 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 10vw, 9.2rem);
+  font-weight: 400;
+  letter-spacing: -0.07em;
+  line-height: 0.8;
+}
+
+.public-page-northwoods .public-hero h1 {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.public-page-northwoods .hero-title-word {
+  white-space: nowrap;
+}
+
+.public-hero-content > p:not(.button) {
+  max-width: 27rem;
+  margin: 2.3rem 0;
+  color: rgba(246, 240, 223, 0.86);
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  line-height: 1.6;
+}
+
+.public-hero-foot {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4.75rem);
+  bottom: 1.5rem;
+  left: clamp(1.25rem, 4vw, 4.75rem);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgba(246, 240, 223, 0.68);
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.page-section {
+  padding: clamp(5rem, 10vw, 9rem) clamp(1.25rem, 8vw, 8rem);
+}
+
+.den-intro,
+.northwoods-intro,
+.stay-details,
+.story-opening,
+.traditions-next {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 8vw, 9rem);
+  background: var(--color-paper);
+}
+
+.den-intro .section-marker,
+.northwoods-intro .section-marker,
+.stay-details .section-marker,
+.story-opening .section-marker,
+.traditions-next .section-marker {
+  align-self: start;
+}
+
+.den-intro-copy,
+.northwoods-intro > p,
+.stay-details-copy,
+.story-opening > div,
+.traditions-next > div {
+  max-width: 42rem;
+}
+
+.large-copy {
+  margin: 0 0 2rem;
+  color: var(--color-forest);
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3.2vw, 3.2rem);
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.den-intro-copy > p:not(.large-copy),
+.stay-details-copy > p:not(.large-copy),
+.story-opening > div > p:not(.large-copy),
+.traditions-next > div > p:not(.large-copy) {
+  max-width: 32rem;
+  margin: 0 0 2rem;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 0.35fr) 1fr;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.detail-row:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.detail-row dt {
+  color: var(--color-copper);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.detail-row dd {
+  margin: 0;
+  color: var(--color-iron-ore);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.den-facts {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.58fr) minmax(0, 1.42fr);
+  gap: clamp(2rem, 7vw, 8rem);
+  padding: 1.25rem clamp(1.25rem, 8vw, 8rem) 1.5rem;
+  color: var(--color-paper);
+  background: var(--color-moss);
+}
+
+.den-facts-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  color: rgba(246, 240, 223, 0.7);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.den-facts-label .asset-icon {
+  width: 2.8rem;
+  height: 2.8rem;
+  filter: invert(86%) sepia(18%) saturate(522%) hue-rotate(356deg) brightness(104%);
+}
+
+.den-facts dl,
+.northwoods-towns dl,
+.stay-details-copy dl {
+  margin: 0;
+}
+
+.den-facts .detail-row {
+  border-color: rgba(246, 240, 223, 0.24);
+}
+
+.den-facts .detail-row dt {
+  color: var(--color-saffron);
+}
+
+.den-facts .detail-row dd {
+  color: rgba(246, 240, 223, 0.88);
+}
+
+.den-sleep {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(12rem, 0.85fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  background: var(--color-shiitake);
+}
+
+.den-sleep-photo img {
+  height: clamp(23rem, 48vw, 44rem);
+  object-position: center 58%;
+}
+
+.den-sleep-copy .section-marker {
+  margin-bottom: 2rem;
+}
+
+.den-sleep-copy > p:not(.small-note) {
+  max-width: 25rem;
+  margin: 0 0 1.6rem;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.small-note {
+  max-width: 25rem;
+  margin: 0 0 1.7rem;
+  color: var(--color-copper);
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  line-height: 1.6;
+}
+
+.text-link {
+  color: var(--color-forest);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.den-rooms,
+.northwoods-guide {
+  padding: clamp(5rem, 9vw, 8rem) clamp(1.25rem, 8vw, 8rem);
+  color: var(--color-paper);
+  background: var(--color-forest);
+}
+
+.den-rooms-heading,
+.northwoods-guide-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 3.2rem;
+}
+
+.den-rooms-heading h2,
+.northwoods-guide-heading h2,
+.northwoods-season h2,
+.future-booking-slot h2 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(2.7rem, 6vw, 6.3rem);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 0.85;
+}
+
+.den-rooms-heading .section-number,
+.northwoods-guide-heading .section-number,
+.northwoods-season .section-number,
+.future-booking-slot .section-number {
+  color: var(--color-saffron);
+}
+
+.den-room-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.den-room-list article {
+  padding: 1.5rem 0 0;
+  border-top: 1px solid rgba(246, 240, 223, 0.3);
+}
+
+.den-room-list article .asset-icon {
+  width: 3.8rem;
+  height: 3.8rem;
+  margin-bottom: 1.6rem;
+  filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.den-room-list h3,
+.northwoods-entry h3,
+.story-principle-list h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 400;
+}
+
+.den-room-list p,
+.northwoods-entry p,
+.story-principle-list p {
+  max-width: 20rem;
+  margin: 1rem 0 0;
+  color: rgba(246, 240, 223, 0.73);
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.den-season {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.72fr) minmax(0, 1.28fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  background: var(--color-paper);
+}
+
+.den-season-copy .section-marker {
+  margin-bottom: 2rem;
+}
+
+.den-season-copy > p:not(.small-note) {
+  max-width: 27rem;
+  margin: 0 0 1.5rem;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.den-season-photo img {
+  height: clamp(20rem, 42vw, 38rem);
+  object-position: center 62%;
+}
+
+.public-closing-band {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 8vw, 8rem);
+  color: var(--color-paper);
+  background: var(--color-sienna);
+}
+
+.public-closing-band .arrow-link {
+  flex: 0 0 auto;
+  color: var(--color-saffron);
+}
+
+.page-heading-band {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(12rem, 0.6fr);
+  align-items: end;
+  gap: 3rem;
+  min-height: 27rem;
+  padding: 10rem clamp(1.25rem, 8vw, 8rem) 4rem;
+  color: var(--color-paper);
+  background: var(--color-forest);
+}
+
+.page-heading-band .coelbren-label {
+  color: var(--color-saffron);
+}
+
+.page-heading-band h1 {
+  margin: 1.1rem 0 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 9vw, 8.5rem);
+  font-weight: 400;
+  letter-spacing: -0.07em;
+  line-height: 0.82;
+}
+
+.page-heading-band > p {
+  max-width: 26rem;
+  margin: 0 0 0.3rem;
+  color: rgba(246, 240, 223, 0.76);
+  font-family: var(--font-sans);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.gallery-body {
+  background: var(--color-shiitake);
+}
+
+.gallery-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gallery-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem 1.2rem;
+}
+
+.gallery-filters button {
+  padding: 0.35rem 0 0.4rem;
+  color: var(--color-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gallery-filters button:hover,
+.gallery-filters button:focus-visible,
+.gallery-filters button.is-selected {
+  color: var(--color-forest);
+  border-bottom-color: var(--color-copper);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(0.8rem, 2.4vw, 2.2rem);
+  align-items: start;
+}
+
+.gallery-tile {
+  position: relative;
+  display: block;
+  min-width: 0;
+  padding: 0;
+  color: var(--color-iron-ore);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.gallery-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 13rem;
+  object-fit: cover;
+  filter: saturate(0.88);
+  transition: filter 220ms ease, transform 220ms ease;
+}
+
+.gallery-tile:hover img,
+.gallery-tile:focus-visible img {
+  filter: saturate(1.1);
+  transform: translateY(-0.25rem);
+}
+
+.gallery-tile span {
+  display: block;
+  margin-top: 0.7rem;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gallery-tile-1 { grid-column: span 5; }
+.gallery-tile-2 { grid-column: span 3; margin-top: 4rem; }
+.gallery-tile-3 { grid-column: span 4; }
+.gallery-tile-4 { grid-column: span 3; margin-top: -1rem; }
+.gallery-tile-5 { grid-column: span 5; margin-top: 5rem; }
+.gallery-tile-1 img { min-height: 31rem; }
+.gallery-tile-2 img { min-height: 21rem; }
+.gallery-tile-3 img { min-height: 28rem; }
+.gallery-tile-4 img { min-height: 23rem; }
+.gallery-tile-5 img { min-height: 25rem; }
+
+.gallery-note {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 3rem 1.25rem 6rem;
+  color: var(--color-forest);
+  text-align: center;
+  background: var(--color-shiitake);
+}
+
+.gallery-note .asset-icon {
+  width: 6rem;
+  height: 6rem;
+  opacity: 0.55;
+  filter: invert(19%) sepia(11%) saturate(484%) hue-rotate(95deg) brightness(86%);
+}
+
+.gallery-note p {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 4rem clamp(1rem, 5vw, 5rem);
+  background: rgba(17, 30, 25, 0.96);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.3rem;
+  right: clamp(1rem, 4vw, 4rem);
+  display: inline-flex;
+  gap: 0.7rem;
+  padding: 0.5rem 0;
+  color: var(--color-paper);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lightbox-close span {
+  color: var(--color-saffron);
+  font-size: 1rem;
+  line-height: 0.8;
+}
+
+.lightbox figure {
+  max-width: min(85rem, 100%);
+  max-height: 100%;
+  margin: 0;
+}
+
+.lightbox img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 75svh;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.lightbox figcaption {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.lightbox figcaption span {
+  color: var(--color-saffron);
+}
+
+.northwoods-intro {
+  background: var(--color-paper);
+}
+
+.northwoods-guide {
+  background: var(--color-moss);
+}
+
+.northwoods-entry-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3.5rem clamp(2rem, 8vw, 9rem);
+}
+
+.northwoods-entry {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(246, 240, 223, 0.3);
+}
+
+.northwoods-entry .asset-icon {
+  width: 4rem;
+  height: 4rem;
+  filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.northwoods-entry p {
+  max-width: 30rem;
+}
+
+.entry-links {
+  display: grid;
+  justify-items: start;
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+}
+
+.entry-links .arrow-link {
+  color: var(--color-saffron);
+  font-size: 0.64rem;
+}
+
+.northwoods-towns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(12rem, 0.9fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  background: var(--color-paper);
+}
+
+.northwoods-towns-image {
+  position: relative;
+  min-height: clamp(22rem, 44vw, 40rem);
+}
+
+.northwoods-towns-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+}
+
+.northwoods-towns-image .asset-icon {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 5rem;
+  height: 5rem;
+  min-height: 0;
+  object-fit: contain;
+  filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.northwoods-towns-copy .section-marker {
+  margin-bottom: 2rem;
+}
+
+.northwoods-towns-copy .small-note {
+  margin-top: 1.5rem;
+}
+
+.northwoods-neighbors {
+  padding: clamp(5rem, 9vw, 8rem) clamp(1.25rem, 8vw, 8rem);
+  color: var(--color-paper);
+  background: var(--color-moss);
+}
+
+.northwoods-neighbors-heading {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+  align-items: end;
+  gap: clamp(2rem, 8vw, 9rem);
+  margin-bottom: 4rem;
+}
+
+.northwoods-neighbors-heading h2 {
+  margin: 1.2rem 0 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 5.5vw, 5.8rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+}
+
+.northwoods-neighbors-heading > p {
+  max-width: 26rem;
+  margin: 0;
+  color: rgba(246, 240, 223, 0.76);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.northwoods-neighbor-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem clamp(1.5rem, 5vw, 5rem);
+}
+
+.northwoods-neighbor-list article {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(246, 240, 223, 0.3);
+}
+
+.northwoods-neighbor-list .asset-icon {
+  width: 4rem;
+  height: 4rem;
+  filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.northwoods-neighbor-list h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.northwoods-neighbor-list p {
+  max-width: 18rem;
+  margin: 0.8rem 0 0;
+  color: rgba(246, 240, 223, 0.73);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.northwoods-season {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.75fr) minmax(0, 1.25fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  padding: clamp(5rem, 9vw, 8rem) clamp(1.25rem, 8vw, 8rem);
+  color: var(--color-paper);
+  background: var(--color-sienna);
+}
+
+.northwoods-season h2 {
+  margin-top: 1.2rem;
+  font-size: clamp(2.8rem, 5.5vw, 5.8rem);
+}
+
+.northwoods-season p {
+  max-width: 25rem;
+  margin: 2rem 0;
+  color: rgba(246, 240, 223, 0.82);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.northwoods-season .arrow-link {
+  color: var(--color-saffron);
+}
+
+.northwoods-season > img {
+  display: block;
+  width: 100%;
+  height: clamp(20rem, 39vw, 35rem);
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.story-hero,
+.stay-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  min-height: min(760px, 90svh);
+  color: var(--color-paper);
+  background: var(--color-forest);
+}
+
+.story-hero-copy,
+.stay-hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 9rem clamp(1.25rem, 7vw, 7rem) 6rem clamp(1.25rem, 8vw, 8rem);
+}
+
+.story-hero-copy .coelbren-label,
+.stay-hero-copy .coelbren-label {
+  color: var(--color-saffron);
+}
+
+.story-hero h1,
+.stay-hero h1 {
+  max-width: 8ch;
+  font-size: clamp(3.8rem, 7vw, 7rem);
+  line-height: 0.86;
+}
+
+.story-hero-copy > p,
+.stay-hero-copy > p {
+  max-width: 27rem;
+  margin: 2rem 0 2.2rem;
+  color: rgba(246, 240, 223, 0.8);
+  font-family: var(--font-sans);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.story-hero > img,
+.stay-hero > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+}
+
+.story-opening,
+.traditions-next {
+  background: var(--color-shiitake);
+}
+
+.story-image-break {
+  position: relative;
+  min-height: clamp(24rem, 58vw, 52rem);
+}
+
+.story-image-break > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center 58%;
+}
+
+.story-image-break > div {
+  position: absolute;
+  right: clamp(1.25rem, 8vw, 8rem);
+  bottom: 1.5rem;
+  display: grid;
+  justify-items: end;
+  gap: 0.5rem;
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.story-image-break .asset-icon {
+  width: 6rem;
+  height: 6rem;
+  filter: invert(86%) sepia(18%) saturate(522%) hue-rotate(356deg) brightness(104%);
+}
+
+.story-principles {
+  background: var(--color-paper);
+}
+
+.story-principles-heading {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+  gap: clamp(2rem, 8vw, 9rem);
+  align-items: end;
+  margin-bottom: 4rem;
+}
+
+.story-principles-heading > p {
+  max-width: 25rem;
+  margin: 0;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.story-principle-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.story-principle-list article {
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.story-principle-list article > span {
+  display: block;
+  margin-bottom: 1.8rem;
+  color: var(--color-copper);
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.story-principle-list h3 {
+  color: var(--color-forest);
+  font-size: 1.5rem;
+}
+
+.story-principle-list p {
+  color: var(--color-muted);
+}
+
+.story-final {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  padding: clamp(5rem, 9vw, 8rem) clamp(1.25rem, 8vw, 8rem);
+  color: var(--color-paper);
+  background: var(--color-moss);
+}
+
+.story-final .coelbren-label {
+  color: var(--color-saffron);
+}
+
+.story-final h2 {
+  max-width: 11ch;
+  margin: 1.4rem 0 2rem;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 5vw, 5.8rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.story-final .arrow-link {
+  color: var(--color-saffron);
+}
+
+.story-final > img {
+  display: block;
+  width: 100%;
+  height: clamp(20rem, 40vw, 36rem);
+  object-fit: cover;
+}
+
+.traditions-heading {
+  background: var(--color-sienna);
+}
+
+.traditions-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  color: var(--color-paper);
+  background: var(--color-forest);
+}
+
+.traditions-feature-image {
+  position: relative;
+  min-height: 33rem;
+}
+
+.traditions-feature-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center 54%;
+}
+
+.traditions-feature-image .asset-icon {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 5rem;
+  height: 5rem;
+  min-height: 0;
+  object-fit: contain;
+  filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.traditions-feature-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(3rem, 7vw, 7rem);
+}
+
+.traditions-feature-copy h2 {
+  margin: 1rem 0 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 6vw, 6.5rem);
+  font-weight: 400;
+  letter-spacing: -0.06em;
+  line-height: 0.85;
+}
+
+.traditions-feature-copy .coelbren-label {
+  max-width: 25rem;
+  margin-top: 1rem;
+  color: var(--color-saffron);
+  line-height: 1.25;
+}
+
+.traditions-feature-copy > p:not(.small-note) {
+  max-width: 24rem;
+  margin: 2rem 0 1rem;
+  color: rgba(246, 240, 223, 0.8);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.traditions-feature-copy .small-note {
+  margin-bottom: 2rem;
+  color: var(--color-saffron);
+}
+
+.traditions-next {
+  background: var(--color-paper);
+}
+
+.stay-hero {
+  background: var(--color-saffron);
+}
+
+.stay-hero-copy {
+  color: var(--color-forest);
+}
+
+.stay-hero-copy .public-hero-eyebrow,
+.stay-hero-copy .coelbren-label {
+  color: var(--color-forest);
+}
+
+.stay-hero-copy h1 {
+  color: var(--color-forest);
+}
+
+.stay-hero-copy > p {
+  color: rgba(23, 42, 36, 0.8);
+}
+
+.stay-hero > img {
+  object-position: center 58%;
+}
+
+.stay-details {
+  background: var(--color-paper);
+}
+
+.stay-details-copy .large-copy {
+  max-width: 37rem;
+}
+
+.stay-details-copy dl {
+  max-width: 36rem;
+  margin-top: 2.5rem;
+}
+
+.stay-inquiry {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(12rem, 0.8fr);
+  gap: clamp(2rem, 8vw, 9rem);
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 8vw, 8rem);
+  color: var(--color-paper);
+  background: var(--color-sienna);
+}
+
+.stay-inquiry .asset-icon {
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: 2rem;
+  filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.stay-inquiry h2 {
+  max-width: 10ch;
+  margin: 1.2rem 0 0;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: clamp(2.7rem, 5vw, 5.8rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 0.88;
+}
+
+.stay-inquiry > div:last-child {
+  align-self: end;
+}
+
+.stay-inquiry p {
+  max-width: 24rem;
+  margin: 0 0 2rem;
+  color: rgba(246, 240, 223, 0.82);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.future-booking-slot {
+  background: var(--color-shiitake);
+}
+
+.future-booking-slot h2 {
+  max-width: 12ch;
+  margin: 1.2rem 0 1.4rem;
+  color: var(--color-forest);
+}
+
+.future-booking-slot p {
+  max-width: 32rem;
+  margin: 0;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 820px) {
+  .den-intro,
+  .northwoods-intro,
+  .stay-details,
+  .story-opening,
+  .traditions-next,
+  .den-season,
+  .northwoods-towns,
+  .northwoods-season,
+  .story-final,
+  .stay-inquiry {
+    grid-template-columns: 1fr;
+  }
+
+  .den-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .den-facts-label {
+    align-items: center;
+  }
+
+  .den-room-list,
+  .story-principle-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .den-room-list article:last-child,
+  .story-principle-list article:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .northwoods-entry-list {
+    gap: 2.5rem 2rem;
+  }
+
+  .northwoods-neighbors-heading {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .northwoods-neighbor-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .story-principles-heading {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .stay-inquiry > div:last-child {
+    align-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .public-hero {
+    min-height: 700px;
+  }
+
+  .public-hero-content {
+    width: 100%;
+    padding: 8rem 1.25rem 6.5rem;
+  }
+
+  .public-hero h1,
+  .page-heading-band h1 {
+    font-size: clamp(3.8rem, 19vw, 6.5rem);
+  }
+
+  .public-page-northwoods .public-hero h1 {
+    font-size: clamp(3.25rem, 17vw, 6.5rem);
+  }
+
+  .northwoods-neighbor-list {
+    grid-template-columns: 1fr;
+  }
+
+  .public-hero-foot {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .page-heading-band {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    min-height: 31rem;
+    padding-top: 9rem;
+  }
+
+  .gallery-toolbar {
+    display: grid;
+    justify-items: start;
+  }
+
+  .gallery-filters {
+    justify-content: flex-start;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem 0.75rem;
+  }
+
+  .gallery-tile-1,
+  .gallery-tile-2,
+  .gallery-tile-3,
+  .gallery-tile-4,
+  .gallery-tile-5 {
+    grid-column: auto;
+    margin-top: 0;
+  }
+
+  .gallery-tile-1,
+  .gallery-tile-4 {
+    grid-row: span 1;
+  }
+
+  .gallery-tile img,
+  .gallery-tile-1 img,
+  .gallery-tile-2 img,
+  .gallery-tile-3 img,
+  .gallery-tile-4 img,
+  .gallery-tile-5 img {
+    min-height: 14rem;
+  }
+
+  .gallery-tile:nth-child(3n) {
+    grid-column: 1 / -1;
+  }
+
+  .gallery-tile:nth-child(3n) img {
+    min-height: 19rem;
+  }
+
+  .northwoods-entry-list,
+  .den-room-list,
+  .story-principle-list {
+    grid-template-columns: 1fr;
+  }
+
+  .den-room-list article:last-child,
+  .story-principle-list article:last-child {
+    grid-column: auto;
+  }
+
+  .northwoods-entry {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+  }
+
+  .northwoods-entry .asset-icon {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .story-hero,
+  .stay-hero,
+  .traditions-feature {
+    grid-template-columns: 1fr;
+  }
+
+  .story-hero,
+  .stay-hero {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .story-hero-copy,
+  .stay-hero-copy {
+    min-height: 36rem;
+    padding: 8rem 1.25rem 4.5rem;
+  }
+
+  .story-hero > img,
+  .stay-hero > img {
+    min-height: 24rem;
+  }
+
+  .traditions-feature-image {
+    min-height: 20rem;
+  }
+
+  .traditions-feature-copy {
+    padding: 4rem 1.25rem 4.5rem;
+  }
+
+  .lightbox {
+    padding: 4rem 1rem 2rem;
+  }
+
+  .lightbox img {
+    max-height: 64svh;
+  }
+
+  .lightbox figcaption {
+    display: grid;
+    gap: 0.35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-page *,
+  .public-page *::before,
+  .public-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
