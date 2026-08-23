@@ -382,16 +382,15 @@ export const Story = () => (
         <div className='story-hero-copy'>
           <span className='public-hero-eyebrow'>A place, becoming itself</span>
           <CoelbrenLabel>The story of the Den</CoelbrenLabel>
-          <h1>Some places ask to be named.</h1>
-          <p>The Druids Den is a private cabin in the Northwoods, but the name is doing a little more work than that.</p>
+          <h1>Some places name themselves</h1>
+          <p>The Druids Den is more than a name. It's a place to become one with nature and with one's true self.</p>
         </div>
         <img src={imagePath('druids_den_welcome_sign.jpg')} alt='The Druids Den welcome sign beside the forest road' />
       </section>
       <section className='story-opening page-section'>
         <SectionMarker eyebrow='The name' title='Keeper and refuge.' />
         <div>
-          <p className='large-copy'>A druid is a keeper of knowledge, ritual, and the living world. A den is a refuge: close to the weather, a little hidden, meant to be returned to.</p>
-          <p>That is the useful meaning of the name. It gives the cabin a point of view without asking it to perform as a fantasy. The Den is a place to pay attention: to the light at the edge of the trees, the sound of a fire starting, the particular silence after a snowfall.</p>
+          <p className='large-copy'>A druid is a keeper of knowledge, ritual, and the living world. A den is a refuge: close to the earth, tucked away, and always beckoning your return.</p>
         </div>
       </section>
       <section className='story-image-break'>
@@ -400,20 +399,20 @@ export const Story = () => (
       </section>
       <section className='story-principles page-section'>
         <div className='story-principles-heading'>
-          <SectionMarker eyebrow='The design philosophy' title='Warmth over polish.' />
-          <p>Everything here should make the stay easier, stranger, or more memorable. Prefer useful beauty. Leave room for weather.</p>
+          <SectionMarker eyebrow='The design philosophy' title='Warmth, comfort, and the outside welcomed in.' />
+          <p>Whether in the shape of the woods-welcoming floor-to-ceiling windows, the wood-panelled walls made from a single fallen pine, or the carefully chosen handicraft that adorns every corner, each detail makes the outside feel closer and the inside more inviting.</p>
         </div>
         <div className='story-principle-list'>
           <article><span>01</span><h3>Make room for the ordinary.</h3><p>A full kitchen, a good bed, a place to put wet boots. Hospitality begins with the small things working.</p></article>
-          <article><span>02</span><h3>Let the woods stay wild.</h3><p>The forest is not a backdrop to be improved. It is the nearest neighbor and the reason to look up.</p></article>
-          <article><span>03</span><h3>Keep a few traditions.</h3><p>Spooktoberfest started as one gathering. Other rituals may follow. They will earn their names.</p></article>
+          <article><span>02</span><h3>Let the woods stay wild.</h3><p>The forest is not a backdrop to be improved. It's your nearest neighbor, the reason to look up, and a source of endless wonder.</p></article>
+          <article><span>03</span><h3>Keep a few traditions.</h3><p>We mark the solstices and equinoxes with rituals of our own. Which traditions will you discover and keep?</p></article>
         </div>
       </section>
       <section className='story-final'>
         <div>
-          <CoelbrenLabel>Still being written</CoelbrenLabel>
-          <h2>The best part of the story is the part that happens there.</h2>
-          <ArrowLink to='/stay'>Find your way to the Den</ArrowLink>
+          <CoelbrenLabel>Woodland wonder is waiting.</CoelbrenLabel>
+          <h2>The best part of the story is yet to be written.</h2>
+          <ArrowLink to='/stay'>Write your story at the Den</ArrowLink>
         </div>
         <img src={imagePath('druids_den_mushroom_on_tree.jpg')} alt='A mushroom growing from a tree near the Den' loading='lazy' />
       </section>
