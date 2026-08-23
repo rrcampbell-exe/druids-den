@@ -155,7 +155,11 @@ exports[`Landing Page > matches snapshot 1`] = `
         <p
           class="home-hero-intro"
         >
-          Five and a half acres of private forest, a warm cabin, and the kind of quiet that makes room for a story.
+          Five and a half acres of private forest, a cozy cabin, and the kind of quiet that makes room for 
+          <i>
+            you
+          </i>
+          .
         </p>
         <div
           class="home-hero-actions"
@@ -222,12 +226,12 @@ exports[`Landing Page > matches snapshot 1`] = `
         <p
           class="home-display-copy"
         >
-          The Druids Den is your cozy woodland basecamp for exploring the beautiful Northwoods of Wisconsin and Michigan's Upper Peninsula.
+          The Druids Den is your intimate woodland basecamp for exploring the beautiful Northwoods of Wisconsin and Michigan's Upper Peninsula.
         </p>
         <p
           class="home-body-copy"
         >
-          A place for slow mornings, deep breaths, long dinners, and the rituals you discover when nobody is rushing you along. Come for the forest. Stay for the solitude.
+          A refuge for slow mornings, deep breaths, and the rituals you discover when nobody is rushing you along. Come for the forest. Stay for the solitude.
         </p>
         <a
           class="arrow-link "
@@ -250,7 +254,7 @@ exports[`Landing Page > matches snapshot 1`] = `
           class="coelbren-label"
           data-testid="coelbren"
         >
-          Keep close to the fire
+          Take it easy
         </span>
         <p>
           No lobby. No itinerary required.
@@ -497,66 +501,6 @@ exports[`Landing Page > matches snapshot 1`] = `
       </div>
     </section>
     <section
-      class="home-tradition"
-    >
-      <div
-        class="home-tradition-image"
-      >
-        <img
-          alt="Fire glowing beneath the trees during Spooktoberfest"
-          loading="lazy"
-          src="/assets/images/spooktoberfest_fire_pit_2025.jpg"
-        />
-      </div>
-      <div
-        class="home-tradition-copy"
-      >
-        <span
-          class="section-number"
-        >
-          05 / A tradition
-        </span>
-        <h2>
-          Spooktoberfest
-        </h2>
-        <span
-          class="coelbren-label "
-        >
-          <span
-            class="sr-only"
-          >
-            When the leaves turn
-          </span>
-          <span
-            aria-hidden="true"
-          >
-               
-          </span>
-        </span>
-        <p>
-          One weekend, one fire pit, an unreasonable amount of autumn. Explore the Den's existing seasonal tradition, then see what else is taking shape.
-        </p>
-        <div
-          class="home-tradition-actions"
-        >
-          <a
-            class="button button-dark landing-cta"
-            data-discover="true"
-            href="/spooktoberfest"
-          >
-            Spooktoberfest 2026 &gt;
-          </a>
-          <a
-            class="home-owner-link landing-cta"
-            data-discover="true"
-            href="/dashboard"
-          >
-            Owner Dashboard &gt;
-          </a>
-        </div>
-      </div>
-    </section>
-    <section
       class="home-stay-cta"
     >
       <div>
@@ -575,7 +519,7 @@ exports[`Landing Page > matches snapshot 1`] = `
           </span>
         </span>
         <h2>
-          Come see what the quiet is for.
+          The quiet is calling.
         </h2>
       </div>
       <div

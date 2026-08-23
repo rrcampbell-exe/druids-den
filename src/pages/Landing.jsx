@@ -40,7 +40,7 @@ const Landing = () => {
               <Coelbren className='landing-title-coelbren' aria-hidden='true'>Druids Den</Coelbren>
               <span className='three-rays' aria-hidden='true'><Awen /></span>
             </h1>
-            <p className='home-hero-intro'>Five and a half acres of private forest, a warm cabin, and the kind of quiet that makes room for a story.</p>
+            <p className='home-hero-intro'>Five and a half acres of private forest, a cozy cabin, and the kind of quiet that makes room for <i>you</i>.</p>
             <div className='home-hero-actions'>
               <Link to='/what-to-expect' className='button button-light landing-cta'>Begin Your Northwoods Adventure &gt;</Link>
               <Link to='/guide' className='home-text-link'>Already arriving?<span>Open the guide</span></Link>
@@ -59,12 +59,12 @@ const Landing = () => {
             <span>01 / The invitation</span>
           </div>
           <div className='home-introduction-copy'>
-            <p className='home-display-copy'>The Druids Den is your cozy woodland basecamp for exploring the beautiful Northwoods of Wisconsin and Michigan's Upper Peninsula.</p>
-            <p className='home-body-copy'>A place for slow mornings, deep breaths, long dinners, and the rituals you discover when nobody is rushing you along. Come for the forest. Stay for the solitude.</p>
+            <p className='home-display-copy'>The Druids Den is your intimate woodland basecamp for exploring the beautiful Northwoods of Wisconsin and Michigan's Upper Peninsula.</p>
+            <p className='home-body-copy'>A refuge for slow mornings, deep breaths, and the rituals you discover when nobody is rushing you along. Come for the forest. Stay for the solitude.</p>
             <ArrowLink to='/the-den'>See what staying here is like</ArrowLink>
           </div>
           <div className='home-introduction-side-note'>
-            <Coelbren renderAs='span' className='coelbren-label'>Keep close to the fire</Coelbren>
+            <Coelbren renderAs='span' className='coelbren-label'>Take it easy</Coelbren>
             <p>No lobby. No itinerary required.</p>
           </div>
         </section>
@@ -132,26 +132,10 @@ const Landing = () => {
           </div>
         </section>
 
-        <section className='home-tradition'>
-          <div className='home-tradition-image'>
-            <img src='/assets/images/spooktoberfest_fire_pit_2025.jpg' alt='Fire glowing beneath the trees during Spooktoberfest' loading='lazy' />
-          </div>
-          <div className='home-tradition-copy'>
-            <span className='section-number'>05 / A tradition</span>
-            <h2>Spooktoberfest</h2>
-            <CoelbrenLabel>When the leaves turn</CoelbrenLabel>
-            <p>One weekend, one fire pit, an unreasonable amount of autumn. Explore the Den's existing seasonal tradition, then see what else is taking shape.</p>
-            <div className='home-tradition-actions'>
-              {showSpooktoberfest && <Link to='/spooktoberfest' className='button button-dark landing-cta'>Spooktoberfest 2026 &gt;</Link>}
-              {showOwnerDashboard && <Link to='/dashboard' className='home-owner-link landing-cta'>Owner Dashboard &gt;</Link>}
-            </div>
-          </div>
-        </section>
-
         <section className='home-stay-cta'>
           <div>
             <CoelbrenLabel>Stay with us</CoelbrenLabel>
-            <h2>Come see what the quiet is for.</h2>
+            <h2>The quiet is calling.</h2>
           </div>
           <div className='home-stay-cta-copy'>
             <p>The Den is for friends, family, and invited guests while we learn the shape of a great stay.</p>
