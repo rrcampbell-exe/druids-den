@@ -458,48 +458,51 @@ export const Traditions = () => (
   </PageFrame>
 )
 
-export const Stay = () => (
-  <PageFrame className='public-page-stay'>
-    <Meta title='Stay | The Druids Den' description='Ask about a private, invitation-based stay at The Druids Den in Conover, Wisconsin. Public booking is not open yet.' />
-    <main>
-      <section className='stay-hero'>
-        <div className='stay-hero-copy'>
-          <span className='public-hero-eyebrow'>For the moment, by invitation</span>
-          <CoelbrenLabel>A private stay</CoelbrenLabel>
-          <h1>Come for the quiet.</h1>
-          <p>The Druids Den is currently a hospitality beta for friends, family, and invited guests while we learn how to make the stay as good as the place.</p>
-          <a href='mailto:grovekeeper@druidsdenwi.com?subject=Private%20stay%20inquiry' className='button button-dark'>Start an inquiry -&gt;</a>
-        </div>
-        <img src={imagePath('sunset-fire-pit.jpeg')} alt='The fire pit and trees at sunset around The Druids Den' />
-      </section>
-      <section className='stay-details page-section'>
-        <SectionMarker eyebrow='What to expect' title='A simple conversation first.' />
-        <div className='stay-details-copy'>
-          <p className='large-copy'>There is no public calendar or instant booking yet. Tell us who is coming, when you are thinking, and what kind of time you want to have.</p>
-          <dl>
-            <DetailRow label='Current model'>Private and invited stays</DetailRow>
-            <DetailRow label='The cabin'>Sleeps up to six guests</DetailRow>
-            <DetailRow label='The ask'>Respect the woods, the neighbors, and the house</DetailRow>
-            <DetailRow label='Next step'>Email Ryan and Lacey to begin the conversation</DetailRow>
-          </dl>
-        </div>
-      </section>
-      <section className='stay-inquiry'>
-        <div>
-          <AssetIcon name='acorn.png' alt='' />
-          <span className='section-number'>Private-stay inquiry</span>
-          <h2>Tell us a little about your stay.</h2>
-        </div>
-        <div>
-          <p>We will reply with the details that make sense for your dates, group, and season. The address and arrival information stay private until the invitation is real.</p>
-          <a href='mailto:grovekeeper@druidsdenwi.com?subject=Private%20stay%20inquiry' className='button button-light'>Email the keepers -&gt;</a>
-        </div>
-      </section>
-      <section className='future-booking-slot page-section' aria-label='Future booking area'>
-        <span className='section-number'>Reserved for a future chapter</span>
-        <h2>A future Lodgify booking area will live here.</h2>
-        <p>When public booking is the right next step, this space can hold an embedded Lodgify widget without changing the rest of the page. For now, there is nothing to book online.</p>
-      </section>
-    </main>
-  </PageFrame>
-)
+export const Stay = () => {
+  const isLodgifyEnabled = import.meta.env.VITE_LODGIFY_ENABLED === 'true'
+  return (
+    <PageFrame className='public-page-stay'>
+      <Meta title='Stay | The Druids Den' description='Ask about a private, invitation-based stay at The Druids Den in Conover, Wisconsin. Public booking is not open yet.' />
+      <main>
+        <section className='stay-hero'>
+          <div className='stay-hero-copy'>
+            <span className='public-hero-eyebrow'>For the moment, by invitation</span>
+            <CoelbrenLabel>A private stay</CoelbrenLabel>
+            <h1>Come for the quiet.</h1>
+            <p>The Druids Den is in a hospitality beta for friends, family, and invited guests while we learn how to make the best stay possible.</p>
+            <a href='mailto:grovekeeper@druidsdenwi.com?subject=Private%20stay%20inquiry' className='button button-dark'>Start an inquiry -&gt;</a>
+          </div>
+          <img src={imagePath('sunset-fire-pit.jpeg')} alt='The fire pit and trees at sunset around The Druids Den' />
+        </section>
+        <section className='stay-details page-section'>
+          <SectionMarker eyebrow='What to expect' title='A simple conversation first.' />
+          <div className='stay-details-copy'>
+            <p className='large-copy'>At this time, there's no public calendar or instant booking. Instead, reach out and tell us who's coming, when you're thinking, and the kind of time you want to have.</p>
+            <dl>
+              <DetailRow label='Current model'>Private and invited stays</DetailRow>
+              <DetailRow label='The cabin'>Sleeps up to six guests</DetailRow>
+              <DetailRow label='The ask'>Respect the woods, the neighbors, and the house</DetailRow>
+              <DetailRow label='Next step'>Contact Ryan and Lacey to start the conversation</DetailRow>
+            </dl>
+          </div>
+        </section>
+        <section className='stay-inquiry'>
+          <div>
+            <AssetIcon name='acorn.png' alt='' />
+            <span className='section-number'>Private-stay inquiry</span>
+            <h2>Tell us a little about your stay.</h2>
+          </div>
+          <div>
+            <p>We'll reply with the details that make sense for your dates, group, and season. We'll share the address and arrival information once your stay is confirmed.</p>
+            <a href='mailto:grovekeeper@druidsdenwi.com?subject=Private%20stay%20inquiry' className='button button-light'>Email the keepers -&gt;</a>
+          </div>
+        </section>
+      {isLodgifyEnabled && <section className='future-booking-slot page-section' aria-label='Future booking area'>
+          <span className='section-number'>Reserved for a future chapter</span>
+          <h2>A future Lodgify booking area will live here.</h2>
+          <p>When public booking is the right next step, this space can hold an embedded Lodgify widget without changing the rest of the page. For now, there is nothing to book online.</p>
+        </section>}
+      </main>
+    </PageFrame>
+  )  
+}
