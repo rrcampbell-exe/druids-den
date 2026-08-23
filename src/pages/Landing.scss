@@ -677,7 +677,8 @@
   .home-introduction,
   .home-glance,
   .home-northwoods,
-  .home-stay-cta {
+  .home-stay-cta,
+  .site-band-dark {
     grid-template-columns: 1fr;
   }
 
@@ -777,6 +778,10 @@
 
   .home-den-preview-photo img {
     height: 26rem;
+  }
+
+  .home-den-preview-photo {
+    order: -1;
   }
 
   .home-constellation {

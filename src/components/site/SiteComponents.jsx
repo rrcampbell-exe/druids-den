@@ -73,7 +73,7 @@ export const SiteHeader = ({ guide = false }) => {
         ) : (
           <Link className='site-navigation-guide-link' to='/guide' onClick={closeOnNavigate}>Guest guide</Link>
         )}
-        <Link className='site-navigation-cta' to='/stay' onClick={closeOnNavigate}>{guide ? 'Need help?' : 'Plan a private stay'}</Link>
+        <Link className='site-navigation-cta' to='/stay' onClick={closeOnNavigate}>Plan a private stay</Link>
       </nav>
     </header>
   )

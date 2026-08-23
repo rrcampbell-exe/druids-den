@@ -102,7 +102,7 @@ const Spooktoberfest = () => {
                   className='sleeping-photo'
                   style={{ objectPosition: 'center 55%' }}
                 />
-                <p>The cabin can comfortably sleep six (two in the primary bedroom, two in the loft, and two on the air mattress), but depending on the number of RSVPs per night, we may have to get cozy with additional air mattresses set up in the space.</p>
+                <p>The cabin can sleep six naturally (two in the primary bedroom, two in the loft, and two on the air mattress), but depending on the number of RSVPs per night, we may have to get cozy with additional air mattresses set up in the space.</p>
                 <p>Alternatively, you're welcome to bring a tent and camp on the land. Please let us know if you plan to do this so we can get a better feel for how to set up the cabin interior to support those who choose to sleep indoors.</p>
               </div>
             </div>
@@ -138,7 +138,7 @@ const Spooktoberfest = () => {
                 style={{ objectPosition: 'center 54%' }}
               />
               <p>The address for The Druids Den was on the physical invite you received in the mail. We can of course text you the address if you need it again.</p>
-              <p>Apple Maps does now feature our address and we did submit it to Google Maps as well, but if it doesn't appear there by October and you need to use Google Maps, let us know and we'll share the best directions at that time.</p>
+              <p>Apple Maps and Google Maps both feature our address now. So long as you have reception, you should be able to find us!</p>
             </div>
           </section>
 
