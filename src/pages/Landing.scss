@@ -44,7 +44,7 @@
 
 .home-hero-image {
   z-index: -3;
-  background-image: url('/assets/images/druids_den_summer_daisies_evening.jpg');
+  background-image: url('/assets/images/druids_den_rear_view_dusk.jpeg');
   background-position: center 58%;
   background-size: cover;
   transform: scale(1.01);
@@ -719,6 +719,10 @@
 @media (max-width: 620px) {
   .home-hero {
     min-height: 740px;
+  }
+
+  .home-hero-image {
+    background-position: 58% center;
   }
 
   .home-hero-content {
