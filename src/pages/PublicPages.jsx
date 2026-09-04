@@ -144,6 +144,7 @@ export const TheDen = () => (
 
 const galleryImages = [
   { src: 'druids_den_autumn_evening_fire_pit.jpg', label: 'The house at dusk', category: 'Outside' },
+  { src: 'druids_den_rear_view_dusk.jpeg', label: 'The Den from behind at dusk', category: 'Outside' },
   { src: 'druids_den_welcome_sign.jpg', label: 'The way in', category: 'Around the Den' },
   { src: 'evening-shot-of-welcome-sign.jpeg', label: 'The sign after dark', category: 'Around the Den' },
   { src: 'druids_den_winter_bedroom.jpg', label: 'Primary bedroom', category: 'Inside' },
