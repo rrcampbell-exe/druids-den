@@ -147,6 +147,7 @@ const galleryImages = [
   { src: 'druids_den_rear_view_dusk.jpeg', label: 'The Den from behind at dusk', category: 'Outside' },
   { src: 'druids_den_welcome_sign.jpg', label: 'The way in', category: 'Around the Den' },
   { src: 'evening-shot-of-welcome-sign.jpeg', label: 'The sign after dark', category: 'Around the Den' },
+  { src: 'door_in_the_wall.jpeg', label: '"The door in the wall"', category: 'Outside' },
   { src: 'druids_den_winter_bedroom.jpg', label: 'Primary bedroom', category: 'Inside' },
   { src: 'druids_den_summer_daisies_evening.jpg', label: 'The long approach', category: 'Outside' },
   { src: 'druids_den_mushroom_on_tree.jpg', label: 'A small resident', category: 'Around the Den' },

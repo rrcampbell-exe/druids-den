@@ -344,24 +344,24 @@ exports[`Landing Page > matches snapshot 1`] = `
           class="home-photo home-photo-large"
         >
           <img
-            alt="The Druids Den welcome sign at the edge of the woods"
-            loading="lazy"
-            src="/assets/images/druids_den_welcome_sign.jpg"
-          />
-          <figcaption>
-            Find the sign. Follow the road.
-          </figcaption>
-        </figure>
-        <figure
-          class="home-photo home-photo-small"
-        >
-          <img
             alt="A mushroom growing from a tree at the Den"
             loading="lazy"
             src="/assets/images/druids_den_mushroom_on_tree.jpg"
           />
           <figcaption>
             There is always something growing.
+          </figcaption>
+        </figure>
+        <figure
+          class="home-photo home-photo-small"
+        >
+          <img
+            alt="A weathered wooden door hidden among the trees at the Den"
+            loading="lazy"
+            src="/assets/images/door_in_the_wall.jpeg"
+          />
+          <figcaption>
+            Open the doors of perception to a hidden world.
           </figcaption>
         </figure>
         <div

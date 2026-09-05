@@ -89,12 +89,12 @@ const Landing = () => {
           </div>
           <div className='home-photo-layout'>
             <figure className='home-photo home-photo-large'>
-              <img src='/assets/images/druids_den_welcome_sign.jpg' alt='The Druids Den welcome sign at the edge of the woods' loading='lazy' />
-              <figcaption>Find the sign. Follow the road.</figcaption>
-            </figure>
-            <figure className='home-photo home-photo-small'>
               <img src='/assets/images/druids_den_mushroom_on_tree.jpg' alt='A mushroom growing from a tree at the Den' loading='lazy' />
               <figcaption>There is always something growing.</figcaption>
+            </figure>
+            <figure className='home-photo home-photo-small'>
+              <img src='/assets/images/door_in_the_wall.jpeg' alt='A weathered wooden door hidden among the trees at the Den' loading='lazy' />
+              <figcaption>Open the doors of perception to a hidden world.</figcaption>
             </figure>
             <div className='home-photo-note'>
               <AssetIcon name='single-mushroom.png' alt='' />
