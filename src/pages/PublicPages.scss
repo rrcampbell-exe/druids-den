@@ -233,6 +233,47 @@
   color: rgba(246, 240, 223, 0.88);
 }
 
+.den-main-room {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.72fr) minmax(0, 1.28fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  background: var(--color-paper);
+}
+
+.den-main-room-copy .section-marker,
+.den-loft-copy .section-marker {
+  margin-bottom: 2rem;
+}
+
+.den-main-room-copy > p,
+.den-loft-copy > p {
+  max-width: 27rem;
+  margin: 0;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.den-main-room-photos,
+.den-loft-photos {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  align-items: end;
+  gap: clamp(0.8rem, 2.4vw, 2.2rem);
+}
+
+.den-main-room-primary img {
+  height: clamp(28rem, 50vw, 48rem);
+  object-position: center 48%;
+}
+
+.den-main-room-secondary img {
+  height: clamp(22rem, 37vw, 35rem);
+  object-position: center 50%;
+}
+
 .den-sleep {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(12rem, 0.85fr);
@@ -257,6 +298,28 @@
   font-family: var(--font-sans);
   font-size: 0.94rem;
   line-height: 1.75;
+}
+
+.den-loft {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: clamp(2rem, 8vw, 9rem);
+  background: var(--color-shiitake);
+}
+
+.den-loft-photos {
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+}
+
+.den-loft-stair-photo img {
+  height: clamp(21rem, 34vw, 32rem);
+  object-position: center 53%;
+}
+
+.den-loft-corner-photo img {
+  height: clamp(27rem, 44vw, 42rem);
+  object-position: center 54%;
 }
 
 .small-note {
@@ -320,6 +383,18 @@
   gap: 2rem;
 }
 
+.den-room-showcase {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 1.28fr);
+  align-items: center;
+  gap: clamp(2rem, 7vw, 8rem);
+}
+
+.den-room-detail-photo img {
+  height: clamp(24rem, 37vw, 36rem);
+  object-position: center 48%;
+}
+
 .den-room-list article {
   padding: 1.5rem 0 0;
   border-top: 1px solid rgba(246, 240, 223, 0.3);
@@ -377,6 +452,22 @@
 .den-season-photo img {
   height: clamp(20rem, 42vw, 38rem);
   object-position: center 62%;
+}
+
+.den-detail {
+  display: grid;
+  justify-items: center;
+  padding: clamp(4rem, 8vw, 7rem) 1.25rem;
+  background: var(--color-shiitake);
+}
+
+.den-detail-photo {
+  width: min(100%, 29rem);
+}
+
+.den-detail-photo img {
+  height: clamp(20rem, 42vw, 34rem);
+  object-position: 76% center;
 }
 
 .public-closing-band {
@@ -1209,6 +1300,8 @@
   .story-opening,
   .traditions-next,
   .den-sleep,
+  .den-main-room,
+  .den-loft,
   .den-season,
   .northwoods-towns,
   .northwoods-season,
@@ -1229,6 +1322,15 @@
   .den-room-list,
   .story-principle-list {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .den-room-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .den-main-room-photos,
+  .den-loft-photos {
+    order: -1;
   }
 
   .den-room-list article:last-child,
@@ -1348,6 +1450,18 @@
   .den-room-list,
   .story-principle-list {
     grid-template-columns: 1fr;
+  }
+
+  .den-main-room-photos,
+  .den-loft-photos {
+    grid-template-columns: 1fr;
+  }
+
+  .den-main-room-primary img,
+  .den-main-room-secondary img,
+  .den-loft-stair-photo img,
+  .den-loft-corner-photo img {
+    height: clamp(22rem, 112vw, 34rem);
   }
 
   .den-room-list article:last-child,
