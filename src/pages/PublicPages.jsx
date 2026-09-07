@@ -51,9 +51,9 @@ export const TheDen = () => (
         eyebrow='A closer look'
         title='The Den'
         coelbren='The Den'
-        description="An inviting space for up to six people who've come to commune with the woods, the fire, and one another."
-        image='druids_den_autumn_evening_fire_pit.jpg'
-        alt='The Druids Den glowing beneath autumn trees'
+        description="An inviting space for up to six people, with room to gather, rest, and let the woods set the pace."
+        image='druids_den_main_room_from_living_area.jpeg'
+        alt='The open-plan main room with its living room, kitchen, and loft'
       >
         <Link to='/gallery' className='button button-light'>See the photo journal -&gt;</Link>
       </PublicHero>
@@ -81,6 +81,27 @@ export const TheDen = () => (
         </dl>
       </section>
 
+      <section className='den-main-room page-section'>
+        <div className='den-main-room-copy'>
+          <SectionMarker eyebrow='The heart of the house' title='Warmth and gathering space.' />
+          <p>The kitchen, dining table, and living room all meet beneath the vaulted ceiling. It is the place for shared breakfasts, a table full of cards, or a late afternoon with nowhere pressing to be.</p>
+        </div>
+        <div className='den-main-room-photos'>
+          <PhotoFigure
+            src={imagePath('druids_den_main_room_from_dining_area.jpeg')}
+            alt='The dining table, kitchen, and loft in the open-plan main room'
+            caption='The room that gathers everyone'
+            className='den-main-room-primary'
+          />
+          <PhotoFigure
+            src={imagePath('druids_den_living_area_from_hallway.jpeg')}
+            alt='The living area viewed from the hallway'
+            caption='Entering the heart of the house'
+            className='den-main-room-secondary'
+          />
+        </div>
+      </section>
+
       <section className='den-sleep page-section'>
         <PhotoFigure
           src={imagePath('druids_den_winter_bedroom.jpg')}
@@ -95,28 +116,66 @@ export const TheDen = () => (
         </div>
       </section>
 
+      <section className='den-loft page-section'>
+        <div className='den-loft-copy'>
+          <SectionMarker eyebrow='A second floor' title='The loft, above it all.' />
+          <p>Upstairs, two beds settle beneath the eaves. The loft stays connected to the rest of the house while holding onto the quiet feeling of its own small retreat.</p>
+        </div>
+        <div className='den-loft-photos'>
+          <PhotoFigure
+            src={imagePath('druids_den_loft_from_stairway.jpeg')}
+            alt='The loft bedroom viewed from the stairway'
+            caption='Up toward the eaves'
+            className='den-loft-stair-photo'
+          />
+          <PhotoFigure
+            src={imagePath('druids_den_loft_from_corner.jpeg')}
+            alt='The loft bedroom with a patterned quilt and forest-facing window'
+            caption='A quiet corner above the main room'
+            className='den-loft-corner-photo'
+          />
+        </div>
+      </section>
+
       <section className='den-rooms'>
         <div className='den-rooms-heading'>
           <span className='section-number'>The rooms</span>
           <h2>Useful things, well placed.</h2>
         </div>
-        <div className='den-room-list'>
-          <article>
-            <AssetIcon name='pinecone.png' alt='' />
-            <h3>Kitchen</h3>
-            <p>A full kitchen with the essentials for breakfast, lunch, and a long dinner that nobody wants to hurry.</p>
-          </article>
-          <article>
-            <AssetIcon name='moon.png' alt='' />
-            <h3>Living room</h3>
-            <p>Settle in by the gas fireplace, put on a DVD, and let the projector turn a blank wall into movie night.</p>
-          </article>
-          <article>
-            <AssetIcon name='raven.png' alt='' />
-            <h3>Outside</h3>
-            <p>The covered porch, back patio, gas grill, and fire pit extend the cabin into the trees. Deer and turkeys are regular neighbors.</p>
-          </article>
+        <div className='den-room-showcase'>
+          <PhotoFigure
+            src={imagePath('druids_den_living_room_with_bookshelf.jpeg')}
+            alt='The living room beneath the vaulted wood ceiling and bookshelf'
+            caption='The bookshelf corner'
+            className='den-room-detail-photo'
+          />
+          <div className='den-room-list'>
+            <article>
+              <AssetIcon name='pinecone.png' alt='' />
+              <h3>Kitchen</h3>
+              <p>A full kitchen with the essentials for breakfast, lunch, and a long dinner that nobody wants to hurry.</p>
+            </article>
+            <article>
+              <AssetIcon name='moon.png' alt='' />
+              <h3>Living room</h3>
+              <p>Settle in by the gas fireplace, put on a DVD, and let the projector turn a blank wall into movie night.</p>
+            </article>
+            <article>
+              <AssetIcon name='raven.png' alt='' />
+              <h3>Outside</h3>
+              <p>The covered porch, back patio, gas grill, and fire pit extend the cabin into the trees. Deer and turkeys are regular neighbors.</p>
+            </article>
+          </div>
         </div>
+      </section>
+
+      <section className='den-detail'>
+        <PhotoFigure
+          src={imagePath('druids_den_fawn_and_pinecone_decor.jpeg')}
+          alt='A fawn figurine resting beside a pinecone'
+          caption='Small signs of care'
+          className='den-detail-photo'
+        />
       </section>
 
       <section className='den-season page-section'>
@@ -150,8 +209,15 @@ const galleryImages = [
   { src: 'evening-shot-of-welcome-sign.jpeg', label: 'The sign after dark', category: 'Around the Den' },
   { src: 'door_in_the_wall.jpeg', label: '"The door in the wall"', category: 'Outside' },
   { src: 'druids_den_winter_bedroom.jpg', label: 'Primary bedroom', category: 'Inside' },
+  { src: 'druids_den_living_area_from_hallway.jpeg', label: 'Entering the heart of the house', category: 'Inside' },
+  { src: 'druids_den_main_room_from_dining_area.jpeg', label: 'A table at the heart of the house', category: 'Inside' },
+  { src: 'druids_den_main_room_from_living_area.jpeg', label: 'The room that gathers everyone', category: 'Inside' },
+  { src: 'druids_den_living_room_with_bookshelf.jpeg', label: 'The bookshelf corner', category: 'Inside' },
+  { src: 'druids_den_loft_from_stairway.jpeg', label: 'Up toward the eaves', category: 'Inside' },
+  { src: 'druids_den_loft_from_corner.jpeg', label: 'A quiet corner above the main room', category: 'Inside' },
   { src: 'druids_den_summer_daisies_evening.jpg', label: 'The long approach', category: 'Outside' },
   { src: 'druids_den_mushroom_on_tree.jpg', label: 'A small resident', category: 'Around the Den' },
+  { src: 'druids_den_fawn_and_pinecone_decor.jpeg', label: 'Small signs of care', category: 'Around the Den' },
   { src: 'druids_den_summer_sun_in_foliage.jpg', label: 'Summer through the trees', category: 'Seasons' },
   { src: 'pink-sunset-at-druids-den.jpeg', label: 'Pink sky over the Den', category: 'Seasons' },
   { src: 'morning_moonrise_at_druids_den.jpeg', label: 'Moonrise over the Den', category: 'Seasons' },
