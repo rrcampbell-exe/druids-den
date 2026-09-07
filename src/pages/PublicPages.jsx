@@ -146,6 +146,7 @@ const galleryImages = [
   { src: 'druids_den_autumn_evening_fire_pit.jpg', label: 'The house at dusk', category: 'Outside' },
   { src: 'druids_den_rear_view_dusk.jpeg', label: 'The Den from behind at dusk', category: 'Outside' },
   { src: 'druids_den_welcome_sign.jpg', label: 'The way in', category: 'Around the Den' },
+  { src: 'druids_den_into_the_woods_sign.png', label: 'Into the woods', category: 'Around the Den' },
   { src: 'evening-shot-of-welcome-sign.jpeg', label: 'The sign after dark', category: 'Around the Den' },
   { src: 'door_in_the_wall.jpeg', label: '"The door in the wall"', category: 'Outside' },
   { src: 'druids_den_winter_bedroom.jpg', label: 'Primary bedroom', category: 'Inside' },
@@ -153,11 +154,13 @@ const galleryImages = [
   { src: 'druids_den_mushroom_on_tree.jpg', label: 'A small resident', category: 'Around the Den' },
   { src: 'druids_den_summer_sun_in_foliage.jpg', label: 'Summer through the trees', category: 'Seasons' },
   { src: 'pink-sunset-at-druids-den.jpeg', label: 'Pink sky over the Den', category: 'Seasons' },
+  { src: 'morning_moonrise_at_druids_den.jpeg', label: 'Moonrise over the Den', category: 'Seasons' },
   { src: 'renting-a-boat-and-riding-the-chain-of-lakes.jpeg', label: 'The Chain of Lakes', category: 'Northwoods' },
   { src: 'druids_den_fall_foliage.jpg', label: 'The canopy in October', category: 'Seasons' },
   { src: 'druids_den_winter_driveway.jpg', label: 'The road in winter', category: 'Seasons' },
   { src: 'druids_den_winter_snowman.jpg', label: 'A winter visitor', category: 'Around the Den' },
   { src: 'fire-pit-closeup.jpeg', label: 'The fire-pit circle', category: 'Outside' },
+  { src: 'fire_pit_with_bonus_stumps.jpeg', label: 'A seat by the fire', category: 'Outside' },
   { src: 'night-time-fire-pit.jpeg', label: 'The Den after dark', category: 'Outside' },
   { src: 'spooktoberfest_pumpkin_fest_2025_1.jpg', label: 'Pumpkin Fest', category: 'Traditions' },
   { src: 'spooktoberfest_daily_grind_2025.jpg', label: 'The Daily Grind', category: 'Traditions' },
@@ -387,7 +390,7 @@ export const Story = () => (
           <h1>Some places name themselves</h1>
           <p>The Druids Den is more than a name. It's a place to become one with nature and with one's true self.</p>
         </div>
-        <img src={imagePath('druids_den_welcome_sign.jpg')} alt='The Druids Den welcome sign beside the forest road' />
+        <img src={imagePath('druids_den_into_the_woods_sign.png')} alt='The Into the Woods sign marking the way into the forest at The Druids Den' />
       </section>
       <section className='story-opening page-section'>
         <SectionMarker eyebrow='The name' title='Keeper and refuge.' />
@@ -436,7 +439,7 @@ export const Traditions = () => (
       </section>
       <section className='traditions-feature'>
         <div className='traditions-feature-image'>
-          <img className='traditions-feature-photo' src={imagePath('fire-pit-closeup.jpeg')} alt='The stone fire pit beneath the trees at The Druids Den' />
+          <img className='traditions-feature-photo' src={imagePath('fire_pit_with_bonus_stumps.jpeg')} alt='The fire pit and stump seats beneath the trees at The Druids Den' />
           <AssetIcon name='great-horned-owl.png' alt='' />
         </div>
         <div className='traditions-feature-copy'>
@@ -487,6 +490,14 @@ export const Stay = () => {
               <DetailRow label='Next step'>Contact Ryan and Lacey to start the conversation</DetailRow>
             </dl>
           </div>
+        </section>
+        <section className='stay-moonrise'>
+          <div>
+            <span className='section-number'>After dark / before coffee</span>
+            <h2>Let the woods set the pace.</h2>
+            <p>Some of the Den's best hours happen when the fire is low, the moon is up, and there's nowhere else you need to be.</p>
+          </div>
+          <img src={imagePath('morning_moonrise_at_druids_den.jpeg')} alt='The moon rising above the trees at The Druids Den' loading='lazy' />
         </section>
         <section className='stay-inquiry'>
           <div>
