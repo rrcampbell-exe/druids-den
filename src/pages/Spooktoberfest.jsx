@@ -97,8 +97,8 @@ const Spooktoberfest = () => {
               <div className='spooktoberfest-subsection'>
                 <h3>Sleeping Arrangements</h3>
                 <CaptionedImage
-                  src='/assets/images/druids_den_winter_bedroom.jpg'
-                  alt='The primary bedroom at The Druids Den'
+                  src='/assets/images/druids_den_primary_bedroom.jpeg'
+                  alt='The sunlit primary bedroom at The Druids Den'
                   className='sleeping-photo'
                   style={{ objectPosition: 'center 55%' }}
                 />

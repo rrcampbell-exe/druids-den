@@ -441,12 +441,12 @@ exports[`Landing Page > matches snapshot 1`] = `
         class="home-den-preview-photo"
       >
         <img
-          alt="The primary bedroom with green walls and a wood-paneled ceiling"
+          alt="The sunlit primary bedroom with green walls, a wood ceiling, and forest-facing windows"
           loading="lazy"
-          src="/assets/images/druids_den_winter_bedroom.jpg"
+          src="/assets/images/druids_den_primary_bedroom.jpeg"
         />
         <figcaption>
-          Winter bedroom / warm floor / one good book
+          Primary bedroom / morning light / one good book
         </figcaption>
       </figure>
       <img

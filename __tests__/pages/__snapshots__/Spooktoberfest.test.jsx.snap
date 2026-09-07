@@ -322,11 +322,11 @@ exports[`Spooktoberfest Page > matches snapshot 1`] = `
               data-testid="captioned-image"
             >
               <img
-                alt="The primary bedroom at The Druids Den"
-                src="/assets/images/druids_den_winter_bedroom.jpg"
+                alt="The sunlit primary bedroom at The Druids Den"
+                src="/assets/images/druids_den_primary_bedroom.jpeg"
               />
               <figcaption>
-                The primary bedroom at The Druids Den
+                The sunlit primary bedroom at The Druids Den
               </figcaption>
             </figure>
             <p>

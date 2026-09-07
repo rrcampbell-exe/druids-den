@@ -113,8 +113,8 @@ const Landing = () => {
             <ArrowLink to='/the-den'>Tour the cabin</ArrowLink>
           </div>
           <figure className='home-den-preview-photo'>
-            <img src='/assets/images/druids_den_winter_bedroom.jpg' alt='The primary bedroom with green walls and a wood-paneled ceiling' loading='lazy' />
-            <figcaption>Winter bedroom / warm floor / one good book</figcaption>
+            <img src='/assets/images/druids_den_primary_bedroom.jpeg' alt='The sunlit primary bedroom with green walls, a wood ceiling, and forest-facing windows' loading='lazy' />
+            <figcaption>Primary bedroom / morning light / one good book</figcaption>
           </figure>
           <AssetIcon name='01-constellation.png' alt='' className='home-constellation' />
         </section>

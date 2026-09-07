@@ -104,9 +104,9 @@ export const TheDen = () => (
 
       <section className='den-sleep page-section'>
         <PhotoFigure
-          src={imagePath('druids_den_winter_bedroom.jpg')}
-          alt='The primary bedroom with green walls, wood ceiling, and a double bed'
-          caption='The primary bedroom / the quiet end of the house'
+          src={imagePath('druids_den_primary_bedroom.jpeg')}
+          alt='The sunlit primary bedroom with green walls, a wood ceiling, and a double bed'
+          caption='The primary bedroom / light through the trees'
           className='den-sleep-photo'
         />
         <div className='den-sleep-copy'>
@@ -208,7 +208,7 @@ const galleryImages = [
   { src: 'druids_den_into_the_woods_sign.png', label: 'Into the woods', category: 'Around the Den' },
   { src: 'evening-shot-of-welcome-sign.jpeg', label: 'The sign after dark', category: 'Around the Den' },
   { src: 'door_in_the_wall.jpeg', label: '"The door in the wall"', category: 'Outside' },
-  { src: 'druids_den_winter_bedroom.jpg', label: 'Primary bedroom', category: 'Inside' },
+  { src: 'druids_den_primary_bedroom.jpeg', label: 'Primary bedroom in morning light', category: 'Inside' },
   { src: 'druids_den_living_area_from_hallway.jpeg', label: 'Entering the heart of the house', category: 'Inside' },
   { src: 'druids_den_main_room_from_dining_area.jpeg', label: 'A table at the heart of the house', category: 'Inside' },
   { src: 'druids_den_main_room_from_living_area.jpeg', label: 'The room that gathers everyone', category: 'Inside' },
