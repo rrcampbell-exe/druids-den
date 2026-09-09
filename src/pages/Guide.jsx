@@ -99,6 +99,8 @@ export const Guide = () => (
         <GuideSection id='arrival' index='02' title='Arrival' icon='crow.png'>
           <div className='guide-two-column'>
             <div>
+              <h3>Check-in</h3>
+              <p>Check-in begins at <strong>4 p.m.</strong> Entry details are shared privately before arrival.</p>
               <h3>Address & directions</h3>
               <CopyField label='Address' value={privateAddress} hideCopy />
               <p className='guide-muted'>The Den is on a private road. Your confirmation includes the exact address and the best final turn.</p>
@@ -217,16 +219,16 @@ export const Guide = () => (
         </GuideSection>
 
         <GuideSection id='checkout' index='10' title='Checkout' icon='pinecone.png' className='guide-section-checkout'>
-          <p className='guide-lead'>A short walk-through, not a cleaning shift.</p>
+          <p className='guide-lead'>Check-out is at <strong>10 a.m.</strong> A short walkthrough to do the below is all that's needed.</p>
           <ol className='guide-checkout-list'>
-            <li><span>01</span>Turn off the fireplace and any fans or lights you used.</li>
-            <li><span>02</span>Ensure the dishwasher is empty or, if its contents are clean, that it's left open a crack.</li>
-            <li><span>03</span>Take food and personal items with you. Leave the cabin ready for the next arrival.</li>
-            <li><span>04</span>Close and lock the doors, then send your host a quick departure note.</li>
+            <li><span>01</span>Take all trash, recyclables, food, and personal items with you.</li>
+            <li><span>02</span>Ensure the dishwasher has no dirty dishes. If clean dishes remain inside, leave the door open a crack so air can circulate.</li>
+            <li><span>03</span>Turn off the fireplace, lights, fans, and nonessential appliances.</li>
+            <li><span>04</span>Close and lock the doors and windows, then send your host a quick departure note.</li>
           </ol>
           <div className='guide-checkout-end'>
             <CoelbrenLabel>Until next time</CoelbrenLabel>
-            <p>Thank you for taking care of the place. The woods will remember.</p>
+            <p>Thank you for caring for the den. The woods will remember.</p>
             <Link to='/' className='text-link'>Return to the public site -&gt;</Link>
           </div>
         </GuideSection>

@@ -40,6 +40,82 @@ const DetailRow = ({ label, children }) => (
   </div>
 )
 
+const amenities = [
+  {
+    icon: 'pinecone.png',
+    room: 'Kitchen',
+    items: [
+      ['Refrigeration', 'Full-size refrigerator and freezer.'],
+      ['Oven', 'An electric range and oven for cooking and baking.'],
+      ['Microwave', 'A microwave for quick heating and cooking.'],
+      ['Dishwasher', 'Keep dishes clean without the hassle of hand washing.'],
+      ['Coffee maker', 'Brew fresh coffee to start your day.'],
+      ['Tea kettle', 'Boil water for tea or other hot beverages.'],
+      ['Toaster', 'Toast bread or other baked goods quickly and evenly.'],
+    ],
+  },
+  {
+    icon: 'moon.png',
+    room: 'Living room',
+    items: [
+      ['Bookshelf', 'Forget to bring a book? We\'ve got you covered.'],
+      ['Projector', 'Stream your favorite movies and shows on the wall.'],
+      ['Screen', 'If the wall\'s not your thing, use the screen instead.'],
+      ['DVD Collection', 'A selection of DVDs for your viewing pleasure.'],
+      ['Fiber Internet', 'High-speed Wi-Fi for all your online needs.'],
+      ['Playing Cards', 'Solitaire? Go Fish? The possibilities are endless.'],
+      ['Assorted Games', 'A variety of board games and puzzles.'],
+      ['Ceiling Fan', 'Keeps the living space cool and comfortable.'],
+    ],
+  },
+  {
+    icon: 'owl.png',
+    room: 'Primary bedroom',
+    items: [
+      ['Bed', 'A queen-sized bed for long naps and restful nights.'],
+      ['Linens', 'High-quality bed linens for a comfortable night\'s sleep.'],
+      ['Pillows', 'Sweet dreams on soft and supportive pillows.'],
+      ['Storage', 'Nightstands next to the bed for personal items.'],
+      ['Shades', 'The room is as dark and as private as you need it to be.'],
+      ['Fans', 'Keep cool with overhead and portable circulation.'],
+    ],
+  },
+  {
+    icon: 'great-horned-owl.png',
+    room: 'Loft',
+    items: [
+      ['Bed', 'A queen-sized bed for long naps and restful nights.'],
+      ['Linens', 'High-quality bed linens for a comfortable night\'s sleep.'],
+      ['Pillows', 'Sweet dreams on soft and supportive pillows.'],
+      ['Storage', 'Storage space beneath the bed for clothing.'],
+    ],
+  },
+  {
+    icon: 'duck.png',
+    room: 'Bathroom',
+    items: [
+      ['Towels', 'Soft towels, hand towels, and washcloths.'],
+      ['Shower essentials', 'Body wash, shampoo, and conditioner.'],
+      ['Toilet Paper', 'Provided for your convenience.'],
+    ],
+  },
+  {
+    icon: 'raven.png',
+    room: 'Outside',
+    items: [
+      ['Fire Pit', 'A cozy fire pit for evening gatherings and marshmallow roasting.'],
+      ['Patio', 'A comfortable outdoor space for relaxing.'],
+      ['Adirondack Chairs', 'Enjoy your morning coffee or evening libations from the patio.'],
+      ['Grill', 'A convenient gas grill for outdoor cooking.'],
+      ['Lighting', 'Outdoor lighting for evening activities and ambiance.'],
+      ['Stargazing', 'A perfect spot for observing the night sky away from city lights.'],
+      ['The woods', 'A serene forested area surrounding the property.'],
+      ['Wildlife', 'Turkeys, deer, and other local wildlife will often pay you a visit.'],
+      ['Lake Access', 'Pioneer Lake\'s public dock is a short drive away.'],
+    ],
+  },
+]
+
 export const TheDen = () => (
   <PageFrame className='public-page-den'>
     <Meta
@@ -118,7 +194,7 @@ export const TheDen = () => (
 
       <section className='den-loft page-section'>
         <div className='den-loft-copy'>
-          <SectionMarker eyebrow='A second floor' title='The loft, above it all.' />
+          <SectionMarker eyebrow='A second floor' title='The loft, above it all.' invert />
           <p>Upstairs, two beds settle beneath the eaves. The loft stays connected to the rest of the house while holding onto the quiet feeling of its own small retreat.</p>
         </div>
         <div className='den-loft-photos'>
@@ -176,6 +252,24 @@ export const TheDen = () => (
           caption='Small signs of care'
           className='den-detail-photo'
         />
+      </section>
+
+      <section className='den-amenities' id='amenities'>
+        <div className='den-amenities-heading'>
+          <SectionMarker eyebrow='A practical inventory' title='Amenities by room.' />
+          <p>Everything you need for an enjoyable, memorable stay.</p>
+        </div>
+        <div className='den-amenities-grid'>
+          {amenities.map(({ icon, room, items }) => (
+            <article className='den-amenity-room' key={room}>
+              <AssetIcon name={icon} alt='' />
+              <h3>{room}</h3>
+              <dl>
+                {items.map(([label, description]) => <DetailRow key={label} label={label}>{description}</DetailRow>)}
+              </dl>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className='den-season page-section'>
