@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import { TheDen } from '../../src/pages/PublicPages'
 
@@ -18,5 +18,14 @@ describe('The Den', () => {
     expect(screen.getByAltText('A fawn figurine resting beside a pinecone')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Warmth and gathering space.' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'The loft, above it all.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Amenities by room.' })).toBeInTheDocument()
+    const amenitiesSection = screen.getByRole('heading', { name: 'Amenities by room.' }).closest('section')
+    const amenities = within(amenitiesSection)
+    expect(amenities.getByRole('heading', { name: 'Kitchen' })).toBeInTheDocument()
+    expect(amenities.getByRole('heading', { name: 'Living room' })).toBeInTheDocument()
+    expect(amenities.getByRole('heading', { name: 'Primary bedroom' })).toBeInTheDocument()
+    expect(amenities.getByRole('heading', { name: 'Loft' })).toBeInTheDocument()
+    expect(amenities.getByRole('heading', { name: 'Bathroom' })).toBeInTheDocument()
+    expect(amenities.getByRole('heading', { name: 'Outside' })).toBeInTheDocument()
   })
 })

@@ -246,8 +246,7 @@
   margin-bottom: 2rem;
 }
 
-.den-main-room-copy > p,
-.den-loft-copy > p {
+.den-main-room-copy > p {
   max-width: 27rem;
   margin: 0;
   color: var(--color-muted);
@@ -305,7 +304,7 @@
   grid-template-columns: minmax(12rem, 0.78fr) minmax(0, 1.22fr);
   align-items: center;
   gap: clamp(2rem, 8vw, 9rem);
-  background: var(--color-shiitake);
+  background: var(--color-sienna);
 }
 
 .den-loft-photos {
@@ -320,6 +319,19 @@
 .den-loft-corner-photo img {
   height: clamp(27rem, 44vw, 42rem);
   object-position: center 54%;
+}
+
+.den-loft-copy > p {
+  max-width: 27rem;
+  margin: 0;
+  color: rgba(246, 240, 223, 0.82);
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  line-height: 1.75;
+}
+
+.den-loft .photo-figure figcaption {
+  color: var(--color-saffron);
 }
 
 .small-note {
@@ -468,6 +480,76 @@
 .den-detail-photo img {
   height: clamp(20rem, 42vw, 34rem);
   object-position: 76% center;
+}
+
+.den-amenities {
+  padding: clamp(5rem, 9vw, 8rem) clamp(1.25rem, 8vw, 8rem);
+  color: var(--color-paper);
+  background: var(--color-moss);
+}
+
+.den-amenities-heading {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 0.8fr);
+  align-items: end;
+  gap: clamp(2rem, 7vw, 8rem);
+  margin-bottom: 3.5rem;
+}
+
+.den-amenities-heading .section-marker h2 {
+  color: var(--color-paper);
+}
+
+.den-amenities-heading > p {
+  max-width: 24rem;
+  margin: 0 0 0.25rem;
+  color: rgba(246, 240, 223, 0.72);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.den-amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem clamp(2rem, 6vw, 6rem);
+}
+
+.den-amenity-room {
+  min-width: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(246, 240, 223, 0.3);
+}
+
+.den-amenity-room > .asset-icon {
+  width: 2.7rem;
+  height: 2.7rem;
+  margin-bottom: 1rem;
+  filter: invert(73%) sepia(44%) saturate(790%) hue-rotate(348deg) brightness(96%);
+}
+
+.den-amenity-room h3 {
+  margin: 0 0 1rem;
+  color: var(--color-paper);
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.den-amenity-room dl {
+  margin: 0;
+}
+
+.den-amenity-room .detail-row {
+  border-color: rgba(246, 240, 223, 0.2);
+}
+
+.den-amenity-room .detail-row dt {
+  color: var(--color-saffron);
+}
+
+.den-amenity-room .detail-row dd {
+  color: rgba(246, 240, 223, 0.82);
 }
 
 .public-closing-band {
@@ -1320,8 +1402,14 @@
   }
 
   .den-room-list,
+  .den-amenities-grid,
   .story-principle-list {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .den-amenities-heading {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 
   .den-room-showcase {
@@ -1385,6 +1473,10 @@
   }
 
   .northwoods-neighbor-list {
+    grid-template-columns: 1fr;
+  }
+
+  .den-amenities-grid {
     grid-template-columns: 1fr;
   }
 
