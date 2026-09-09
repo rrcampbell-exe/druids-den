@@ -4,11 +4,24 @@ The online hub for **The Druids Den**, a private cabin in Conover, Wisconsin. Th
 
 **Tech stack:** React 19 (Vite) · Vercel Serverless Functions · Vercel Web Analytics + Speed Insights · PostgreSQL (Prisma ORM + Accelerate) · Clerk Auth · Resend Email · WeatherAPI
 
+## Documentation
+
+Start with [docs/README.md](docs/README.md) for the documentation map. Before
+changing product, public content, design, privacy-sensitive material, routes, or
+architecture, read the relevant reference in `docs/ai/`.
+
+- [Product reference](docs/ai/product.md)
+- [Design system](docs/ai/design-system.md)
+- [Content and privacy](docs/ai/content-and-privacy.md)
+- [Architecture reference](docs/ai/architecture.md)
+- [Local development](docs/local-development.md)
+
 ---
 
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Documentation](#documentation)
 - [Project Structure](#project-structure)
 - [Public Site](#public-site)
   - [Landing Page](#landing-page)
@@ -50,9 +63,9 @@ The online hub for **The Druids Den**, a private cabin in Conover, Wisconsin. Th
 # Install dependencies
 npm install
 
-# Copy and populate environment variables (see Environment Variables section)
-cp .env.example .env.local
-cp .env.clerk.local.example .env.clerk.local
+# Create ignored local environment files as described in docs/local-development.md.
+# Do not place private guest-guide data or any secret in VITE_* variables.
+# Vercel-pulled or manually provisioned development values belong in .env.local.
 
 # Generate the Prisma client, run database migrations, and seed test data
 npx prisma generate
@@ -63,6 +76,10 @@ npm run db:seed
 # Use start:local if Vercel Development env vars conflict with localhost Clerk auth
 npm run start:local
 ```
+
+The repository does not currently include environment example files. Follow the
+safe setup and database instructions in [docs/local-development.md](docs/local-development.md)
+instead of copying nonexistent templates.
 
 | Script | Purpose |
 |---|---|
@@ -160,6 +177,8 @@ A passcode-protected event page at `/spooktoberfest` for the October 8–11, 202
 | `/stay` | Stay | Invitation-only inquiry flow; no instant booking |
 | `/guide` | Guest guide | Intended for invited guests; currently route-accessible |
 | `/spooktoberfest` | Spooktoberfest | Passcode-protected event page |
+| `/feedback/:reservationId` | Feedback | Link-accessible post-stay feedback form |
+| `*` | Fallback | Redirects unknown client routes to `/` |
 
 ---
 
@@ -260,7 +279,7 @@ All endpoints are Vercel serverless functions under `/api/`.
 | `PATCH` | `/api/reservations/[id]` | Owner/Admin | Update status or details of a reservation |
 | `DELETE` | `/api/reservations/[id]` | Owner/Admin | Soft-delete a reservation |
 | `GET` | `/api/user/status` | Signed in | Fetch current user's app profile |
-| `PATCH` | `/api/users` | Owner/Admin | Update a guest's account status |
+| `GET`, `PATCH` | `/api/users` | Owner/Admin | List guest accounts or update a guest's account status |
 | `POST` | `/api/message-guest` | Owner/Admin | Send a message to a guest |
 | `POST` | `/api/verify-passcode` | None | Validate Spooktoberfest passcode |
 | `POST` | `/api/receive-email` | Webhook (Svix) | Inbound email forwarding |
