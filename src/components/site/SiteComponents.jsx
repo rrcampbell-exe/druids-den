@@ -12,6 +12,11 @@ const publicNavigation = [
   { label: 'Spooktoberfest', to: '/spooktoberfest' },
 ]
 
+const isSpooktoberfestNavigationVisible = (date = new Date()) => {
+  const month = date.getMonth()
+  return month >= 3 && (month < 9 || (month === 9 && date.getDate() <= 15))
+}
+
 export const CoelbrenLabel = ({ children, className = '' }) => (
   <span className={`coelbren-label ${className}`}>
     <span className='sr-only'>{children}</span>
@@ -40,6 +45,7 @@ export const SiteHeader = ({ guide = false }) => {
   }, [menuOpen])
 
   const closeOnNavigate = () => setMenuOpen(false)
+  const showSpooktoberfest = isSpooktoberfestNavigationVisible()
 
   return (
     <header className={`site-header ${guide ? 'site-header-guide' : ''}`}>
@@ -63,7 +69,7 @@ export const SiteHeader = ({ guide = false }) => {
       </button>
 
       <nav id='primary-navigation' className={`site-navigation ${menuOpen ? 'is-open' : ''}`} aria-label='Primary navigation'>
-        {!guide && publicNavigation.map((item) => (
+        {!guide && publicNavigation.filter((item) => item.to !== '/spooktoberfest' || showSpooktoberfest).map((item) => (
           <NavLink key={item.to} to={item.to} onClick={closeOnNavigate} className={({ isActive }) => isActive ? 'is-active' : undefined}>
             {item.label}
           </NavLink>

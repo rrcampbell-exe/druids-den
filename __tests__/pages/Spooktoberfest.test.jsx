@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
 import Spooktoberfest from '../../src/pages/Spooktoberfest'
@@ -21,6 +21,10 @@ vi.mock('../../src/components', () => ({
 }))
 
 describe('Spooktoberfest Page', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   const renderWithRouter = (component) => {
     return render(<BrowserRouter>{component}</BrowserRouter>)
   }
@@ -31,6 +35,9 @@ describe('Spooktoberfest Page', () => {
   })
 
   it('matches snapshot', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 6, 1, 12))
+
     const { container } = renderWithRouter(<Spooktoberfest />)
     expect(container.firstChild).toMatchSnapshot()
   })

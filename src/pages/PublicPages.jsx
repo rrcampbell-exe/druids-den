@@ -247,6 +247,12 @@ export const TheDen = () => (
 
       <section className='den-detail'>
         <PhotoFigure
+          src={imagePath('druids_den_autumn_lantern.jpg')}
+          alt='A lantern hanging from an iron hook beside a tree, above fallen maple leaves'
+          caption='Light for the path'
+          className='den-detail-photo'
+        />
+        <PhotoFigure
           src={imagePath('druids_den_fawn_and_pinecone_decor.jpeg')}
           alt='A fawn figurine resting beside a pinecone'
           caption='Small signs of care'
@@ -280,9 +286,9 @@ export const TheDen = () => (
           <ArrowLink to='/northwoods'>Read the seasonal field notes</ArrowLink>
         </div>
         <PhotoFigure
-          src={imagePath('druids_den_winter_driveway.jpg')}
-          alt='The driveway and trees covered in winter snow'
-          caption='Winter asks for a little preparation'
+          src={imagePath('druids_den_fire_pit_autumn.jpg')}
+          alt='The stone fire pit and stump seats surrounded by autumn color'
+          caption='Fall is all foliage and fire'
           className='den-season-photo'
         />
       </section>
@@ -317,6 +323,9 @@ const galleryImages = [
   { src: 'morning_moonrise_at_druids_den.jpeg', label: 'Moonrise over the Den', category: 'Seasons' },
   { src: 'renting-a-boat-and-riding-the-chain-of-lakes.jpeg', label: 'The Chain of Lakes', category: 'Northwoods' },
   { src: 'druids_den_fall_foliage.jpg', label: 'The canopy in October', category: 'Seasons' },
+  { src: 'druids_den_maple_sun_through_trees.jpg', label: 'Low sun in the maples', category: 'Seasons' },
+  { src: 'druids_den_autumn_lantern.jpg', label: 'Light for the path', category: 'Around the Den' },
+  { src: 'druids_den_fire_pit_autumn.jpg', label: 'The fire pit in October', category: 'Outside' },
   { src: 'druids_den_winter_driveway.jpg', label: 'The road in winter', category: 'Seasons' },
   { src: 'druids_den_winter_snowman.jpg', label: 'A winter visitor', category: 'Around the Den' },
   { src: 'fire-pit-closeup.jpeg', label: 'The fire-pit circle', category: 'Outside' },
@@ -533,7 +542,7 @@ export const Northwoods = () => (
           <p>Wear blaze orange during fall deer and turkey hunts. Assume wildlife is nearby. Check for ticks. In winter, bring AWD or 4WD and let the road take the time it takes.</p>
           <ArrowLink to='/the-den'>Read the cabin notes</ArrowLink>
         </div>
-        <img src={imagePath('druids_den_fall_foliage.jpg')} alt='Autumn foliage above the fire pit' loading='lazy' />
+        <img src={imagePath('druids_den_maple_sun_through_trees.jpg')} alt='Low autumn sun shining through yellow maples in the woods around the Den' loading='lazy' />
       </section>
     </main>
   </PageFrame>

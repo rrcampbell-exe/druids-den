@@ -468,6 +468,9 @@
 
 .den-detail {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 29rem));
+  justify-content: center;
+  gap: 2rem;
   justify-items: center;
   padding: clamp(4rem, 8vw, 7rem) 1.25rem;
   background: var(--color-shiitake);
