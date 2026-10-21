@@ -11,9 +11,6 @@ const Landing = () => {
   const { isSignedIn } = useAuth()
   const { user } = useCurrentAppUser()
 
-  // Check if current date is April 2026 or later
-  const now = new Date()
-  const showSpooktoberfest = now >= new Date('2026-04-01')
   const showOwnerDashboard = isSignedIn && (user?.role === 'OWNER' || user?.role === 'ADMIN')
 
   useEffect(() => {
@@ -121,7 +118,7 @@ const Landing = () => {
 
         <section className='home-northwoods site-band'>
           <div className='home-northwoods-image'>
-            <img src='/assets/images/druids_den_sky_image.jpg' alt='Sky framed by the trees around the Druids Den' loading='lazy' />
+            <img src='/assets/images/druids_den_maple_sun_through_trees.jpg' alt='Low autumn sun shining through yellow maples around the Druids Den' loading='lazy' />
             <span>North of ordinary</span>
           </div>
           <div className='home-northwoods-copy'>

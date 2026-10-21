@@ -463,9 +463,9 @@ exports[`Landing Page > matches snapshot 1`] = `
         class="home-northwoods-image"
       >
         <img
-          alt="Sky framed by the trees around the Druids Den"
+          alt="Low autumn sun shining through yellow maples around the Druids Den"
           loading="lazy"
-          src="/assets/images/druids_den_sky_image.jpg"
+          src="/assets/images/druids_den_maple_sun_through_trees.jpg"
         />
         <span>
           North of ordinary
