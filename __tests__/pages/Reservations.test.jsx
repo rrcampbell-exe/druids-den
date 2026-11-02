@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { createElement } from 'react'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router'
 
@@ -25,7 +26,7 @@ vi.mock('../../src/utils/authHeaders', () => ({
 }))
 
 vi.mock('../../src/components', () => ({
-  Coelbren: ({ children, renderAs: Tag = 'div', ...props }) => <Tag {...props}>{children}</Tag>,
+  Coelbren: ({ children, renderAs: Tag = 'div', ...props }) => createElement(Tag, props, children),
   Flower: () => <div>Flower</div>,
   Leaf: () => <div>Leaf</div>,
   Awen: () => <span>Awen</span>,
@@ -53,7 +54,7 @@ const renderReservations = async () => {
   )
 
   await waitFor(() => {
-    expect(global.fetch).toHaveBeenCalledWith('/api/availability')
+    expect(globalThis.fetch).toHaveBeenCalledWith('/api/availability')
   })
 
   await screen.findByLabelText('First Name *')
@@ -61,7 +62,7 @@ const renderReservations = async () => {
 
 const waitForReservationForm = async () => {
   await waitFor(() => {
-    expect(global.fetch).toHaveBeenCalledWith('/api/availability')
+    expect(globalThis.fetch).toHaveBeenCalledWith('/api/availability')
   })
   await screen.findByLabelText('First Name *')
 }
@@ -83,7 +84,7 @@ describe('Reservations', () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-01-15T12:00:00'))
     Element.prototype.scrollIntoView = vi.fn()
-    fetchSpy = vi.spyOn(global, 'fetch')
+    fetchSpy = vi.spyOn(globalThis, 'fetch')
     fetchSpy.mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -500,10 +501,10 @@ describe('Reservations', () => {
   })
 
   describe('Guest count validation', () => {
-    it('limits adults to a maximum of 6', async () => {
+    it('limits adults to a maximum of four', async () => {
       await renderReservations()
 
-      expect(screen.getByLabelText('Adults *')).toHaveAttribute('max', '6')
+      expect(screen.getByLabelText('Adults *')).toHaveAttribute('max', '4')
     })
 
     it('requires at least one adult', async () => {
@@ -518,7 +519,7 @@ describe('Reservations', () => {
       expect(screen.getByLabelText('Children')).toHaveAttribute('min', '0')
     })
 
-    it('prevents submission when total guests exceed 10', async () => {
+    it('prevents submission when total guests exceed four', async () => {
       const user = userEvent.setup()
       render(
         <BrowserRouter>
@@ -529,23 +530,23 @@ describe('Reservations', () => {
       await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1))
 
       await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
-      // 6 adults + 5 children = 11
+      // 3 adults + 2 children = 5
       await user.clear(screen.getByLabelText('Adults *'))
-      await user.type(screen.getByLabelText('Adults *'), '6')
+      await user.type(screen.getByLabelText('Adults *'), '3')
       await user.clear(screen.getByLabelText('Children'))
-      await user.type(screen.getByLabelText('Children'), '5')
+      await user.type(screen.getByLabelText('Children'), '2')
 
       await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
 
       await waitFor(() => {
-        expect(screen.getByText('Maximum 10 guests total allowed')).toBeInTheDocument()
+        expect(screen.getByText('Maximum 4 guests total allowed')).toBeInTheDocument()
       })
 
       // Only the initial availability fetch — no POST
       expect(fetchSpy).toHaveBeenCalledTimes(1)
     })
 
-    it('does not show guest limit error with exactly 10 guests', async () => {
+    it('allows exactly four guests', async () => {
       const user = userEvent.setup()
       render(
         <BrowserRouter>
@@ -556,16 +557,16 @@ describe('Reservations', () => {
       await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1))
 
       await user.type(screen.getByLabelText('Phone Number *'), '5551234567')
-      // 6 adults + 4 children = 10
+      // 2 adults + 2 children = 4
       await user.clear(screen.getByLabelText('Adults *'))
-      await user.type(screen.getByLabelText('Adults *'), '6')
+      await user.type(screen.getByLabelText('Adults *'), '2')
       await user.clear(screen.getByLabelText('Children'))
-      await user.type(screen.getByLabelText('Children'), '4')
+      await user.type(screen.getByLabelText('Children'), '2')
 
       await user.click(screen.getByRole('button', { name: /submit reservation request/i }))
 
       await waitFor(() => {
-        expect(screen.queryByText('Maximum 10 guests total allowed')).not.toBeInTheDocument()
+        expect(screen.queryByText('Maximum 4 guests total allowed')).not.toBeInTheDocument()
       })
     })
   })

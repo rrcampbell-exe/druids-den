@@ -317,20 +317,20 @@ describe('Form Validation Utilities', () => {
       expect(result.valid).toBe(true)
     })
 
-    it('accepts maximum (10 adults)', () => {
-      const result = validateGuestCount(10)
+    it('accepts maximum (4 adults)', () => {
+      const result = validateGuestCount(4)
       expect(result.valid).toBe(true)
     })
 
     it('accepts numeric string', () => {
-      const result = validateGuestCount('5')
+      const result = validateGuestCount('4')
       expect(result.valid).toBe(true)
     })
 
     it('rejects zero adults', () => {
       const result = validateGuestCount(0)
       expect(result.valid).toBe(false)
-      expect(result.error).toBe('Must have between 1 and 10 guests')
+      expect(result.error).toBe('Must have between 1 and 4 guests')
     })
 
     it('rejects negative numbers', () => {
@@ -338,8 +338,8 @@ describe('Form Validation Utilities', () => {
       expect(result.valid).toBe(false)
     })
 
-    it('rejects more than 10 adults', () => {
-      const result = validateGuestCount(11)
+    it('rejects more than 4 adults', () => {
+      const result = validateGuestCount(5)
       expect(result.valid).toBe(false)
     })
 
@@ -373,19 +373,19 @@ describe('Form Validation Utilities', () => {
       expect(result.valid).toBe(true)
     })
 
-    it('accepts maximum (9 children)', () => {
-      const result = validateChildCount(9)
+    it('accepts maximum (4 children)', () => {
+      const result = validateChildCount(4)
       expect(result.valid).toBe(true)
     })
 
     it('rejects negative children', () => {
       const result = validateChildCount(-1)
       expect(result.valid).toBe(false)
-      expect(result.error).toBe('Must have between 0 and 9 children')
+      expect(result.error).toBe('Must have between 0 and 4 children')
     })
 
-    it('rejects more than 9 children', () => {
-      const result = validateChildCount(10)
+    it('rejects more than 4 children', () => {
+      const result = validateChildCount(5)
       expect(result.valid).toBe(false)
     })
 
@@ -582,27 +582,26 @@ describe('Form Validation Utilities', () => {
       expect(result.errors.specialRequests).toBeUndefined()
     })
 
-    it('rejects form with more than 10 total guests', () => {
-      const data = { ...validFormData, adults: 6, children: 5 }
+    it('rejects form with more than four total guests', () => {
+      const data = { ...validFormData, adults: 3, children: 2 }
       const result = validateReservationForm(data)
       expect(result.valid).toBe(false)
-      expect(result.errors.adults).toBe('Maximum 10 guests total allowed')
+      expect(result.errors.adults).toBe('Maximum 4 guests total allowed')
     })
 
-    it('accepts form with exactly 10 total guests', () => {
-      const data = { ...validFormData, adults: 6, children: 4 }
+    it('accepts form with exactly four total guests', () => {
+      const data = { ...validFormData, adults: 2, children: 2 }
       const result = validateReservationForm(data)
       expect(result.valid).toBe(true)
       expect(result.errors.adults).toBeUndefined()
     })
 
-    it('accepts various combinations under 10 guests', () => {
+    it('accepts various combinations up to four guests', () => {
       const combinations = [
         { adults: 1, children: 0 },
-        { adults: 5, children: 5 },
-        { adults: 8, children: 2 },
-        { adults: 10, children: 0 },
-        { adults: 3, children: 7 }
+        { adults: 2, children: 2 },
+        { adults: 4, children: 0 },
+        { adults: 1, children: 3 }
       ]
       
       combinations.forEach(combo => {

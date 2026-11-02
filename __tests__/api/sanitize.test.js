@@ -464,27 +464,26 @@ describe('Sanitization Utilities', () => {
       expect(result.sanitized.firstName).toBe('John')
     })
 
-    it('rejects reservations with more than 10 total guests', () => {
-      const data = { ...validData, adults: 6, children: 5 }
+    it('rejects reservations with more than four total guests', () => {
+      const data = { ...validData, adults: 3, children: 2 }
       const result = sanitizeReservationData(data)
-      expect(result.errors.adults).toBe('Maximum 10 guests total allowed')
+      expect(result.errors.adults).toBe('Maximum 4 guests total allowed')
     })
 
-    it('accepts reservations with exactly 10 total guests', () => {
-      const data = { ...validData, adults: 6, children: 4 }
+    it('accepts reservations with exactly four total guests', () => {
+      const data = { ...validData, adults: 2, children: 2 }
       const result = sanitizeReservationData(data)
       expect(result.errors.adults).toBeUndefined()
-      expect(result.sanitized.adults).toBe(6)
-      expect(result.sanitized.children).toBe(4)
+      expect(result.sanitized.adults).toBe(2)
+      expect(result.sanitized.children).toBe(2)
     })
 
-    it('accepts various combinations under 10 guests', () => {
+    it('accepts various combinations up to four guests', () => {
       const combinations = [
         { adults: 1, children: 0 },
-        { adults: 5, children: 5 },
-        { adults: 8, children: 2 },
-        { adults: 10, children: 0 },
-        { adults: 3, children: 7 }
+        { adults: 2, children: 2 },
+        { adults: 4, children: 0 },
+        { adults: 1, children: 3 }
       ]
       
       combinations.forEach(combo => {

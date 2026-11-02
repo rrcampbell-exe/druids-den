@@ -138,8 +138,8 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
       return
     }
 
-    if (editData.adults + editData.children > 10) {
-      setEditError('Maximum 10 guests allowed')
+    if (editData.adults + editData.children > 4) {
+      setEditError('Maximum 4 guests allowed')
       return
     }
 
@@ -390,15 +390,15 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                     type='number'
                     id={`edit-adults-${reservation.id}`}
                     min='1'
-                    max='10'
+                    max='4'
                     value={editData.adults}
                     onChange={(e) => {
                       const value = e.target.value === '' ? 1 : Number(e.target.value)
                       const newAdults = Number.isFinite(value) ? value : 1
                       setEditData({ ...editData, adults: newAdults })
                       // Show proactive validation for total guests
-                      if (newAdults + editData.children > 10) {
-                        setEditError('Maximum 10 guests total allowed')
+                      if (newAdults + editData.children > 4) {
+                        setEditError('Maximum 4 guests total allowed')
                       } else if (newAdults < 1) {
                         setEditError('At least 1 adult is required')
                       } else {
@@ -413,15 +413,15 @@ const ReservationCard = ({ reservation, onApprove, onDeny, onCancel, onMessage, 
                     type='number'
                     id={`edit-children-${reservation.id}`}
                     min='0'
-                    max='9'
+                    max='4'
                     value={editData.children}
                     onChange={(e) => {
                       const value = e.target.value === '' ? 0 : Number(e.target.value)
                       const newChildren = Number.isFinite(value) ? value : 0
                       setEditData({ ...editData, children: newChildren })
                       // Show proactive validation for total guests
-                      if (editData.adults + newChildren > 10) {
-                        setEditError('Maximum 10 guests total allowed')
+                      if (editData.adults + newChildren > 4) {
+                        setEditError('Maximum 4 guests total allowed')
                       } else if (editData.adults < 1) {
                         setEditError('At least 1 adult is required')
                       } else {

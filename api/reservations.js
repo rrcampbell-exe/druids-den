@@ -16,6 +16,17 @@ export default async function handler(req, res) {
         ownerEmail // Backwards-compatible fallback until the dashboard is updated
       } = req.body
 
+      if (
+        !Number.isInteger(adults) ||
+        adults < 1 ||
+        adults > 4 ||
+        !Number.isInteger(children) ||
+        children < 0 ||
+        adults + children > 4
+      ) {
+        return res.status(400).json({ error: 'Maximum occupancy is four guests' })
+      }
+
       if (!checkIn || !checkOut) {
         return res.status(400).json({ error: 'Check-in and check-out dates are required' })
       }

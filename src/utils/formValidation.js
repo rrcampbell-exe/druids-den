@@ -104,8 +104,8 @@ export const validateDate = (dateString) => {
 export const validateGuestCount = (count) => {
   const num = parseInt(count, 10)
   
-  if (isNaN(num) || num < 1 || num > 10) {
-    return { valid: false, error: 'Must have between 1 and 10 guests' }
+  if (isNaN(num) || num < 1 || num > 4) {
+    return { valid: false, error: 'Must have between 1 and 4 guests' }
   }
   
   return { valid: true, error: '' }
@@ -119,8 +119,8 @@ export const validateGuestCount = (count) => {
 export const validateChildCount = (count) => {
   const num = parseInt(count, 10)
   
-  if (isNaN(num) || num < 0 || num > 9) {
-    return { valid: false, error: 'Must have between 0 and 9 children' }
+  if (isNaN(num) || num < 0 || num > 4) {
+    return { valid: false, error: 'Must have between 0 and 4 children' }
   }
   
   return { valid: true, error: '' }
@@ -211,8 +211,8 @@ export const validateReservationForm = (formData) => {
   
   // Validate total guest count (adults + children)
   const totalGuests = (formData.adults || 0) + (formData.children || 0)
-  if (totalGuests > 10) {
-    errors.adults = 'Maximum 10 guests total allowed'
+  if (totalGuests > 4) {
+    errors.adults = 'Maximum 4 guests total allowed'
   }
   
   // Validate special requests if provided
