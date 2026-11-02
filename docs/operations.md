@@ -9,10 +9,11 @@ Set production values in the Vercel project environment configuration. Treat the
 | Group | Examples | Handling |
 | --- | --- | --- |
 | Browser-visible | `VITE_CLERK_PUBLISHABLE_KEY`, WeatherAPI settings, visual feature flags | May ship to clients; never store secrets or guest-private details. |
+| Public booking destinations | `VITE_AIRBNB_BOOKING_URL`, `VITE_VRBO_BOOKING_URL` | Optional. Set only to verified, property-specific HTTPS listing URLs. |
 | Server-only application | database URL, Clerk secret, Resend key, owner-email setting | Keep in Vercel environment configuration only. |
 | Server-only webhook and event secrets | Clerk/Resend signing secrets and event passcode | Keep in Vercel environment configuration only; never log or commit. |
 
-Do not configure real address, Wi-Fi, arrival, or access values through `VITE_GUIDE_*`. The current guide route is public. See [content and privacy](ai/content-and-privacy.md).
+The guide route is public. Keep the address, Wi-Fi, arrival, access, and guest-support details out of browser-visible variables and public assets. See [content and privacy](ai/content-and-privacy.md).
 
 ## Deployment Sequence
 

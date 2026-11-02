@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import Coelbren from '../Coelbren'
 import Awen from '../Awen'
+import { bookingLinks } from '../../config/booking'
 import './SiteComponents.scss'
 
 const publicNavigation = [
@@ -10,6 +11,7 @@ const publicNavigation = [
   { label: 'Northwoods', to: '/northwoods' },
   { label: 'The Story', to: '/story' },
   { label: 'Spooktoberfest', to: '/spooktoberfest' },
+  { label: 'Guest guide', to: '/guide', className: 'site-navigation-guide-link' },
 ]
 
 const isSpooktoberfestNavigationVisible = (date = new Date()) => {
@@ -24,13 +26,40 @@ export const CoelbrenLabel = ({ children, className = '' }) => (
   </span>
 )
 
+export const BookingAction = ({ className = '', fallbackLink = false, onClick }) => {
+  const primaryBookingLink = bookingLinks[0]
+  if (primaryBookingLink) {
+    return (
+      <a className={className} href={primaryBookingLink.href} target='_blank' rel='noopener noreferrer' onClick={onClick}>
+        Check availability
+      </a>
+    )
+  }
+
+  return fallbackLink ? (
+    <Link className={className} to='/stay' onClick={onClick}>Rental stays coming soon</Link>
+  ) : (
+    <p className='booking-coming-soon' role='status'>Rental stays coming soon</p>
+  )
+}
+
+export const AlternateBookingLinks = () => (
+  bookingLinks.length > 1 && (
+    <div className='stay-alternate-bookings' aria-label='Other booking listings'>
+      {bookingLinks.slice(1).map(({ platform, href }) => (
+        <a key={platform} href={href} target='_blank' rel='noopener noreferrer'>Also listed on {platform}</a>
+      ))}
+    </div>
+  )
+)
+
 const AwenMark = () => (
   <span className='site-wordmark-symbol' aria-hidden='true'>
     <span className='site-wordmark-awen'><Awen /></span>
   </span>
 )
 
-export const SiteHeader = ({ guide = false }) => {
+export const SiteHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -48,12 +77,12 @@ export const SiteHeader = ({ guide = false }) => {
   const showSpooktoberfest = isSpooktoberfestNavigationVisible()
 
   return (
-    <header className={`site-header ${guide ? 'site-header-guide' : ''}`}>
-      <Link className='site-wordmark' to={guide ? '/guide' : '/'} onClick={closeOnNavigate} aria-label={guide ? 'The Druids Den guest guide' : 'The Druids Den home'}>
+    <header className='site-header'>
+      <Link className='site-wordmark' to='/' onClick={closeOnNavigate} aria-label='The Druids Den home'>
         <AwenMark />
         <span>
           <strong>The Druids Den</strong>
-          <small>{guide ? 'Guest guide' : 'Conover, Wisconsin'}</small>
+          <small>Conover, Wisconsin</small>
         </span>
       </Link>
 
@@ -69,17 +98,17 @@ export const SiteHeader = ({ guide = false }) => {
       </button>
 
       <nav id='primary-navigation' className={`site-navigation ${menuOpen ? 'is-open' : ''}`} aria-label='Primary navigation'>
-        {!guide && publicNavigation.filter((item) => item.to !== '/spooktoberfest' || showSpooktoberfest).map((item) => (
-          <NavLink key={item.to} to={item.to} onClick={closeOnNavigate} className={({ isActive }) => isActive ? 'is-active' : undefined}>
+        {publicNavigation.filter((item) => item.to !== '/spooktoberfest' || showSpooktoberfest).map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            onClick={closeOnNavigate}
+            className={({ isActive }) => [item.className, isActive && 'is-active'].filter(Boolean).join(' ') || undefined}
+          >
             {item.label}
           </NavLink>
         ))}
-        {guide ? (
-          <Link className='site-navigation-guide-link' to='/'>Back to the Den</Link>
-        ) : (
-          <Link className='site-navigation-guide-link' to='/guide' onClick={closeOnNavigate}>Guest guide</Link>
-        )}
-        <Link className='site-navigation-cta' to='/stay' onClick={closeOnNavigate}>Plan a private stay</Link>
+        <BookingAction className='site-navigation-cta' fallbackLink onClick={closeOnNavigate} />
       </nav>
     </header>
   )
@@ -109,7 +138,7 @@ export const SiteFooter = () => (
       </div>
     </div>
     <div className='site-footer-bottom'>
-      <span>Private hospitality by invitation</span>
+      <span>A private cabin in Conover, Wisconsin</span>
       <span>©<span className='site-footer-year'>{new Date().getFullYear()}</span><span className='site-footer-title'>The Druids Den</span></span>
     </div>
   </footer>

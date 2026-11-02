@@ -203,18 +203,6 @@ const Reservations = () => {
     return blackoutDates
   }
   
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-  
-  const validatePhone = (phone) => {
-    // Remove all non-digit characters for validation
-    const digitsOnly = phone.replace(/\D/g, '')
-    // US phone numbers should be 10 digits
-    return digitsOnly.length === 10
-  }
-  
   const formatPhone = (value) => {
     // Remove all non-digit characters
     const digitsOnly = value.replace(/\D/g, '')
@@ -574,7 +562,7 @@ const Reservations = () => {
                     value={formData.adults}
                     onChange={handleInputChange}
                     min='1'
-                    max='6'
+                    max='4'
                     required
                   />
                   <small>Age 13+</small>
@@ -592,7 +580,7 @@ const Reservations = () => {
                     value={formData.children}
                     onChange={handleInputChange}
                     min='0'
-                    max='10'
+                    max='4'
                   />
                   <small>Ages 0-12</small>
                 </div>

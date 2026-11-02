@@ -198,6 +198,21 @@ describe('reservations API', () => {
       )
     })
 
+    it('rejects owner reservations above the four-guest occupancy limit', async () => {
+      req.body = {
+        checkIn: '2026-04-01',
+        checkOut: '2026-04-05',
+        adults: 3,
+        children: 2,
+      }
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Maximum occupancy is four guests' })
+      expect(prisma.reservation.create).not.toHaveBeenCalled()
+    })
+
     it('returns 400 when checkIn is missing', async () => {
       req.body = {
         checkOut: '2026-04-05',

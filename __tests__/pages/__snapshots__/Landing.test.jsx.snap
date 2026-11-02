@@ -5,7 +5,7 @@ exports[`Landing Page > matches snapshot 1`] = `
   class="landing-page"
 >
   <header
-    class="site-header "
+    class="site-header"
   >
     <a
       aria-label="The Druids Den home"
@@ -101,7 +101,7 @@ exports[`Landing Page > matches snapshot 1`] = `
         data-discover="true"
         href="/stay"
       >
-        Plan a private stay
+        Rental stays coming soon
       </a>
     </nav>
   </header>
@@ -167,18 +167,18 @@ exports[`Landing Page > matches snapshot 1`] = `
           <a
             class="button button-light landing-cta"
             data-discover="true"
-            href="/what-to-expect"
+            href="/stay"
           >
-            Begin Your Northwoods Adventure &gt;
+            Rental stays coming soon
           </a>
           <a
             class="home-text-link"
             data-discover="true"
-            href="/guide"
+            href="/the-den"
           >
-            Already arriving?
+            Explore the cabin
             <span>
-              Open the guide
+              See the practical details
             </span>
           </a>
         </div>
@@ -186,9 +186,6 @@ exports[`Landing Page > matches snapshot 1`] = `
       <div
         class="home-hero-meta"
       >
-        <span>
-          46° 04' N / 89° 15' W
-        </span>
         <span>
           Conover, WI
         </span>
@@ -217,7 +214,7 @@ exports[`Landing Page > matches snapshot 1`] = `
           src="/assets/iconography/crow.png"
         />
         <span>
-          01 / The invitation
+          01 / The place
         </span>
       </div>
       <div
@@ -281,10 +278,10 @@ exports[`Landing Page > matches snapshot 1`] = `
       >
         <div>
           <strong>
-            6
+            4
           </strong>
           <span>
-            guests, 4 comfortably
+            guests maximum
           </span>
         </div>
         <div>
@@ -297,10 +294,10 @@ exports[`Landing Page > matches snapshot 1`] = `
         </div>
         <div>
           <strong>
-            4
+            1 + 1
           </strong>
           <span>
-            seasons worth arriving for
+            private bedroom + open loft
           </span>
         </div>
         <div>
@@ -526,20 +523,14 @@ exports[`Landing Page > matches snapshot 1`] = `
         class="home-stay-cta-copy"
       >
         <p>
-          The Den is for friends, family, and invited guests while we learn the shape of a great stay.
+          A private woodland cabin in Conover, Wisconsin, with room for up to four guests.
         </p>
         <a
-          class="arrow-link "
+          class="button button-dark"
           data-discover="true"
           href="/stay"
         >
-          Family? Friends? Reach out here
-          <span
-            aria-hidden="true"
-            class="arrow-link-mark"
-          >
-            -&gt;
-          </span>
+          Rental stays coming soon
         </a>
       </div>
     </section>
@@ -649,7 +640,7 @@ exports[`Landing Page > matches snapshot 1`] = `
       class="site-footer-bottom"
     >
       <span>
-        Private hospitality by invitation
+        A private cabin in Conover, Wisconsin
       </span>
       <span>
         ©

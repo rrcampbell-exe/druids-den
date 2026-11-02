@@ -89,6 +89,23 @@ describe('reservations/[id] API', () => {
   })
 
   describe('PATCH /api/reservations/[id]', () => {
+    it('rejects guest-count edits above the four-guest occupancy limit', async () => {
+      req.body = { adults: 3, children: 2 }
+      prisma.reservation.findUnique.mockResolvedValue({
+        id: '1',
+        adults: 2,
+        children: 0,
+        checkIn: new Date('2026-02-15T00:00:00.000Z'),
+        checkOut: new Date('2026-02-17T00:00:00.000Z'),
+      })
+
+      await handler(req, res)
+
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Maximum occupancy is four guests' })
+      expect(prisma.reservation.update).not.toHaveBeenCalled()
+    })
+
     it('updates reservation status to approved', async () => {
       req.body = { status: 'approved' }
 
@@ -303,6 +320,13 @@ describe('reservations/[id] API', () => {
     })
 
     it('returns error when Prisma update fails', async () => {
+      prisma.reservation.findUnique.mockResolvedValue({
+        id: '1',
+        adults: 2,
+        children: 0,
+        checkIn: new Date('2026-02-15T00:00:00.000Z'),
+        checkOut: new Date('2026-02-17T00:00:00.000Z'),
+      })
       prisma.reservation.update.mockRejectedValue(new Error('Record not found'))
       
       req.body = { status: 'approved' }
@@ -316,6 +340,13 @@ describe('reservations/[id] API', () => {
     })
 
     it('updates reservation even if previously soft-deleted', async () => {
+      prisma.reservation.findUnique.mockResolvedValue({
+        id: '1',
+        adults: 2,
+        children: 0,
+        checkIn: new Date('2026-02-15T00:00:00.000Z'),
+        checkOut: new Date('2026-02-17T00:00:00.000Z'),
+      })
       prisma.reservation.update.mockResolvedValue({
         id: '1',
         guestFirstName: 'John',

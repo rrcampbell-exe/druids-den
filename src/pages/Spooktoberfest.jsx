@@ -102,7 +102,7 @@ const Spooktoberfest = () => {
                   className='sleeping-photo'
                   style={{ objectPosition: 'center 55%' }}
                 />
-                <p>The cabin can sleep six naturally (two in the primary bedroom, two in the loft, and two on the air mattress), but depending on the number of RSVPs per night, we may have to get cozy with additional air mattresses set up in the space.</p>
+                <p>The cabin accommodates up to four guests, with one private bedroom and an open loft. Coordinate any event lodging plans with the hosts.</p>
                 <p>Alternatively, you're welcome to bring a tent and camp on the land. Please let us know if you plan to do this so we can get a better feel for how to set up the cabin interior to support those who choose to sleep indoors.</p>
               </div>
             </div>

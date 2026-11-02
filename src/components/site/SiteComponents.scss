@@ -28,17 +28,7 @@
   gap: 2rem;
   padding: 1.4rem clamp(1.25rem, 4vw, 4.75rem);
   color: var(--color-paper);
-}
-
-.site-header:not(.site-header-guide) {
   background: linear-gradient(180deg, rgba(17, 26, 23, 0.58), transparent);
-}
-
-.site-header-guide {
-  position: sticky;
-  color: var(--color-iron-ore);
-  background: var(--color-shiitake);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .site-wordmark {
@@ -129,11 +119,6 @@
 .site-navigation a.is-active::after {
   transform: scaleX(1);
   transform-origin: left;
-}
-
-.site-navigation .site-navigation-guide-link {
-  color: inherit;
-  opacity: 0.75;
 }
 
 .site-navigation .site-navigation-cta {
@@ -457,10 +442,6 @@
     padding: 1rem;
     background: var(--color-forest);
     box-shadow: 0 1.2rem 2rem rgba(17, 26, 23, 0.16);
-  }
-
-  .site-header-guide .site-navigation {
-    background: var(--color-paper);
   }
 
   .site-navigation.is-open {

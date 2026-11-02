@@ -41,15 +41,14 @@ from a photograph.
 
 ## Guest Guide Boundary
 
-`/guide` is intended for invited guests but is currently a public route. It
-may contain general, safety-oriented, and seasonal information, but it must not
-contain actual private arrival details, Wi-Fi credentials, access codes, or
-personal contact details.
+`/guide` is a public route. It may contain general, safety-oriented, and
+seasonal information, but it must not contain actual private arrival details,
+Wi-Fi credentials, access codes, guest-support contacts, or the cabin address.
 
-Vite variables with the `VITE_` prefix are embedded in the client bundle. In
-particular, `VITE_GUIDE_ADDRESS`, `VITE_GUIDE_WIFI_NAME`, and
-`VITE_GUIDE_WIFI_PASSWORD` are browser-visible configuration, not secret
-storage. Do not configure real private values there.
+`vite.config.js` explicitly allowlists the browser-visible Vite variables.
+Treat every allowlisted value as public, not as secret storage. Booking URL
+variables may contain only verified public listing destinations; never place
+private guest information in Vite variables.
 
 Before real private guide details can be placed in the application, implement
 one of these reviewed designs:

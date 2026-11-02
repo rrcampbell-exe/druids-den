@@ -2,16 +2,10 @@ import { useEffect, useRef } from 'react'
 import './Landing.scss'
 import { Coelbren, Awen, Weather } from '../components'
 import { Link } from 'react-router'
-import { useAuth } from '@clerk/react'
-import { useCurrentAppUser } from '../hooks/useCurrentAppUser'
-import { ArrowLink, AssetIcon, CoelbrenLabel, SiteFooter, SiteHeader } from '../components/site/SiteComponents'
+import { ArrowLink, AssetIcon, BookingAction, CoelbrenLabel, SiteFooter, SiteHeader } from '../components/site/SiteComponents'
 
 const Landing = () => {
   const ref = useRef()
-  const { isSignedIn } = useAuth()
-  const { user } = useCurrentAppUser()
-
-  const showOwnerDashboard = isSignedIn && (user?.role === 'OWNER' || user?.role === 'ADMIN')
 
   useEffect(() => {
     const img = new window.Image()
@@ -39,12 +33,11 @@ const Landing = () => {
             </h1>
             <p className='home-hero-intro'>Five and a half acres of private forest, a cozy cabin, and the kind of quiet that makes room for <i>you</i>.</p>
             <div className='home-hero-actions'>
-              <Link to='/what-to-expect' className='button button-light landing-cta'>Begin Your Northwoods Adventure &gt;</Link>
-              <Link to='/guide' className='home-text-link'>Already arriving?<span>Open the guide</span></Link>
+              <BookingAction className='button button-light landing-cta' fallbackLink />
+              <Link to='/the-den' className='home-text-link'>Explore the cabin<span>See the practical details</span></Link>
             </div>
           </div>
           <div className='home-hero-meta'>
-            <span>46° 04' N / 89° 15' W</span>
             <span>Conover, WI</span>
             <span className='home-scroll-note'>Scroll to wander<b aria-hidden='true'>↓</b></span>
           </div>
@@ -53,7 +46,7 @@ const Landing = () => {
         <section className='home-introduction site-band'>
           <div className='home-introduction-marker'>
             <AssetIcon name='crow.png' alt='' />
-            <span>01 / The invitation</span>
+            <span>01 / The place</span>
           </div>
           <div className='home-introduction-copy'>
             <p className='home-display-copy'>The Druids Den is your intimate woodland basecamp for exploring the beautiful Northwoods of Wisconsin and Michigan's Upper Peninsula.</p>
@@ -72,9 +65,9 @@ const Landing = () => {
             <h2>The cabin at a glance</h2>
           </div>
           <div className='home-glance-list'>
-            <div><strong>6</strong><span>guests, 4 comfortably</span></div>
+            <div><strong>4</strong><span>guests maximum</span></div>
             <div><strong>5½</strong><span>acres of private forest</span></div>
-            <div><strong>4</strong><span>seasons worth arriving for</span></div>
+            <div><strong>1 + 1</strong><span>private bedroom + open loft</span></div>
             <div><strong>1</strong><span>projector, many movie nights</span></div>
           </div>
         </section>
@@ -135,8 +128,8 @@ const Landing = () => {
             <h2>The quiet is calling.</h2>
           </div>
           <div className='home-stay-cta-copy'>
-            <p>The Den is for friends, family, and invited guests while we learn the shape of a great stay.</p>
-            <ArrowLink to='/stay'>Family? Friends? Reach out here</ArrowLink>
+            <p>A private woodland cabin in Conover, Wisconsin, with room for up to four guests.</p>
+            <BookingAction className='button button-dark' fallbackLink />
           </div>
         </section>
       </main>

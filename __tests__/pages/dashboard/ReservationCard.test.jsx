@@ -458,7 +458,7 @@ describe('ReservationCard', () => {
       expect(screen.getByText('At least 1 adult is required')).toBeInTheDocument()
     })
 
-    it('validates maximum 10 guests allowed', () => {
+    it('validates maximum four guests allowed', () => {
       const editableReservation = { ...mockApprovedReservation }
       render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
       
@@ -468,17 +468,17 @@ describe('ReservationCard', () => {
       const adultsInput = screen.getByLabelText(/Adults/)
       const childrenInput = screen.getByLabelText(/Children/)
       
-      fireEvent.change(adultsInput, { target: { value: '6' } })
-      fireEvent.change(childrenInput, { target: { value: '5' } })
+      fireEvent.change(adultsInput, { target: { value: '4' } })
+      fireEvent.change(childrenInput, { target: { value: '1' } })
       
       const updateButton = screen.getByText('Save Changes')
       fireEvent.click(updateButton)
       
-      expect(screen.getByText('Maximum 10 guests allowed')).toBeInTheDocument()
+      expect(screen.getByText('Maximum 4 guests allowed')).toBeInTheDocument()
     })
 
-    it('shows validation error immediately when guest count exceeds 10', () => {
-      const editableReservation = { ...mockApprovedReservation, adults: 5, children: 4 }
+    it('shows validation error immediately when guest count exceeds four', () => {
+      const editableReservation = { ...mockApprovedReservation, adults: 2, children: 1 }
       render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
       
       const editButton = screen.getByText('✎ Edit Reservation')
@@ -486,15 +486,15 @@ describe('ReservationCard', () => {
       
       const childrenInput = screen.getByLabelText(/Children/)
       
-      // Increase children from 4 to 6 (5 + 6 = 11 total)
-      fireEvent.change(childrenInput, { target: { value: '6' } })
+      // Increase to three children (2 + 3 = 5 total)
+      fireEvent.change(childrenInput, { target: { value: '3' } })
       
       // Error should appear immediately without clicking submit
-      expect(screen.getByText('Maximum 10 guests total allowed')).toBeInTheDocument()
+      expect(screen.getByText('Maximum 4 guests total allowed')).toBeInTheDocument()
     })
 
     it('clears validation error when guest count becomes valid', () => {
-      const editableReservation = { ...mockApprovedReservation, adults: 6, children: 5 }
+      const editableReservation = { ...mockApprovedReservation, adults: 3, children: 2 }
       render(<ReservationCard reservation={editableReservation} {...mockHandlers} isApproved={true} />)
       
       const editButton = screen.getByText('✎ Edit Reservation')
@@ -502,16 +502,16 @@ describe('ReservationCard', () => {
       
       const childrenInput = screen.getByLabelText(/Children/)
       
-      // Initially 11 total (6 + 5), trigger validation by clicking submit
+      // Initially five total, trigger validation by clicking submit
       const updateButton = screen.getByText('Save Changes')
       fireEvent.click(updateButton)
-      expect(screen.getByText('Maximum 10 guests allowed')).toBeInTheDocument()
+      expect(screen.getByText('Maximum 4 guests allowed')).toBeInTheDocument()
       
-      // Reduce children to 4 (6 + 4 = 10 total)
-      fireEvent.change(childrenInput, { target: { value: '4' } })
+      // Reduce to one child for four total guests
+      fireEvent.change(childrenInput, { target: { value: '1' } })
       
       // Error should clear immediately
-      expect(screen.queryByText('Maximum 10 guests total allowed')).not.toBeInTheDocument()
+      expect(screen.queryByText('Maximum 4 guests total allowed')).not.toBeInTheDocument()
     })
 
     it('calls onEdit when valid edit is submitted', async () => {

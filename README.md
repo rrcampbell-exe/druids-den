@@ -1,6 +1,6 @@
 # The Druids Den
 
-The online hub for **The Druids Den**, a private cabin in Conover, Wisconsin. The public site is an invitation-first way to explore the cabin, its Northwoods setting, its photo journal, and the traditions taking shape there. Invited guests can open a practical guest guide, approved users can request reservations, and owners manage reservations, guest accounts, and revenue analytics — all from a single app deployed on Vercel.
+The online hub for **The Druids Den**, a private cabin in Conover, Wisconsin. The public site introduces the cabin, its Northwoods setting, its photo journal, and the traditions taking shape there. Rental stays are coming soon; guests can use the general guide, approved users can request reservations, and owners manage reservations, guest accounts, and revenue analytics — all from a single app deployed on Vercel.
 
 **Tech stack:** React 19 (Vite) · Vercel Serverless Functions · Vercel Web Analytics + Speed Insights · PostgreSQL (Prisma ORM + Accelerate) · Clerk Auth · Resend Email · WeatherAPI
 
@@ -113,7 +113,7 @@ instead of copying nonexistent templates.
 │   ├── hooks/              # Custom React hooks
 │   ├── pages/              # Route-level page components
 │   │   ├── PublicPages.jsx  # The Den, Gallery, Northwoods, Story, Traditions, and Stay
-│   │   ├── Guide.jsx        # Invitation-oriented guest guide
+│   │   ├── Guide.jsx        # Public guest information guide
 │   │   └── dashboard/      # Owner dashboard sub-views
 │   └── utils/              # Client-side helpers
 ├── __tests__/              # Mirrors src/ and api/ structure
@@ -127,7 +127,7 @@ instead of copying nonexistent templates.
 
 ### Landing Page
 
-The home page at `/` is the public front door. It introduces the cabin, links into the photo journal, cabin details, Northwoods field guide, traditions, and private-stay inquiry, and includes the live weather widget for Conover, WI. A Spooktoberfest 2026 link appears starting April 1, 2026. The site uses a custom Celtic font (Coelbren), the Awen symbol, the new public-site navigation, and responsive editorial layouts.
+The home page at `/` is the public front door. It introduces the cabin, links into the photo journal, cabin details, Northwoods field guide, traditions, and stay details, and includes the live weather widget for Conover, WI. A Spooktoberfest 2026 link appears starting April 1, 2026. The site uses a custom Celtic font (Coelbren), the Awen symbol, the new public-site navigation, and responsive editorial layouts.
 
 ### The Den
 
@@ -151,13 +151,13 @@ The traditions page at `/traditions` is deployed but intentionally unlinked whil
 
 ### Stay & Inquiries
 
-The invitation-first stay page at `/stay` is the public booking boundary for the current phase of the site. There is no public calendar or instant booking widget yet. Visitors are directed to email `grovekeeper@druidsdenwi.com` with their dates, group, and plans. The page reserves a future location for a Lodgify booking area.
+The stay page at `/stay` is the public booking boundary. Until verified property-specific Airbnb or Vrbo listing URLs are configured, it displays “Rental stays coming soon.” The existing owner email is available for general questions; an email inquiry does not reserve a stay. No public availability calendar or independent booking engine is provided.
 
 ### Guest Guide
 
-The practical guide at `/guide` is intended to be shared with invited guests. It includes copyable arrival details, Wi-Fi fields, heat and fireplace guidance, kitchen and septic notes, fire safety, local links, emergency information, and checkout steps. The address and Wi-Fi values can be supplied through `VITE_GUIDE_ADDRESS`, `VITE_GUIDE_WIFI_NAME`, and `VITE_GUIDE_WIFI_PASSWORD`; unset values fall back to a placeholder message.
+The public guide at `/guide` includes general arrival, Wi-Fi, projector, safety, recreation, and checkout information. It does not display the property address, access instructions, Wi-Fi credentials, or guest-support contact details.
 
-The guide route is invitation-oriented but is not currently an authentication boundary. `VITE_` values are bundled into the browser, so those settings must not be treated as secret storage.
+The guide is not an authentication boundary. Keep private guest information in an approved reservation communication channel, not in public pages or browser-visible `VITE_` variables.
 
 ### Spooktoberfest
 
@@ -174,8 +174,8 @@ A passcode-protected event page at `/spooktoberfest` for the October 8–11, 202
 | `/northwoods` | Northwoods | Public regional field guide |
 | `/story` | The Story | Public property story and design principles |
 | `/traditions` | Traditions | Deployed, currently unlinked |
-| `/stay` | Stay | Invitation-only inquiry flow; no instant booking |
-| `/guide` | Guest guide | Intended for invited guests; currently route-accessible |
+| `/stay` | Stay | Rental stays coming soon; verified listing links appear when available |
+| `/guide` | Guest guide | Public general information only; no private arrival details |
 | `/spooktoberfest` | Spooktoberfest | Passcode-protected event page |
 | `/feedback/:reservationId` | Feedback | Link-accessible post-stay feedback form |
 | `*` | Fallback | Redirects unknown client routes to `/` |
@@ -351,9 +351,8 @@ npm run db:reset
 | `VITE_CLERK_PUBLISHABLE_KEY` | Yes | Clerk authentication public key |
 | `VITE_LOCAL_CLERK_PUBLISHABLE_KEY` | Local only | Optional localhost override used by `npm run start:local` |
 | `VITE_WEATHER_API_KEY` | No | WeatherAPI.com key; falls back to mock data in dev |
-| `VITE_GUIDE_ADDRESS` | No | Optional address shown in the invitation-oriented guest guide |
-| `VITE_GUIDE_WIFI_NAME` | No | Optional Wi-Fi network name shown in the guest guide |
-| `VITE_GUIDE_WIFI_PASSWORD` | No | Optional Wi-Fi password shown in the guest guide; bundled into the browser |
+| `VITE_AIRBNB_BOOKING_URL` | No | Verified property-specific Airbnb listing URL; browser-visible |
+| `VITE_VRBO_BOOKING_URL` | No | Verified property-specific Vrbo listing URL; browser-visible |
 
 ### Backend (Node.js — server-side only)
 

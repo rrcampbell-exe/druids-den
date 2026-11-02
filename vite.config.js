@@ -3,6 +3,13 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  envPrefix: [
+    'VITE_AIRBNB_BOOKING_URL',
+    'VITE_VRBO_BOOKING_URL',
+    'VITE_WEATHER_API_KEY',
+    'VITE_LOCAL_CLERK_PUBLISHABLE_KEY',
+    'VITE_CLERK_PUBLISHABLE_KEY',
+  ],
   plugins: [react()],
   test: {
     include: ['__tests__/**/*.{test,spec}.{js,jsx}'],

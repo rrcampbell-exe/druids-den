@@ -43,6 +43,21 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'Reservation not found' })
       }
 
+      const updatedAdults = adults === undefined ? currentReservation.adults : Number(adults)
+      const updatedChildren = children === undefined ? currentReservation.children : Number(children)
+      const guestCountsAreInvalid = (
+        !Number.isInteger(updatedAdults) ||
+        updatedAdults < 1 ||
+        !Number.isInteger(updatedChildren) ||
+        updatedChildren < 0 ||
+        updatedAdults + updatedChildren > 4
+      )
+      const changesGuestCounts = adults !== undefined || children !== undefined
+      const approvesOverCapacityReservation = typeof status === 'string' && status.toLowerCase() === 'approved' && guestCountsAreInvalid
+      if ((changesGuestCounts && guestCountsAreInvalid) || approvesOverCapacityReservation) {
+        return res.status(400).json({ error: 'Maximum occupancy is four guests' })
+      }
+
       // Status change
       if (status) {
         const normalizedStatus = status.toLowerCase()
@@ -143,14 +158,14 @@ export default async function handler(req, res) {
       }
       
       if (adults !== undefined) {
-        if (adults !== currentReservation.adults) {
-          updateData.adults = adults
+        if (updatedAdults !== currentReservation.adults) {
+          updateData.adults = updatedAdults
           changes.guests = true
         }
       }
       if (children !== undefined) {
-        if (children !== currentReservation.children) {
-          updateData.children = children
+        if (updatedChildren !== currentReservation.children) {
+          updateData.children = updatedChildren
           changes.guests = true
         }
       }

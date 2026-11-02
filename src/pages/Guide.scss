@@ -54,60 +54,6 @@
   line-height: 1.65;
 }
 
-.guide-arrival-chip {
-  display: grid;
-  gap: 0.5rem;
-  min-width: 12rem;
-  padding: 1rem 0 0;
-  border-top: 1px solid rgba(246, 240, 223, 0.4);
-}
-
-.guide-arrival-chip span,
-.guide-arrival-chip strong {
-  font-family: var(--font-sans);
-  font-size: 0.67rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.guide-arrival-chip span {
-  color: var(--color-saffron);
-}
-
-.guide-arrival-chip strong {
-  color: rgba(246, 240, 223, 0.78);
-  font-weight: 500;
-}
-
-.guide-quick-nav {
-  position: sticky;
-  top: 5.05rem;
-  z-index: 8;
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  overflow-x: auto;
-  padding: 0.9rem clamp(1.25rem, 8vw, 8rem);
-  color: var(--color-paper);
-  background: var(--color-moss);
-  box-shadow: 0 0.5rem 1.2rem rgba(23, 42, 36, 0.12);
-  scrollbar-width: none;
-}
-
-.guide-quick-nav::-webkit-scrollbar {
-  display: none;
-}
-
-.guide-quick-nav > span {
-  flex: 0 0 auto;
-  color: var(--color-saffron);
-  font-family: var(--font-sans);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 .guide-quick-link {
   display: inline-flex;
   flex: 0 0 auto;
@@ -385,6 +331,11 @@
   text-transform: uppercase;
 }
 
+.guide-download-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+}
+
 .guide-instruction-list p {
   max-width: 34rem;
   margin: 1rem 0 0 1.2rem;
@@ -565,10 +516,6 @@
     gap: 2.5rem;
   }
 
-  .guide-arrival-chip {
-    max-width: 14rem;
-  }
-
   .guide-critical,
   .guide-section,
   .guide-two-column {
@@ -606,6 +553,10 @@
     padding-left: 1rem;
   }
 
+  .guide-instruction-list summary {
+    list-style-position: inside;
+  }
+
   .guide-emergency-grid {
     grid-template-columns: 1fr;
     gap: 1.6rem;
@@ -620,13 +571,6 @@
 
   .guide-hero h1 {
     font-size: clamp(3.5rem, 18vw, 5.5rem);
-  }
-
-  .guide-quick-nav {
-    top: 4.45rem;
-    gap: 1rem;
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
   }
 
   .guide-critical {

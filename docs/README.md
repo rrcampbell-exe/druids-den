@@ -30,6 +30,8 @@ agents making changes to the application.
   migrations, and business constraints.
 - [Testing](testing.md): test layout, mocks, coverage, and validation commands.
 - [Analytics](analytics.md): event instrumentation and data-minimization rules.
+- [Rental launch checklist](launch-checklist.md): unresolved property facts,
+  booking and guest-support setup, and assets to confirm before launch.
 
 ## Operations
 

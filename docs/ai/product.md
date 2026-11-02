@@ -14,8 +14,8 @@ private information.
 ## Audiences
 
 1. People considering a future stay.
-2. Invited guests seeking public-facing practical context.
-3. Approved guests requesting a stay through the application.
+2. Guests seeking practical public-facing context.
+3. Approved guests using the legacy reservation-request workflow.
 4. Owners, hosts, and grove keepers managing guest accounts and reservations.
 
 The public site should feel secluded, welcoming, curious, crafted, and
@@ -26,44 +26,48 @@ fantasy-game interface.
 
 | Topic | Current policy or behavior |
 | --- | --- |
-| Public booking | Not available. There is no public calendar or instant-booking flow. |
-| Inquiry | Visitors contact the owners, hosts, or grove keepers directly by email or text. |
-| Booking platform | Lodgify is planned but is not active. Do not imply an active platform integration. |
-| Nightly estimate | $150 per night. This is the current implementation baseline and needs owner review before any pricing change is published. |
-| Minimum stay | Two nights. |
-| Check-in | 4 p.m. |
-| Check-out | 10 a.m. |
-| Capacity | Up to six guests. |
-| Pets | Not permitted. Do not infer otherwise from photography or past copy. |
-| Smoking | Only permitted outdoors. No smoking of any kind is permitted indoors. |
+| Public booking | Not open yet. Use “Rental stays coming soon” until verified property-specific listing URLs are configured. |
+| Booking platforms | Northwoods Signature Vacation Homes plans to manage the property-specific Airbnb and Vrbo listings through its accounts. Do not invent URLs or imply a live listing. |
+| General inquiry | The existing owner email may be used for general questions; an email inquiry does not reserve a stay. |
+| Public price | Do not publish a nightly rate. The legacy reservation system's estimate is internal and is not an approved public price. |
+| Check-in / check-out | The public guide states 4 p.m. check-in and 10 a.m. checkout; Northwoods must confirm both before launch. |
+| Capacity | Maximum occupancy is four guests, as stated in the current Property Rules information supplied for the rental transition. |
+| Sleeping areas | One private bedroom plus an open loft, with a queen bed for two guests in each space. The loft is open to the main living area and reached by stairs. The living room is not an air-mattress sleeping area. |
+| Bathroom | One bathroom. |
+| Parking | Up to four vehicles, including trailers, on the driveway or designated parking pad. Winter snow can reduce usable space. |
 
-The current implementation is an invitation-oriented hospitality beta. Do not
-invent availability, fees, cancellation terms, accessibility claims, or other
-guest policies that have not been confirmed by the owners.
+Do not invent availability, a launch date, licensing or approval status, fees,
+cancellation terms, accessibility claims, or guest policies. See the
+[rental launch checklist](../launch-checklist.md) for unresolved confirmations.
 
 ## Confirmed Cabin Information
 
-The cabin information currently represented in the site is verified for use in
-public content. It includes sleeping space for up to six, a full kitchen,
-radiant in-floor heat, an indoor gas fireplace, fiber internet with potentially
-spotty cellular reception, a projector and DVD collection, a covered
-porch, patio, gas grill, outdoor fire pit, and surrounding woods.
+Owner-confirmed public cabin facts include a full kitchen, radiant floor heat,
+a gas fireplace, fiber internet with potentially spotty cellular reception,
+projector, covered porch, patio, grill, fire pit, and 5½ acres of private
+forest in Conover, Wisconsin. Describe the setting as a woodland cabin with
+nearby public lake access.
 
-Describe amenities accurately and with the qualifications already established
-in the public content. In particular, weather, seasonal road conditions,
-wildlife, cellular reception, and outdoor features require sensible, current
-context. Never represent a planned amenity or unverified local recommendation
-as available.
+The supplied property photographs show a refrigerator, electric range and
+oven, microwave, dishwasher, coffee maker, kettle, shower, vanity and toilet,
+bedroom furnishings, bookshelves, and living-room furniture. The projector
+setup materials document a DVD player. Describe these visible items
+specifically, but do not infer guest supplies or policies from photographs.
+Confirmed guest supplies include laundry, bed linens and towels, cookware,
+games, DVDs, and books. Use those general descriptions without inventing
+specific laundry equipment, cookware pieces, or game and DVD titles.
+Toiletries, dinnerware, coffee/filters, and firewood remain unresolved. Do not
+infer storage or other unpictured supplies from older copy.
 
 ## Page And Access Model
 
 | Surface | Intended audience | Product boundary |
 | --- | --- | --- |
 | Public site: `/`, `/the-den`, `/gallery`, `/northwoods`, `/story` | Everyone | Discovery, cabin context, and regional field notes. |
-| `/stay` | Everyone | Direct inquiry only; no public booking or availability. |
+| `/stay` | Everyone | Rental details and verified Airbnb/Vrbo links when configured. General email inquiries do not reserve a stay. |
 | `/traditions` | Everyone with the route | Deployed seasonal and property traditions content; it may remain unlinked while it develops. |
 | `/spooktoberfest` | Event invitees | A separate passcode-protected event experience. Treat dates, itinerary, and logistics as event-specific rather than general stay policy. |
-| `/guide` | Invited guests in intent, currently public in implementation | Helpful general guidance only. It must not contain actual arrival instructions, address, Wi-Fi credentials, access codes, or owner contact details while publicly routable. |
+| `/guide` | Public implementation | General guidance only. It must not contain actual arrival instructions, address, Wi-Fi credentials, access codes, or private guest-support details while publicly routable. |
 | `/reservations` | Approved signed-in guests | Reservation-request workflow. |
 | `/dashboard` | Owners and administrators | Private operational interface. |
 | `/feedback/:reservationId` | Guests with a valid feedback link | Post-stay feedback collection. |
@@ -83,9 +87,10 @@ Each public page should answer, in roughly this order:
 4. What practical or seasonal context matters?
 5. What is the appropriate next action?
 
-Use direct inquiries as the next action until an owner-approved public booking
-experience exists. Avoid urgency, availability implications, price promotions,
-and claims that turn private hospitality into an unsupported commercial offer.
+Use “Rental stays coming soon” until verified property-specific booking links
+are available. Once configured, make “Check availability” the primary action
+to the Airbnb and/or Vrbo listing. Avoid urgency, invented availability, price
+promotions, and claims that turn planned operations into approved policy.
 
 ## Canonical Language
 
@@ -93,9 +98,9 @@ and claims that turn private hospitality into an unsupported commercial offer.
 | --- | --- |
 | Property | The Druids Den; the Den; the cabin. |
 | Location | Conover, Wisconsin; the forested Northwoods of Vilas County. |
-| Nearby context | Eagle River is about 15 minutes away; Michigan's Upper Peninsula is about 15 minutes away. Use only when useful to visitor context, never as directions. |
+| Nearby context | Mention nearby towns, distances, or access only when verified and useful to visitors; do not turn them into directions to the property. |
 | Hosts | Owners, hosts, or grove keepers. |
-| Experience | Private, invitation-oriented, thoughtful, wooded, and practical. |
+| Experience | Private, thoughtful, wooded, and practical. |
 
 Do not publish a street address, coordinates, turn-by-turn directions, private
 road details that identify the property, access procedures, Wi-Fi credentials,

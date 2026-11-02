@@ -258,7 +258,7 @@ export const sanitizeReservationData = (reservationData) => {
   // adults (has a default in form, but can be missing)
   const adults = sanitizeInteger(
     reservationData.adults !== undefined ? reservationData.adults : 1,
-    { min: 1, max: 10 }
+    { min: 1, max: 4 }
   )
   if (!adults.valid) {
     errors.adults = 'Number of adults is invalid'
@@ -269,7 +269,7 @@ export const sanitizeReservationData = (reservationData) => {
   // children (optional, default to 0)
   const children = sanitizeInteger(
     reservationData.children !== undefined ? reservationData.children : 0,
-    { min: 0, max: 9 }
+    { min: 0, max: 4 }
   )
   if (!children.valid) {
     errors.children = 'Number of children is invalid'
@@ -280,8 +280,8 @@ export const sanitizeReservationData = (reservationData) => {
   // Validate total guest count
   if (sanitized.adults !== undefined && sanitized.children !== undefined) {
     const totalGuests = sanitized.adults + sanitized.children
-    if (totalGuests > 10) {
-      errors.adults = 'Maximum 10 guests total allowed'
+    if (totalGuests > 4) {
+      errors.adults = 'Maximum 4 guests total allowed'
     }
   }
   
