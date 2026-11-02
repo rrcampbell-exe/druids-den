@@ -36,7 +36,7 @@ describe('Landing Page', () => {
     })
 
     // Mock window.Image
-    global.Image = class {
+    globalThis.Image = class {
       constructor() {
         setTimeout(() => {
           this.onload && this.onload()
@@ -47,7 +47,7 @@ describe('Landing Page', () => {
 
   it('renders without crashing', () => {
     renderWithRouter(<Landing />)
-    expect(screen.getByText('Begin Your Northwoods Adventure >')).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Rental stays coming soon' }).length).toBeGreaterThan(0)
   })
 
   it('matches snapshot', () => {
@@ -64,10 +64,10 @@ describe('Landing Page', () => {
     expect(coelbren.length).toBeGreaterThanOrEqual(2)
   })
 
-  it('renders link to what-to-expect page', () => {
+  it('renders the coming-soon action to the stay page', () => {
     renderWithRouter(<Landing />)
-    const link = screen.getByText('Begin Your Northwoods Adventure >')
-    expect(link.closest('a')).toHaveAttribute('href', '/what-to-expect')
+    const link = screen.getAllByText('Rental stays coming soon')[0]
+    expect(link.closest('a')).toHaveAttribute('href', '/stay')
   })
 
   it('renders Weather component', () => {

@@ -122,6 +122,10 @@
   background: var(--color-paper);
 }
 
+.den-intro {
+  background: var(--color-shiitake);
+}
+
 .den-intro .section-marker,
 .northwoods-intro .section-marker,
 .stay-details .section-marker,
@@ -520,8 +524,6 @@
 
 .den-amenity-room {
   min-width: 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(246, 240, 223, 0.3);
 }
 
 .den-amenity-room > .asset-icon {
@@ -652,14 +654,15 @@
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(0.8rem, 2.4vw, 2.2rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
   align-items: start;
 }
 
 .gallery-tile {
   position: relative;
   display: block;
+  width: 100%;
   min-width: 0;
   padding: 0;
   color: var(--color-iron-ore);
@@ -673,8 +676,7 @@
 .gallery-tile img {
   display: block;
   width: 100%;
-  height: 100%;
-  min-height: 13rem;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   filter: saturate(0.88);
   transition: filter 220ms ease, transform 220ms ease;
@@ -696,17 +698,6 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-
-.gallery-tile-1 { grid-column: span 5; }
-.gallery-tile-2 { grid-column: span 3; margin-top: 4rem; }
-.gallery-tile-3 { grid-column: span 4; }
-.gallery-tile-4 { grid-column: span 3; margin-top: -1rem; }
-.gallery-tile-5 { grid-column: span 5; margin-top: 5rem; }
-.gallery-tile-1 img { min-height: 31rem; }
-.gallery-tile-2 img { min-height: 21rem; }
-.gallery-tile-3 img { min-height: 28rem; }
-.gallery-tile-4 img { min-height: 23rem; }
-.gallery-tile-5 img { min-height: 25rem; }
 
 .gallery-note {
   display: grid;
@@ -801,7 +792,7 @@
 }
 
 .northwoods-guide {
-  background: var(--color-moss);
+  background: var(--color-forest);
 }
 
 .northwoods-entry-list {
@@ -1265,6 +1256,31 @@
   color: rgba(23, 42, 36, 0.8);
 }
 
+.booking-coming-soon {
+  margin: 0;
+  color: var(--color-forest);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stay-alternate-bookings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: -0.75rem 0 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+}
+
+.stay-alternate-bookings a {
+  color: var(--color-forest);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
 .stay-hero > img {
   object-position: center 58%;
 }
@@ -1289,7 +1305,7 @@
   gap: clamp(2rem, 8vw, 9rem);
   padding: clamp(5rem, 9vw, 8rem) clamp(1.25rem, 8vw, 8rem);
   color: var(--color-paper);
-  background: var(--color-forest);
+  background: var(--color-moss);
 }
 
 .stay-moonrise h2 {
@@ -1419,6 +1435,10 @@
     grid-template-columns: 1fr;
   }
 
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .den-main-room-photos,
   .den-loft-photos {
     order: -1;
@@ -1505,40 +1525,8 @@
   }
 
   .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.4rem 0.75rem;
-  }
-
-  .gallery-tile-1,
-  .gallery-tile-2,
-  .gallery-tile-3,
-  .gallery-tile-4,
-  .gallery-tile-5 {
-    grid-column: auto;
-    margin-top: 0;
-  }
-
-  .gallery-tile-1,
-  .gallery-tile-4 {
-    grid-row: span 1;
-  }
-
-  .gallery-tile img,
-  .gallery-tile-1 img,
-  .gallery-tile-2 img,
-  .gallery-tile-3 img,
-  .gallery-tile-4 img,
-  .gallery-tile-5 img {
-    min-height: 14rem;
-  }
-
-  .gallery-tile:nth-child(3n) {
-    grid-column: 1 / -1;
-  }
-
-  .gallery-tile:nth-child(3n) img {
-    min-height: 19rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem 0.75rem;
   }
 
   .northwoods-entry-list,

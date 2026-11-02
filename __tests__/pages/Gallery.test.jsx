@@ -11,26 +11,34 @@ describe('Gallery', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Inside' }))
 
-    expect(screen.getByRole('button', { name: 'View Entering the heart of the house' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'View A table at the heart of the house' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'View The room that gathers everyone' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View The main living area, kitchen, and open loft' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View The kitchen and island countertop' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View The private bedroom in morning light' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View The open loft above the main living space' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View The bathroom interior' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'View The bookshelf corner' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'View Up toward the eaves' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'View A quiet corner above the main room' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View A quiet corner of the open loft' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'View Small signs of care' })).not.toBeInTheDocument()
   })
 
   it('opens and closes the lightbox for a new interior photograph', () => {
     renderWithRouter(<Gallery />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'View The bookshelf corner' }))
+    const trigger = screen.getByRole('button', { name: 'View The bookshelf corner' })
+    fireEvent.click(trigger)
 
     expect(screen.getByRole('dialog', { name: 'The bookshelf corner' })).toBeInTheDocument()
+    const closeButton = screen.getByRole('button', { name: 'Close' })
+    expect(closeButton).toHaveFocus()
     expect(document.body.style.overflow).toBe('hidden')
+
+    fireEvent.keyDown(window, { key: 'Tab' })
+    expect(closeButton).toHaveFocus()
 
     fireEvent.keyDown(window, { key: 'Escape' })
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
     expect(document.body.style.overflow).toBe('')
   })
 })

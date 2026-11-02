@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import {
   ArrowLink,
   AssetIcon,
+  AlternateBookingLinks,
+  BookingAction,
   CoelbrenLabel,
   Meta,
   PageFrame,
@@ -10,6 +12,7 @@ import {
   Quote,
   SectionMarker,
 } from '../components/site/SiteComponents'
+import { bookingLinks } from '../config/booking'
 import './PublicPages.scss'
 
 const imagePath = (name) => `/assets/images/${name}`
@@ -26,9 +29,8 @@ const PublicHero = ({ eyebrow, title, coelbren, description, image, alt, childre
       {children}
     </div>
     <div className='public-hero-foot'>
-      <span>46° 04' N / 89° 15' W</span>
       <span>Conover, Wisconsin</span>
-      <span>Private hospitality by invitation</span>
+      <span>A private cabin in the Northwoods</span>
     </div>
   </section>
 )
@@ -45,73 +47,58 @@ const amenities = [
     icon: 'pinecone.png',
     room: 'Kitchen',
     items: [
-      ['Refrigeration', 'Full-size refrigerator and freezer.'],
-      ['Oven', 'An electric range and oven for cooking and baking.'],
-      ['Microwave', 'A microwave for quick heating and cooking.'],
-      ['Dishwasher', 'Keep dishes clean without the hassle of hand washing.'],
-      ['Coffee maker', 'Brew fresh coffee to start your day.'],
-      ['Tea kettle', 'Boil water for tea or other hot beverages.'],
-      ['Toaster', 'Toast bread or other baked goods quickly and evenly.'],
+      ['Appliances', 'Refrigerator, electric range and oven, microwave, and dishwasher.'],
+      ['Coffee equipment', 'Coffee maker, filters, and grounds.'],
+      ['Cookware', 'Cookware is available for guest use.'],
     ],
   },
   {
     icon: 'moon.png',
     room: 'Living room',
     items: [
-      ['Bookshelf', 'Forget to bring a book? We\'ve got you covered.'],
-      ['Projector', 'Stream your favorite movies and shows on the wall.'],
-      ['Screen', 'If the wall\'s not your thing, use the screen instead.'],
-      ['DVD Collection', 'A selection of DVDs for your viewing pleasure.'],
-      ['Fiber Internet', 'High-speed Wi-Fi for all your online needs.'],
-      ['Playing Cards', 'Solitaire? Go Fish? The possibilities are endless.'],
-      ['Assorted Games', 'A variety of board games and puzzles.'],
-      ['Ceiling Fan', 'Keeps the living space cool and comfortable.'],
+      ['Books', 'A selection to enjoy during your stay.'],
+      ['Movie night', 'Projector and DVD player.'],
+      ['Forested views', 'Windows with views of the surrounding forest.'],
+      ['Keeping warm', 'A fireplace provides cozy indoor comfort.']
     ],
   },
   {
     icon: 'owl.png',
     room: 'Primary bedroom',
-    items: [
-      ['Bed', 'A queen-sized bed for long naps and restful nights.'],
-      ['Linens', 'High-quality bed linens for a comfortable night\'s sleep.'],
-      ['Pillows', 'Sweet dreams on soft and supportive pillows.'],
-      ['Storage', 'Nightstands next to the bed for personal items.'],
-      ['Shades', 'The room is as dark and as private as you need it to be.'],
-      ['Fans', 'Keep cool with overhead and portable circulation.'],
-    ],
+    items: [['Furnishings', 'Bedside tables, ceiling fan, and window shades.']],
   },
   {
     icon: 'great-horned-owl.png',
-    room: 'Loft',
-    items: [
-      ['Bed', 'A queen-sized bed for long naps and restful nights.'],
-      ['Linens', 'High-quality bed linens for a comfortable night\'s sleep.'],
-      ['Pillows', 'Sweet dreams on soft and supportive pillows.'],
-      ['Storage', 'Storage space beneath the bed for clothing.'],
-    ],
+    room: 'Open loft',
+    items: [['Furnishings', 'Bedside tables and a small reading nook beneath the eaves.']],
   },
   {
     icon: 'duck.png',
     room: 'Bathroom',
     items: [
-      ['Towels', 'Soft towels, hand towels, and washcloths.'],
-      ['Shower essentials', 'Body wash, shampoo, and conditioner.'],
-      ['Toilet Paper', 'Provided for your convenience.'],
+      ['Fixtures', 'Shower, sink and vanity, and toilet.'],
+      ['Amenities', 'Towels and toiletries are provided.']
+    ],
+  },
+  {
+    icon: 'acorn.png',
+    room: 'Guest supplies',
+    items: [
+      ['Laundry', 'Laundry is available for guest use.'],
+      ['Linens & towels', 'Bed linens and towels are provided.'],
+      ['Games', 'Games and cards to enjoy during your stay.'],
+      ['DVDs', 'A selection for movie night.'],
     ],
   },
   {
     icon: 'raven.png',
     room: 'Outside',
     items: [
-      ['Fire Pit', 'A cozy fire pit for evening gatherings and marshmallow roasting.'],
-      ['Patio', 'A comfortable outdoor space for relaxing.'],
-      ['Adirondack Chairs', 'Enjoy your morning coffee or evening libations from the patio.'],
-      ['Grill', 'A convenient gas grill for outdoor cooking.'],
-      ['Lighting', 'Outdoor lighting for evening activities and ambiance.'],
-      ['Stargazing', 'A perfect spot for observing the night sky away from city lights.'],
-      ['The woods', 'A serene forested area surrounding the property.'],
-      ['Wildlife', 'Turkeys, deer, and other local wildlife will often pay you a visit.'],
-      ['Lake Access', 'Pioneer Lake\'s public dock is a short drive away.'],
+      ['Outdoor spaces', 'Covered porch and open back patio.'],
+      ['Fire and seating', 'Fire pit with stump seating.'],
+      ['Grill', 'Outdoor grill.'],
+      ['Natural surroundings', 'Views of the surrounding forest and wildlife.'],
+      ['The Door in the Woods', 'Ponder the meaning of the mysterious door and its place amidst the trees.']
     ],
   },
 ]
@@ -127,40 +114,40 @@ export const TheDen = () => (
         eyebrow='A closer look'
         title='The Den'
         coelbren='The Den'
-        description="An inviting space for up to six people, with room to gather, rest, and let the woods set the pace."
+        description='A Northwoods cabin for up to four guests, with a private bedroom, an open loft, and room to let the woods set the pace.'
         image='druids_den_main_room_from_living_area.jpeg'
         alt='The open-plan main room with its living room, kitchen, and loft'
       >
         <Link to='/gallery' className='button button-light'>See the photo journal -&gt;</Link>
       </PublicHero>
 
-      <section className='den-intro page-section'>
-        <SectionMarker eyebrow='The short version' title='All of the amenities. None of the distractions.' />
-        <div className='den-intro-copy'>
-          <p className='large-copy'>Nestled on 5½ secluded acres of private forest in Conover, The Druids Den is a basecamp for both stillness and getting out of the house.</p>
-          <p>The cabin sleeps up to six: two in the primary bedroom, two in the loft, and up to two more on an air mattress in the living room. There is a full kitchen, radiant in-floor heating, an indoor gas fireplace, a projector, laundry, a covered porch, and a fire pit waiting out back.</p>
-          <ArrowLink to='/northwoods'>See what is beyond the driveway</ArrowLink>
-        </div>
-      </section>
-
       <section className='den-facts'>
         <div className='den-facts-label'>
           <AssetIcon name='doe.png' alt='' />
-          <span>At a glance</span>
+          <span>Cabin at a glance</span>
         </div>
         <dl>
-          <DetailRow label='Sleeps'>Six guests across bedroom, loft, and living room</DetailRow>
-          <DetailRow label='Grounds'>5½ acres of private forest</DetailRow>
-          <DetailRow label='Heat'>Radiant in-floor heating and gas fireplace</DetailRow>
-          <DetailRow label='Outside'>Covered porch, back patio, grill, and fire pit</DetailRow>
-          <DetailRow label='Connection'>Fiber internet, though cell reception that can be spotty</DetailRow>
+          <DetailRow label='Maximum occupancy'>Four guests.</DetailRow>
+          <DetailRow label='Layout'>One private bedroom and an open loft.</DetailRow>
+          <DetailRow label='Bathroom'>One bathroom.</DetailRow>
+          <DetailRow label='Setting'>A woodland cabin with nearby public lake access.</DetailRow>
+          <DetailRow label='Comfort'>Radiant in-floor heat, gas fireplace, and fiber Wi-Fi.</DetailRow>
+          <DetailRow label='Parking'>Up to four vehicles, including trailers, on the driveway or designated parking pad. Winter snow can reduce usable space.</DetailRow>
         </dl>
+      </section>
+
+      <section className='den-intro page-section'>
+        <SectionMarker eyebrow='The short version' title='Useful comforts, surrounded by woods.' />
+        <div className='den-intro-copy'>
+          <p className='large-copy'>The Druids Den sits on 5½ acres of private forest in Conover, Wisconsin: a place to slow down, gather, and head out into the Northwoods.</p>
+          <ArrowLink to='/northwoods'>Read the Northwoods field guide</ArrowLink>
+        </div>
       </section>
 
       <section className='den-main-room page-section'>
         <div className='den-main-room-copy'>
           <SectionMarker eyebrow='The heart of the house' title='Warmth and gathering space.' />
-          <p>The kitchen, dining table, and living room all meet beneath the vaulted ceiling. It is the place for shared breakfasts, a table full of cards, or a late afternoon with nowhere pressing to be.</p>
+          <p>The kitchen, dining table, and living room all meet beneath the vaulted ceiling. It's an easy place to gather for a shared meal, a game of cards, or a lazy afternoon with nowhere to be.</p>
         </div>
         <div className='den-main-room-photos'>
           <PhotoFigure
@@ -181,71 +168,45 @@ export const TheDen = () => (
       <section className='den-sleep page-section'>
         <PhotoFigure
           src={imagePath('druids_den_primary_bedroom.jpeg')}
-          alt='The sunlit primary bedroom with green walls, a wood ceiling, and a double bed'
+          alt='The sunlit private bedroom with green walls, a wood ceiling, and forest-facing windows'
           caption='The primary bedroom / light through the trees'
           className='den-sleep-photo'
         />
         <div className='den-sleep-copy'>
           <SectionMarker eyebrow='Sleeping arrangements' title='Everyone gets a corner.' />
-          <p>The primary bedroom holds two. The loft holds two more and feels especially good on rainy afternoons. The living room can take an air mattress for the final two guests, if needed.</p>
-          <Link to='/guide#arrival' className='text-link'>Already invited? Read the guest guide -&gt;</Link>
+          <p>The private bedroom features a queen bed, windows with drawable shades, and forest-facing views.</p>
+          <Link to='/guide#arrival' className='text-link'>Read practical arrival information -&gt;</Link>
         </div>
       </section>
 
       <section className='den-loft page-section'>
         <div className='den-loft-copy'>
           <SectionMarker eyebrow='A second floor' title='The loft, above it all.' invert />
-          <p>Upstairs, two beds settle beneath the eaves. The loft stays connected to the rest of the house while holding onto the quiet feeling of its own small retreat.</p>
+          <p>Open to the main living area and reachable by stairs, the open loft also has a queen bed.</p>
         </div>
         <div className='den-loft-photos'>
           <PhotoFigure
             src={imagePath('druids_den_loft_from_stairway.jpeg')}
-            alt='The loft bedroom viewed from the stairway'
-            caption='Up toward the eaves'
+            alt='The open loft above the main living area, viewed from the stairway'
+            caption='The open loft'
             className='den-loft-stair-photo'
           />
           <PhotoFigure
             src={imagePath('druids_den_loft_from_corner.jpeg')}
-            alt='The loft bedroom with a patterned quilt and forest-facing window'
+            alt='A view across the open loft toward a forest-facing window'
             caption='A quiet corner above the main room'
             className='den-loft-corner-photo'
           />
         </div>
       </section>
 
-      <section className='den-rooms'>
-        <div className='den-rooms-heading'>
-          <span className='section-number'>The rooms</span>
-          <h2>Useful things, well placed.</h2>
-        </div>
-        <div className='den-room-showcase'>
-          <PhotoFigure
-            src={imagePath('druids_den_living_room_with_bookshelf.jpeg')}
-            alt='The living room beneath the vaulted wood ceiling and bookshelf'
-            caption='The bookshelf corner'
-            className='den-room-detail-photo'
-          />
-          <div className='den-room-list'>
-            <article>
-              <AssetIcon name='pinecone.png' alt='' />
-              <h3>Kitchen</h3>
-              <p>A full kitchen with the essentials for breakfast, lunch, and a long dinner that nobody wants to hurry.</p>
-            </article>
-            <article>
-              <AssetIcon name='moon.png' alt='' />
-              <h3>Living room</h3>
-              <p>Settle in by the gas fireplace, put on a DVD, and let the projector turn a blank wall into movie night.</p>
-            </article>
-            <article>
-              <AssetIcon name='raven.png' alt='' />
-              <h3>Outside</h3>
-              <p>The covered porch, back patio, gas grill, and fire pit extend the cabin into the trees. Deer and turkeys are regular neighbors.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
       <section className='den-detail'>
+        <PhotoFigure
+          src={imagePath('druids_den_living_room_with_bookshelf.jpeg')}
+          alt='Books on the living-room shelf beneath the vaulted wood ceiling'
+          caption='Bookshelf corner'
+          className='den-detail-photo'
+        />
         <PhotoFigure
           src={imagePath('druids_den_autumn_lantern.jpg')}
           alt='A lantern hanging from an iron hook beside a tree, above fallen maple leaves'
@@ -263,7 +224,7 @@ export const TheDen = () => (
       <section className='den-amenities' id='amenities'>
         <div className='den-amenities-heading'>
           <SectionMarker eyebrow='A practical inventory' title='Amenities by room.' />
-          <p>Everything you need for an enjoyable, memorable stay.</p>
+          <p>A closer look at the practical comforts, room by room.</p>
         </div>
         <div className='den-amenities-grid'>
           {amenities.map(({ icon, room, items }) => (
@@ -281,8 +242,8 @@ export const TheDen = () => (
       <section className='den-season page-section'>
         <div className='den-season-copy'>
           <SectionMarker eyebrow='Four seasons' title='The Den changes with the trees.' />
-          <p>Spring can be muddy. Summer brings water, long light, and mosquitoes. Fall is all foliage and fire. Winter asks for good boots, warm layers, and AWD or 4WD.</p>
-          <p>Bring outdoor footwear, layers, insect repellent, sunscreen, and your favorite beverages. The private road is maintained and plowed, but winter driving is still winter driving.</p>
+          <p>Spring can be muddy. Summer brings long light. Fall is all foliage and fire. Winter brings snow and silence.</p>
+          <p>Bring outdoor footwear and layers. The Northwoods field guide links to Wisconsin road and county trail information.</p>
           <ArrowLink to='/northwoods'>Read the seasonal field notes</ArrowLink>
         </div>
         <PhotoFigure
@@ -295,37 +256,38 @@ export const TheDen = () => (
 
       <section className='public-closing-band'>
         <Quote cite='The Druids Den, in its natural habitat'>Welcome to the woods. Welcome to The Druids Den.</Quote>
-        <ArrowLink to='/stay'>Ask about a private stay</ArrowLink>
+        <ArrowLink to='/stay'>Explore stay details</ArrowLink>
       </section>
     </main>
   </PageFrame>
 )
 
 const galleryImages = [
-  { src: 'druids_den_autumn_evening_fire_pit.jpg', label: 'The house at dusk', category: 'Outside' },
-  { src: 'druids_den_rear_view_dusk.jpeg', label: 'The Den from behind at dusk', category: 'Outside' },
-  { src: 'druids_den_welcome_sign.jpg', label: 'The way in', category: 'Around the Den' },
+  { src: 'druids_den_rear_view_dusk.jpeg', label: 'The cabin in its wooded clearing', category: 'Outside' },
+  { src: 'druids_den_main_room_from_living_area.jpeg', label: 'The main living area, kitchen, and open loft', category: 'Inside' },
+  { src: 'druids_den_kitchen-interior.jpg', label: 'The kitchen and island countertop', category: 'Inside' },
+  { src: 'druids_den_primary_bedroom.jpeg', label: 'The private bedroom in morning light', category: 'Inside' },
+  { src: 'druids_den_loft_from_stairway.jpeg', label: 'The open loft above the main living space', category: 'Inside' },
+  { src: 'druids_den_bathroom-interior.jpg', label: 'The bathroom interior', category: 'Inside' },
+  { src: 'druids_den_fire_pit_autumn.jpg', label: 'The fire pit among autumn color', category: 'Outside' },
+  { src: 'druids_den_maple_sun_through_trees.jpg', label: 'Autumn light through the trees', category: 'Around the Den' },
+  { src: 'druids_den_welcome_sign.jpg', label: 'The welcome sign', category: 'Around the Den' },
   { src: 'druids_den_into_the_woods_sign.png', label: 'Into the woods', category: 'Around the Den' },
   { src: 'evening-shot-of-welcome-sign.jpeg', label: 'The sign after dark', category: 'Around the Den' },
-  { src: 'door_in_the_wall.jpeg', label: '"The door in the wall"', category: 'Outside' },
-  { src: 'druids_den_primary_bedroom.jpeg', label: 'Primary bedroom in morning light', category: 'Inside' },
-  { src: 'druids_den_living_area_from_hallway.jpeg', label: 'Entering the heart of the house', category: 'Inside' },
-  { src: 'druids_den_main_room_from_dining_area.jpeg', label: 'A table at the heart of the house', category: 'Inside' },
-  { src: 'druids_den_main_room_from_living_area.jpeg', label: 'The room that gathers everyone', category: 'Inside' },
+  { src: 'door_in_the_wall.jpeg', label: 'The door in the wall', category: 'Around the Den' },
+  { src: 'druids_den_living_area_from_hallway.jpeg', label: 'The living area viewed from the hallway', category: 'Inside' },
+  { src: 'druids_den_main_room_from_dining_area.jpeg', label: 'The dining table and main living area', category: 'Inside' },
   { src: 'druids_den_living_room_with_bookshelf.jpeg', label: 'The bookshelf corner', category: 'Inside' },
-  { src: 'druids_den_loft_from_stairway.jpeg', label: 'Up toward the eaves', category: 'Inside' },
-  { src: 'druids_den_loft_from_corner.jpeg', label: 'A quiet corner above the main room', category: 'Inside' },
+  { src: 'druids_den_loft_from_corner.jpeg', label: 'A quiet corner of the open loft', category: 'Inside' },
   { src: 'druids_den_summer_daisies_evening.jpg', label: 'The long approach', category: 'Outside' },
   { src: 'druids_den_mushroom_on_tree.jpg', label: 'A small resident', category: 'Around the Den' },
   { src: 'druids_den_fawn_and_pinecone_decor.jpeg', label: 'Small signs of care', category: 'Around the Den' },
   { src: 'druids_den_summer_sun_in_foliage.jpg', label: 'Summer through the trees', category: 'Seasons' },
   { src: 'pink-sunset-at-druids-den.jpeg', label: 'Pink sky over the Den', category: 'Seasons' },
   { src: 'morning_moonrise_at_druids_den.jpeg', label: 'Moonrise over the Den', category: 'Seasons' },
-  { src: 'renting-a-boat-and-riding-the-chain-of-lakes.jpeg', label: 'The Chain of Lakes', category: 'Northwoods' },
+  { src: 'renting-a-boat-and-riding-the-chain-of-lakes.jpeg', label: 'A boat on the regional Eagle River Chain of Lakes', category: 'Northwoods' },
   { src: 'druids_den_fall_foliage.jpg', label: 'The canopy in October', category: 'Seasons' },
-  { src: 'druids_den_maple_sun_through_trees.jpg', label: 'Low sun in the maples', category: 'Seasons' },
   { src: 'druids_den_autumn_lantern.jpg', label: 'Light for the path', category: 'Around the Den' },
-  { src: 'druids_den_fire_pit_autumn.jpg', label: 'The fire pit in October', category: 'Outside' },
   { src: 'druids_den_winter_driveway.jpg', label: 'The road in winter', category: 'Seasons' },
   { src: 'druids_den_winter_snowman.jpg', label: 'A winter visitor', category: 'Around the Den' },
   { src: 'fire-pit-closeup.jpeg', label: 'The fire-pit circle', category: 'Outside' },
@@ -340,22 +302,33 @@ const galleryImages = [
 export const Gallery = () => {
   const [filter, setFilter] = useState('All')
   const [activeImage, setActiveImage] = useState(null)
+  const triggerRef = useRef(null)
+  const closeButtonRef = useRef(null)
   const categories = ['All', ...new Set(galleryImages.map((image) => image.category))]
   const visibleImages = filter === 'All' ? galleryImages : galleryImages.filter((image) => image.category === filter)
 
   useEffect(() => {
     if (!activeImage) return undefined
 
-    const closeOnEscape = (event) => {
-      if (event.key === 'Escape') setActiveImage(null)
+    const handleDialogKeydown = (event) => {
+      if (event.key === 'Escape') {
+        setActiveImage(null)
+      } else if (event.key === 'Tab') {
+        event.preventDefault()
+        closeButtonRef.current?.focus()
+      }
     }
+    const trigger = triggerRef.current
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', closeOnEscape)
+    closeButtonRef.current?.focus()
+    window.addEventListener('keydown', handleDialogKeydown)
 
     return () => {
       document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', closeOnEscape)
+      window.removeEventListener('keydown', handleDialogKeydown)
+      trigger?.focus()
+      triggerRef.current = null
     }
   }, [activeImage])
 
@@ -384,7 +357,10 @@ export const Gallery = () => {
           </div>
           <div className='gallery-grid'>
             {visibleImages.map((image, index) => (
-              <button className={`gallery-tile gallery-tile-${(index % 5) + 1}`} type='button' key={image.src} onClick={() => setActiveImage(image)} aria-label={`View ${image.label}`}>
+              <button className='gallery-tile' type='button' key={image.src} onClick={(event) => {
+                triggerRef.current = event.currentTarget
+                setActiveImage(image)
+              }} aria-label={`View ${image.label}`}>
                 <img src={imagePath(image.src)} alt={image.label} loading={index < 4 ? 'eager' : 'lazy'} />
                 <span>{image.label}</span>
               </button>
@@ -399,7 +375,7 @@ export const Gallery = () => {
       </main>
       {activeImage && (
         <div className='lightbox' role='dialog' aria-modal='true' aria-label={activeImage.label} onClick={(event) => event.target === event.currentTarget && setActiveImage(null)}>
-          <button className='lightbox-close' type='button' onClick={() => setActiveImage(null)}>Close <span aria-hidden='true'>x</span></button>
+          <button className='lightbox-close' type='button' ref={closeButtonRef} onClick={() => setActiveImage(null)}>Close <span aria-hidden='true'>x</span></button>
           <figure>
             <img src={imagePath(activeImage.src)} alt={activeImage.label} />
             <figcaption><span>{activeImage.category}</span>{activeImage.label}</figcaption>
@@ -412,39 +388,69 @@ export const Gallery = () => {
 
 const localGuideSections = [
   {
-    icon: 'buck.png',
-    title: 'Woods & trails',
-    text: 'Hike, bike, ride, or meander the back lot until the trees rearrange your thoughts. Bring sturdy shoes: mud and snow have their own opinions.',
+    icon: 'duck.png',
+    title: 'Lakes & public access',
+    text: 'The Eagle River Chain of Lakes links 28 lakes for boating, fishing, and paddling. Nearby public lake access offers a way onto the water.',
     links: [
-      { label: 'Vilas County hiking', href: 'https://www.vilascountywi.gov/' },
-      { label: 'Biking the northwoods', href: 'https://biketheheart.org/bike-trail-map/' },
+      { label: 'Eagle River Chain of Lakes', href: 'https://northwoodswisconsin.com/northern-wisconsin-recreation/eagle-river-chain-of-lakes/' },
+      { label: 'Wisconsin boating information', href: 'https://dnr.wisconsin.gov/topic/Boat' },
     ],
   },
   {
-    icon: 'duck.png',
-    title: 'Lakes & water',
-    text: 'Eagle River is the local hub for the Chain of 28 Lakes. Pioneer Lake, North Twin, and South Twin are even more nearby options for time on the water.',
+    icon: 'buck.png',
+    title: 'Hiking & biking',
+    text: 'Vilas County has public hiking routes and local bike trails, including the Sucker Springs Mountain Bike Trail and the Conover-Phelps Trail.',
     links: [
-      { label: 'Explore the Eagle River Chain', href: 'https://northwoodswisconsin.com/northern-wisconsin-recreation/eagle-river-chain-of-lakes/' },
-      { label: 'Rentals made easy at Boat Sport', href: 'https://www.boatsport.com/' },
+      { label: 'Vilas County hiking trails', href: 'https://www.vilascountywi.gov/departments/services/parks_and_recreation/trails___recreational_opportunities/hunter_hiking_trails.php' },
+      { label: 'Vilas County bike trails', href: 'https://www.vilascountywi.gov/departments/services/parks_and_recreation/trails___recreational_opportunities/bike_trails.php' },
     ],
   },
   {
     icon: 'turkey.png',
-    title: 'Supper club season',
-    text: 'A Friday night fish fry is one of the region\'s oldest and most dependable rituals. The Craftsman and Brew\'s Pub are good places to begin.',
+    title: 'Restaurants & supper clubs',
+    text: 'Local recommendations include Honey Bear Inn for a fish fry, Brew\'s Pub in Land O\' Lakes, and Twilight Supper Club for dinner.',
     links: [
+      { label: 'Honey Bear Inn in Eagle River', href: 'https://share.google/6bzLDlQTHICa1SUmb' },
+      { label: 'Brew\'s Pub in Land O\' Lakes', href: 'https://share.google/K9P3V8jEzpzWnVDOi' },
+      { label: 'Twilight Supper Club', href: 'https://twilightsupperclub.com/' },
+      { label: 'Buckshot\'s Saloon & Eatery', href: 'https://share.google/PQfG0GTQuuDx6SQsA' },
       { label: 'The Craftsman American Tavern', href: 'https://www.thecraftsmanamericantavern.com/' },
-      { label: "Brew's Pub", href: 'https://www.facebook.com/brewspublando/' },
+    ],
+  },
+  {
+    icon: 'pinecone.png',
+    title: 'Groceries & supplies',
+    text: "Trig's and Pick 'n Save have Eagle River grocery locations for groceries and trip supplies. Or visit the nearby Energy Mart for convenience items.",
+    links: [
+      { label: "Trig's of Eagle River", href: 'https://share.google/fPbC19bTIA7E3PwqG' },
+      { label: "Pick 'n Save of Eagle River", href: 'https://share.google/QSnc8R6dxEXQBfORp' },
+      { label: "Energy Mart of Conover", href: 'https://share.google/mjIxj5iv9unMxjJPM' },
     ],
   },
   {
     icon: 'great-horned-owl.png',
-    title: 'When the weather turns',
-    text: 'Winter brings snowmobiling, ice fishing, cross-country skiing, and clear nights. Rain brings the projector, board games, and permission to stay in.',
+    title: 'Winter recreation',
+    text: 'Vilas County has snowmobile trails and the Pioneer Creek cross-country ski trail in Conover. Check road conditions before winter travel.',
+    links: [
+      { label: 'Wisconsin 511 road conditions', href: 'https://511wi.gov/' },
+      { label: 'Vilas County snowmobile trails', href: 'https://www.vilascountywi.gov/departments/services/parks_and_recreation/trails___recreational_opportunities/snowmobile_trails.php' },
+      { label: 'Pioneer Creek ski trails', href: 'https://www.vilascountywi.gov/departments/services/parks_and_recreation/trails___recreational_opportunities/ski_trails.php' },
+    ],
+  },
+  {
+    icon: 'doe.png',
+    title: 'ATV & UTV trails',
+    text: 'Vilas County ATV and UTV routes connect communities around the county, including Conover.',
+    links: [
+      { label: 'Vilas County ATV and UTV trails', href: 'https://www.vilascountywi.gov/departments/services/parks_and_recreation/trails___recreational_opportunities/atv_trails.php' },
+    ],
+  },
+  {
+    icon: 'owl.png',
+    title: 'Regional attractions',
+    text: 'Winter events at the World Championship Derby Complex bring snowmobile racing to Eagle River.',
     links: [
       { label: 'World Championship Derby Complex', href: 'https://derbycomplex.com/' },
-      { label: 'Vilas County snowmobile trails', href: 'https://www.vilascountywi.gov/departments/services/parks_and_recreation/trails___recreational_opportunities/snowmobile_trails.php' },
     ],
   },
 ]
@@ -457,7 +463,7 @@ export const Northwoods = () => (
         eyebrow='A field guide for the curious'
         title={<>The <span className='hero-title-word'>Northwoods</span></>}
         coelbren='The Northwoods'
-        description='Water, woods, supper clubs—the places where new memories await.'
+        description='Water, woods, supper clubs—the places new memories await.'
         image='druids_den_summer_sun_in_foliage.jpg'
         alt='Sunlight filtering through summer foliage near the Den'
       />
@@ -483,21 +489,6 @@ export const Northwoods = () => (
               </div>
             </article>
           ))}
-        </div>
-      </section>
-      <section className='northwoods-towns page-section'>
-        <div className='northwoods-towns-image'>
-          <img className='northwoods-towns-photo' src={imagePath('pink-sunset-at-druids-den.jpeg')} alt='Pink sunset above the trees around the Den' loading='lazy' />
-          <AssetIcon name='raven.png' alt='' />
-        </div>
-        <div className='northwoods-towns-copy'>
-          <SectionMarker eyebrow='The useful towns' title='Know where to stock up.' />
-          <dl>
-            <DetailRow label='Conover'>The Den's home base: small, quiet, close to the water.</DetailRow>
-            <DetailRow label='Eagle River'>15 minutes south for groceries, dining, events, and supplies.</DetailRow>
-            <DetailRow label='Michigan U.P.'>About 20 minutes north for waterfalls, trails, and a change of state.</DetailRow>
-          </dl>
-          <p className='small-note'>Pick 'n Save or Trig's in Eagle River make for a proper grocery run. Energy Mart is closer for gas, drinks, meat, and the thing you forgot.</p>
         </div>
       </section>
       <section className='northwoods-neighbors'>
@@ -633,58 +624,36 @@ export const Traditions = () => (
 )
 
 export const Stay = () => {
-  const isLodgifyEnabled = import.meta.env.VITE_LODGIFY_ENABLED === 'true'
   return (
     <PageFrame className='public-page-stay'>
-      <Meta title='Stay | The Druids Den' description='Ask about a private, invitation-based stay at The Druids Den in Conover, Wisconsin. Public booking is not open yet.' />
+      <Meta title='Stay | The Druids Den' description='Rental stays at The Druids Den, a private Northwoods cabin in Conover, Wisconsin, are coming soon.' />
       <main>
         <section className='stay-hero'>
           <div className='stay-hero-copy'>
-            <span className='public-hero-eyebrow'>For the moment, by invitation</span>
-            <CoelbrenLabel>A private stay</CoelbrenLabel>
+            <span className='public-hero-eyebrow'>A Northwoods cabin</span>
+            <CoelbrenLabel>Stay at the Den</CoelbrenLabel>
             <h1>Come for the quiet.</h1>
-            <p>The Druids Den is in a hospitality beta for friends, family, and invited guests while we learn how to make the best stay possible.</p>
-            <a href='mailto:grovekeeper@druidsdenwi.com?subject=Private%20stay%20inquiry' className='button button-dark'>Start an inquiry -&gt;</a>
+            <p>{bookingLinks.length ? 'Booking information is available from the listings below.' : 'Rental stays are coming soon. Booking information will be available here.'}</p>
+            {bookingLinks.length > 0 && (
+              <>
+                <BookingAction className='button button-light' />
+                <AlternateBookingLinks />
+              </>
+            )}
+            <a href='mailto:grovekeeper@druidsdenwi.com?subject=General%20Druids%20Den%20inquiry' className='text-link'>General questions? Email the owners</a>
           </div>
           <img src={imagePath('sunset-fire-pit.jpeg')} alt='The fire pit and trees at sunset around The Druids Den' />
-        </section>
-        <section className='stay-details page-section'>
-          <SectionMarker eyebrow='What to expect' title='A simple conversation first.' />
-          <div className='stay-details-copy'>
-            <p className='large-copy'>At this time, there's no public calendar or instant booking. Instead, reach out and tell us who's coming, when you're thinking, and the kind of time you want to have.</p>
-            <dl>
-              <DetailRow label='Current model'>Private and invited stays</DetailRow>
-              <DetailRow label='The cabin'>Sleeps up to six guests</DetailRow>
-              <DetailRow label='The ask'>Respect the woods, the neighbors, and the house</DetailRow>
-              <DetailRow label='Next step'>Contact Ryan and Lacey to start the conversation</DetailRow>
-            </dl>
-          </div>
         </section>
         <section className='stay-moonrise'>
           <div>
             <span className='section-number'>After dark / before coffee</span>
             <h2>Let the woods set the pace.</h2>
             <p>Some of the Den's best hours happen when the fire is low, the moon is up, and there's nowhere else you need to be.</p>
+            <ArrowLink to='/the-den'>Explore the cabin</ArrowLink>
           </div>
           <img src={imagePath('morning_moonrise_at_druids_den.jpeg')} alt='The moon rising above the trees at The Druids Den' loading='lazy' />
         </section>
-        <section className='stay-inquiry'>
-          <div>
-            <AssetIcon name='acorn.png' alt='' />
-            <span className='section-number'>Private-stay inquiry</span>
-            <h2>Tell us a little about your stay.</h2>
-          </div>
-          <div>
-            <p>We'll reply with the details that make sense for your dates, group, and season. We'll share the address and arrival information once your stay is confirmed.</p>
-            <a href='mailto:grovekeeper@druidsdenwi.com?subject=Private%20stay%20inquiry' className='button button-light'>Email the keepers -&gt;</a>
-          </div>
-        </section>
-      {isLodgifyEnabled && <section className='future-booking-slot page-section' aria-label='Future booking area'>
-          <span className='section-number'>Reserved for a future chapter</span>
-          <h2>A future Lodgify booking area will live here.</h2>
-          <p>When public booking is the right next step, this space can hold an embedded Lodgify widget without changing the rest of the page. For now, there is nothing to book online.</p>
-        </section>}
       </main>
     </PageFrame>
-  )  
+  )
 }

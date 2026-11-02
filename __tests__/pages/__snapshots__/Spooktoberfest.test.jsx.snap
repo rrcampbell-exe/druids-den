@@ -5,7 +5,7 @@ exports[`Spooktoberfest Page > matches snapshot 1`] = `
   class="public-page spooktoberfest-page"
 >
   <header
-    class="site-header "
+    class="site-header"
   >
     <a
       aria-label="The Druids Den home"
@@ -101,7 +101,7 @@ exports[`Spooktoberfest Page > matches snapshot 1`] = `
         data-discover="true"
         href="/stay"
       >
-        Plan a private stay
+        Rental stays coming soon
       </a>
     </nav>
   </header>
@@ -330,7 +330,7 @@ exports[`Spooktoberfest Page > matches snapshot 1`] = `
               </figcaption>
             </figure>
             <p>
-              The cabin can sleep six naturally (two in the primary bedroom, two in the loft, and two on the air mattress), but depending on the number of RSVPs per night, we may have to get cozy with additional air mattresses set up in the space.
+              The cabin accommodates up to four guests, with one private bedroom and an open loft. Coordinate any event lodging plans with the hosts.
             </p>
             <p>
               Alternatively, you're welcome to bring a tent and camp on the land. Please let us know if you plan to do this so we can get a better feel for how to set up the cabin interior to support those who choose to sleep indoors.
@@ -538,7 +538,7 @@ exports[`Spooktoberfest Page > matches snapshot 1`] = `
       class="site-footer-bottom"
     >
       <span>
-        Private hospitality by invitation
+        A private cabin in Conover, Wisconsin
       </span>
       <span>
         ©
