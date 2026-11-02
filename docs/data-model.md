@@ -49,7 +49,7 @@ The present application does not uniformly centralize this filter in Prisma midd
 - Reservation submission currently uses a two-night minimum and a $150 nightly estimate. Pricing is recalculated server-side in `api/_utils/pricing.js`.
 - Reservation date overlap is checked in the handler against non-deleted pending and approved reservations.
 - Server sanitization constrains input formats, guest counts, and text lengths.
-- The public product capacity is six guests, but the current reservation sanitizer permits a larger raw adult/child total. Preserve the owner-confirmed public capacity when reviewing reservation validation changes.
+- The current maximum occupancy is four guests. Client validation, server sanitization, and owner reservation updates enforce the same limit.
 
 These are application constraints, not database constraints. Update this document and tests whenever their source of truth changes.
 

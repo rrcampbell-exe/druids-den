@@ -28,7 +28,7 @@ flowchart LR
 | Route | Access model | Purpose |
 | --- | --- | --- |
 | `/`, `/the-den`, `/what-to-expect`, `/gallery`, `/northwoods`, `/story`, `/stay`, `/traditions` | Public | Marketing, cabin, regional, and traditions content. |
-| `/guide` | Public implementation; invited-guest intent | General guest information only. It must not contain private details. |
+| `/guide` | Public implementation | General guest information only. It must not contain private details. |
 | `/spooktoberfest` | Passcode gate | Event-specific content protected by a server-validated passcode flow. |
 | `/reservations` | Approved Clerk account | Reservation request form. |
 | `/dashboard` | Approved `OWNER` or `ADMIN` account | Reservation, guest, and reporting operations. |

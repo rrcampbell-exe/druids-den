@@ -27,13 +27,17 @@ order, then maps local overrides to the runtime variable names used by Vercel.
 | --- | --- | --- |
 | `VITE_CLERK_PUBLISHABLE_KEY` and optional `VITE_LOCAL_CLERK_PUBLISHABLE_KEY` | Clerk client authentication | Browser-visible. |
 | `VITE_WEATHER_API_KEY` | Weather widget | Browser-visible. |
-| `VITE_GUIDE_*` | Guest-guide placeholders | Browser-visible. Never use for private address, Wi-Fi, or access data. |
+| `VITE_AIRBNB_BOOKING_URL` and `VITE_VRBO_BOOKING_URL` | Optional verified property-specific listing URLs | Browser-visible; use only public listing destinations. |
 | `DATABASE_URL` and optional `PRISMA_DATABASE_URL` | PostgreSQL and optional Prisma Accelerate connection | Server-only. |
 | `DEV_DATABASE_URL` and optional `DEV_PRISMA_DATABASE_URL` | Explicit local database overrides | Server-only. |
 | Clerk, Resend, and passcode secrets | Authentication, webhooks, email, and event gate | Server-only. |
 
-Read [content and privacy](ai/content-and-privacy.md) before configuring values.
-In particular, the `VITE_` prefix does not make a value private.
+Do not configure private address, Wi-Fi, arrival, access, or guest-support
+details as Vite variables. Read [content and privacy](ai/content-and-privacy.md)
+before configuring values.
+`vite.config.js` explicitly allowlists the browser-visible variables in the
+table above. Review public visibility before adding another variable to that
+allowlist; the `VITE_` prefix does not make a value private.
 
 ## Database Workflow
 
