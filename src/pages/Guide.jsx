@@ -43,7 +43,7 @@ export const Guide = () => (
 
       <div className='guide-content'>
         <GuideSection id='wifi' index='01' title='Wi-Fi' icon='01-constellation.png' className='guide-section-wifi'>
-          <p className='guide-lead'>Find the Wi-Fi network name and password in your reservation arrival information and in the cabin. You can also find it posted on the refrigerator and in the loft.</p>
+          <p className='guide-lead'>Find the Wi-Fi network name and password in your reservation arrival information and in the cabin on the refrigerator and in the loft.</p>
           <p className='guide-lead'>Cell reception can be spotty. Download anything you need before heading into the woods.</p>
         </GuideSection>
 
@@ -62,7 +62,7 @@ export const Guide = () => (
           </div>
         </GuideSection>
 
-        <GuideSection id='high-water' index='03' title='High-water alarm' icon='duck.png'>
+        <GuideSection id='high-water' index='03' title='High-water alarm' icon='owl.png'>
           <p className='guide-lead'>If the septic system's high-water alarm sounds, follow these steps.</p>
           <ol className='guide-checkout-list'>
             <li><span>01</span>Find the wall-mounted alarm beneath the NTI boilers in the utility room.</li>
@@ -165,7 +165,7 @@ export const Guide = () => (
           </div>
         </GuideSection>
 
-        <GuideSection id='recreation' index='11' title='Outdoor recreation rules' icon='buck.png'>
+        <GuideSection id='recreation' index='11' title='Outdoor recreation rules' icon='turkey.png'>
           <p className='guide-lead'>Use current Wisconsin DNR guidance for burning, hunting, fishing, boating, snowmobiling, and ATV/UTV use. Rules and restrictions can change.</p>
           <div className='guide-explore-links'>
             <ArrowLink href='https://dnr.wisconsin.gov/topic/forestfire/permits'>Burning permits and fire conditions</ArrowLink>
