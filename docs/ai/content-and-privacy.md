@@ -14,7 +14,7 @@ When this document conflicts with promotional convenience, privacy wins.
 | --- | --- | --- |
 | Public | Yes, when accurate | The Druids Den, Conover, Wisconsin, Northwoods context, general amenities, public inquiry method, owner-confirmed stay terms. |
 | Guest-private | No | Street address, coordinates, turn-by-turn directions, private-road access details, arrival procedure, entry codes, Wi-Fi name and password, host phone number, guest reservation details. |
-| Secret | No | API keys, database URLs, webhook signing secrets, Clerk secret keys, passcodes, authentication tokens. |
+| Secret | No | API keys, database URLs, webhook signing secrets, passcodes, authentication tokens. |
 | Personal data | No, except within authorized operational flows | Guest contact details, messages, reviews before publication approval, account status, reservation data, IP addresses, and user agents. |
 
 Never move information from a more restricted class into a less restricted

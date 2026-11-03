@@ -20,14 +20,10 @@ agents making changes to the application.
 
 ## Contributor References
 
-- [Local development](local-development.md): prerequisites, safe environment
-  setup, database workflow, and local servers.
-- [API reference](api.md): endpoint contracts, authentication, errors,
-  webhooks, and rate limits.
-- [Authentication and accounts](auth-and-accounts.md): Clerk synchronization,
-  roles, account states, and authorization boundaries.
-- [Data model](data-model.md): Prisma entities, relationships, soft deletion,
-  migrations, and business constraints.
+- [Local development](local-development.md): prerequisites, environment
+  setup, and local servers.
+- [API reference](api.md): remaining passcode and inbound-email endpoints,
+  webhook behavior, and rate limits.
 - [Testing](testing.md): test layout, mocks, coverage, and validation commands.
 - [Analytics](analytics.md): event instrumentation and data-minimization rules.
 - [Rental launch checklist](launch-checklist.md): unresolved property facts,
@@ -35,8 +31,8 @@ agents making changes to the application.
 
 ## Operations
 
-- [Operations](operations.md): deployment, production configuration, webhook
-  registration, monitoring, rollback, and secret-management responsibilities.
+- [Operations](operations.md): deployment, production configuration, inbound
+  email webhook registration, monitoring, rollback, and secret management.
 
 ## Source Of Truth
 

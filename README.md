@@ -1,415 +1,115 @@
 # The Druids Den
 
-The online hub for **The Druids Den**, a private cabin in Conover, Wisconsin. The public site introduces the cabin, its Northwoods setting, its photo journal, and the traditions taking shape there. Rental stays are coming soon; guests can use the general guide, approved users can request reservations, and owners manage reservations, guest accounts, and revenue analytics — all from a single app deployed on Vercel.
+The public website for The Druids Den, a private cabin in Conover, Wisconsin.
+It introduces the cabin, its Northwoods setting, photography, traditions, and
+rental information. Visitors discover stays through verified external listing
+links when configured.
 
-**Tech stack:** React 19 (Vite) · Vercel Serverless Functions · Vercel Web Analytics + Speed Insights · PostgreSQL (Prisma ORM + Accelerate) · Clerk Auth · Resend Email · WeatherAPI
+**Tech stack:** React 19 · Vite · Vercel Functions · Vercel Analytics and Speed
+Insights · Resend inbound email · WeatherAPI
 
 ## Documentation
 
 Start with [docs/README.md](docs/README.md) for the documentation map. Before
-changing product, public content, design, privacy-sensitive material, routes, or
-architecture, read the relevant reference in `docs/ai/`.
+changing product, public content, design, privacy-sensitive material, routes,
+or architecture, read the relevant reference in `docs/ai/`.
 
 - [Product reference](docs/ai/product.md)
 - [Design system](docs/ai/design-system.md)
 - [Content and privacy](docs/ai/content-and-privacy.md)
 - [Architecture reference](docs/ai/architecture.md)
 - [Local development](docs/local-development.md)
-
----
-
-## Table of Contents
-
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Project Structure](#project-structure)
-- [Public Site](#public-site)
-  - [Landing Page](#landing-page)
-  - [The Den](#the-den)
-  - [Gallery](#gallery)
-  - [Northwoods](#northwoods)
-  - [The Story](#the-story)
-  - [Traditions](#traditions)
-  - [Stay & Inquiries](#stay--inquiries)
-  - [Guest Guide](#guest-guide)
-  - [Spooktoberfest](#spooktoberfest)
-- [Authentication & Accounts](#authentication--accounts)
-  - [Sign-Up / Sign-In](#sign-up--sign-in)
-  - [Account Approval Workflow](#account-approval-workflow)
-- [Guest Features](#guest-features)
-  - [Reservations](#reservations)
-  - [Post-Stay Feedback](#post-stay-feedback)
-- [Owner Dashboard](#owner-dashboard)
-  - [At A Glance](#at-a-glance)
-  - [Guest Management](#guest-management)
-  - [Reports & Analytics](#reports--analytics)
-  - [Guest Messaging](#guest-messaging)
-- [Email System](#email-system)
-- [API Reference](#api-reference)
-- [Rate Limiting](#rate-limiting)
-- [Input Validation & Sanitization](#input-validation--sanitization)
-- [Database](#database)
-- [Environment Variables](#environment-variables)
-- [Testing](#testing)
-- [Deployment](#deployment)
-
----
+- [Operations](docs/operations.md)
 
 ## Getting Started
 
-**Prerequisites:** Node.js ≥ 24, a PostgreSQL database, and accounts for [Clerk](https://clerk.com), [Resend](https://resend.com), and optionally [WeatherAPI](https://www.weatherapi.com).
+**Prerequisite:** Node.js 24 or later.
 
-```bash
-# Install dependencies
+```sh
 npm install
-
-# Create ignored local environment files as described in docs/local-development.md.
-# Do not place private guest-guide data or any secret in VITE_* variables.
-# Vercel-pulled or manually provisioned development values belong in .env.local.
-
-# Generate the Prisma client, run database migrations, and seed test data
-npx prisma generate
-npx prisma migrate deploy
-npm run db:seed
-
-# Start the full-stack dev server (Vite + Vercel Functions)
-# Use start:local if Vercel Development env vars conflict with localhost Clerk auth
 npm run start:local
 ```
 
-The repository does not currently include environment example files. Follow the
-safe setup and database instructions in [docs/local-development.md](docs/local-development.md)
-instead of copying nonexistent templates.
+`npm run start:local` loads `.env` and `.env.local` when present, then starts
+Vercel development so both the website and API handlers are available. See
+[local development](docs/local-development.md) for environment setup.
 
 | Script | Purpose |
 |---|---|
-| `npm start` | Full-stack dev server via pinned local `vercel dev` |
-| `npm run start:local` | Full-stack dev server with local overrides (Clerk + dev DB URLs) |
-| `npm run dev` | Frontend only (Vite) |
-| `npm run build` | Production build (generates Prisma client + Vite bundle) |
+| `npm start` | Full-stack development through Vercel |
+| `npm run start:local` | Vercel development with local environment files |
+| `npm run dev` | Frontend-only Vite development |
+| `npm run build` | Production build |
 | `npm run lint` | ESLint check |
 | `npm test` | Run tests with coverage |
+| `npm run test:run` | Run tests without coverage |
 | `npm run test:ui` | Interactive Vitest UI |
-| `npm run db:reset` | Drop, re-migrate, and re-seed the database |
-
----
-
-## Project Structure
-
-```
-├── api/                    # Vercel serverless functions (Node.js)
-│   ├── _utils/             # Shared server utilities (auth, email, pricing, etc.)
-│   ├── reservations/       # /api/reservations/[id] dynamic route
-│   ├── user/               # /api/user/status
-│   └── webhooks/           # Clerk webhook handler
-├── prisma/
-│   ├── schema.prisma       # Database models & enums
-│   ├── seed.js             # Faker-based dev seed script
-│   └── migrations/         # Migration history
-├── public/                 # Static assets & images
-├── src/
-│   ├── components/         # Reusable React components
-│   │   └── site/            # Public-site header, footer, metadata, and content primitives
-│   ├── hooks/              # Custom React hooks
-│   ├── pages/              # Route-level page components
-│   │   ├── PublicPages.jsx  # The Den, Gallery, Northwoods, Story, Traditions, and Stay
-│   │   ├── Guide.jsx        # Public guest information guide
-│   │   └── dashboard/      # Owner dashboard sub-views
-│   └── utils/              # Client-side helpers
-├── __tests__/              # Mirrors src/ and api/ structure
-├── vite.config.js          # Vite + Vitest configuration
-└── vercel.json             # Deployment & function settings
-```
-
----
 
 ## Public Site
 
-### Landing Page
+| Route | Purpose |
+|---|---|
+| `/` | Landing page |
+| `/the-den`, `/what-to-expect` | Cabin overview and compatibility alias |
+| `/gallery` | Photo journal |
+| `/northwoods` | Regional field guide |
+| `/story` | Property story |
+| `/traditions` | Traditions content |
+| `/stay` | Rental information and verified external listing links |
+| `/guide` | Public general guest information; no private arrival details |
+| `/spooktoberfest` | Passcode-protected event page |
 
-The home page at `/` is the public front door. It introduces the cabin, links into the photo journal, cabin details, Northwoods field guide, traditions, and stay details, and includes the live weather widget for Conover, WI. A Spooktoberfest 2026 link appears starting April 1, 2026. The site uses a custom Celtic font (Coelbren), the Awen symbol, the new public-site navigation, and responsive editorial layouts.
+The public email address is for general inquiries; contacting the owners does
+not reserve a stay. Do not invent listing URLs, availability, prices,
+policies, or private property information.
 
-### The Den
+## API Endpoints
 
-The cabin overview at `/the-den` covers sleeping arrangements, amenities, the grounds, connectivity, and seasonal preparation. `/what-to-expect` remains as a compatibility alias to the same page while existing links are phased over to `/the-den`.
+The remaining Vercel handlers are:
 
-### Gallery
-
-The visual journal at `/gallery` presents cabin, landscape, wildlife, and Spooktoberfest photography. Visitors can filter the collection by category and open any image in an accessible lightbox; the images are served from `public/assets/images/`.
-
-### Northwoods
-
-The regional field guide at `/northwoods` collects practical notes about trails, lakes, nearby towns, winter conditions, wildlife, rainy-day plans, and local food. Links to regional resources open in a new tab.
-
-### The Story
-
-The origin and design point of view for the property lives at `/story`. It explains the meaning behind the name, the preference for useful beauty over polish, and the traditions that are still being written.
-
-### Traditions
-
-The traditions page at `/traditions` is deployed but intentionally unlinked while the collection grows. It currently introduces Spooktoberfest and leaves room for future seasonal rituals.
-
-### Stay & Inquiries
-
-The stay page at `/stay` is the public booking boundary. Until verified property-specific Airbnb or Vrbo listing URLs are configured, it displays “Rental stays coming soon.” The existing owner email is available for general questions; an email inquiry does not reserve a stay. No public availability calendar or independent booking engine is provided.
-
-### Guest Guide
-
-The public guide at `/guide` includes general arrival, Wi-Fi, projector, safety, recreation, and checkout information. It does not display the property address, access instructions, Wi-Fi credentials, or guest-support contact details.
-
-The guide is not an authentication boundary. Keep private guest information in an approved reservation communication channel, not in public pages or browser-visible `VITE_` variables.
-
-### Spooktoberfest
-
-A passcode-protected event page at `/spooktoberfest` for the October 8–11, 2026 gathering. Guests enter the passcode, which is validated server-side. On success a token is stored in the browser and grants access for the session. The page details the multi-day itinerary, sleeping arrangements, and food logistics.
-
-### Route Map
-
-| Route | Surface | Access / purpose |
+| Method | Endpoint | Purpose |
 |---|---|---|
-| `/` | Landing | Public home page |
-| `/the-den` | The Den | Public cabin overview |
-| `/what-to-expect` | The Den | Compatibility alias |
-| `/gallery` | Gallery | Public photo journal with filters and lightbox |
-| `/northwoods` | Northwoods | Public regional field guide |
-| `/story` | The Story | Public property story and design principles |
-| `/traditions` | Traditions | Deployed, currently unlinked |
-| `/stay` | Stay | Rental stays coming soon; verified listing links appear when available |
-| `/guide` | Guest guide | Public general information only; no private arrival details |
-| `/spooktoberfest` | Spooktoberfest | Passcode-protected event page |
-| `/feedback/:reservationId` | Feedback | Link-accessible post-stay feedback form |
-| `*` | Fallback | Redirects unknown client routes to `/` |
+| `POST` | `/api/verify-passcode` | Validate the Spooktoberfest passcode |
+| `POST` | `/api/receive-email` | Forward metadata notifications for inbound email |
 
----
-
-## Authentication & Accounts
-
-### Sign-Up / Sign-In
-
-Authentication is handled by [Clerk](https://clerk.com) at `/sign-in` and `/sign-up`. When a user signs up, a Clerk webhook syncs their profile to the app's PostgreSQL database. If the signup email matches the configured owner email, the account is auto-approved with the **OWNER** role. All other signups are created as **GUEST** accounts in **PENDING_APPROVAL** status.
-
-### Account Approval Workflow
-
-Guests cannot book until an owner approves their account. The flow:
-
-1. Guest signs up → account is **PENDING_APPROVAL**.
-2. Owner receives a notification email and sees the guest in the dashboard's Guests tab.
-3. Owner approves, denies, or later revokes access.
-4. Guest receives an email reflecting the decision.
-5. Approved guests can access the reservation form; others see a status message.
-
-Account statuses: `PENDING_APPROVAL` · `APPROVED` · `DENIED` · `REVOKED`
-
-Roles: `GUEST` · `ADMIN` · `OWNER`
-
----
-
-## Guest Features
-
-### Reservations
-
-Authenticated, approved guests book stays at `/reservations`. The form collects personal information (pre-filled from Clerk), check-in/check-out dates, party size, and special requests.
-
-Key behaviors:
-- **Date picker** fetches live availability and disables dates that overlap existing approved or pending reservations.
-- **2-night minimum** stay is enforced.
-- **Estimated total** is calculated automatically ($150/night).
-- **Server-side validation** sanitizes all fields and re-checks date conflicts before creating a PENDING reservation.
-- On success, confirmation emails are sent to both the guest and the owner.
-
-### Post-Stay Feedback
-
-After checkout, guests receive an email with a unique link to `/feedback/:reservationId`. The form collects a 1–5 star rating, optional review text, and a would-recommend toggle. Submissions are stored for owner review and potential use as public testimonials.
-
----
-
-## Owner Dashboard
-
-Accessible at `/dashboard` to users with the **OWNER** or **ADMIN** role.
-
-### At A Glance
-
-A month-view calendar showing all reservations color-coded by status (pending, approved, owner). Owners can approve, deny, or cancel reservations inline, create owner-hold reservations directly on the calendar, and click any reservation card for full details and edit capabilities. Date conflicts are validated on edits.
-
-### Guest Management
-
-A tabbed list of all user accounts filterable by status (Pending, Approved, Denied, Revoked). Owners change account status with one click. Each status change triggers an automated email to the guest explaining the decision.
-
-### Reports & Analytics
-
-Revenue and occupancy metrics with configurable date ranges (year-to-date, full year, or custom). Displays total revenue, average per-booking and per-night revenue, occupancy rate, booking counts, average stay length, lead time, and party size. Includes line and bar charts (Nivo) for monthly trends. Owner metrics can be toggled on or off.
-
-### Guest Messaging
-
-From any reservation card, owners can send free-form messages to guests. Messages are delivered via email with the reservation context included.
-
----
-
-## Email System
-
-Transactional email is powered by [Resend](https://resend.com). If `RESEND_API_KEY` is not set, emails are logged to the console instead — useful during development.
-
-Emails sent by the system:
-| Trigger | Recipient | Template |
-|---|---|---|
-| New reservation submitted | Owner + Guest | Admin notification + guest confirmation |
-| Reservation approved | Guest | Approval with details |
-| Reservation denied | Guest | Denial with owner message |
-| Reservation cancelled | Guest | Cancellation with reason |
-| Reservation edited | Guest | Modification summary |
-| Account approved / denied / revoked | Guest | Status-specific message |
-| New user signup | Owner | New guest notification |
-| Custom message | Guest | Free-form owner message |
-| Inbound email received | Owner | Forwarded notification |
-
-Inbound emails to the property address are received via a Resend webhook at `/api/receive-email`, verified with Svix signatures, and forwarded to the owner.
-
----
-
-## API Reference
-
-All endpoints are Vercel serverless functions under `/api/`.
-
-| Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| `GET` | `/api/availability` | None | Fetch booked date ranges for the date picker |
-| `POST` | `/api/send-reservation` | Approved guest | Submit a new reservation request |
-| `GET` | `/api/reservations` | Owner/Admin | List all reservations |
-| `POST` | `/api/reservations` | Owner/Admin | Create an owner reservation |
-| `PATCH` | `/api/reservations/[id]` | Owner/Admin | Update status or details of a reservation |
-| `DELETE` | `/api/reservations/[id]` | Owner/Admin | Soft-delete a reservation |
-| `GET` | `/api/user/status` | Signed in | Fetch current user's app profile |
-| `GET`, `PATCH` | `/api/users` | Owner/Admin | List guest accounts or update a guest's account status |
-| `POST` | `/api/message-guest` | Owner/Admin | Send a message to a guest |
-| `POST` | `/api/verify-passcode` | None | Validate Spooktoberfest passcode |
-| `POST` | `/api/receive-email` | Webhook (Svix) | Inbound email forwarding |
-| `POST` | `/api/webhooks/clerk` | Webhook (Svix) | Clerk user lifecycle sync |
-
----
-
-## Rate Limiting
-
-Sensitive endpoints are protected by a per-IP rate limiter (`api/_utils/rateLimit.js`). Limits are tuned to the site's expected traffic profile — relaxed for authenticated users, stricter for public and signup paths.
-
-| Endpoint | Limit | Window |
-|---|---|---|
-| `verify-passcode` | 10 requests | 10 minutes |
-| `send-reservation` | 60 requests | 1 minute |
-| `user/status` | 600 requests | 1 minute |
-| `webhooks/clerk` (all events) | 240 requests | 1 minute |
-| `webhooks/clerk` (user.created only) | 10 requests | 24 hours |
-
-The client IP is resolved via `x-vercel-forwarded-for` → `x-real-ip` → `x-forwarded-for` (rightmost valid entry), preventing clients from spoofing the forwarded header to evade limits.
-
-The webhook delivery limit fires **before** Svix signature verification so invalid-signature floods are rejected cheaply. The `user.created` signup limit fires after verification since it depends on the event type.
-
-The store is **in-memory and per-instance**. It is not shared across concurrent serverless instances or regions and resets on cold starts. This provides best-effort protection; for strict guarantees swap the store for a shared backend (Redis, Vercel KV, Upstash).
-
-Rate limiting is bypassed in the test environment. In production, exceeding a limit returns a `429` with a descriptive message.
-
----
-
-## Input Validation & Sanitization
-
-All user-submitted data is validated on both the client and server:
-
-- **Client:** `src/utils/formValidation.js` checks email format, US phone format, name characters, date ranges, guest counts, and special request length before submission.
-- **Server:** `api/_utils/sanitize.js` escapes HTML entities, strips control characters, enforces field-level format rules, and returns structured error objects. Reservation data passes through `sanitizeReservationData()` before any database write.
-
----
-
-## Database
-
-PostgreSQL via Prisma ORM with Prisma Accelerate for connection pooling.
-
-**Models:** User · Reservation · BlackoutDate · Feedback · Message · AuditLog
-
-Key design decisions:
-- **Soft deletes** — `deletedAt` field on users and reservations; records are never physically removed.
-- **Audit trail** — Reservation status changes record who made the change and when.
-- **Clerk sync** — Users are upserted from Clerk webhook events; the app DB is the source of truth for roles and approval status.
-
-```bash
-# Apply pending migrations
-npm run db:deploy
-
-# Seed development data
-npm run db:seed
-
-# Reset everything (destructive)
-npm run db:reset
-```
-
----
+See the [API reference](docs/api.md) for contracts and rate-limit details.
 
 ## Environment Variables
 
-### Frontend (Vite — `VITE_` prefix, exposed to browser)
-
-| Variable | Required | Purpose |
+| Variable | Visibility | Purpose |
 |---|---|---|
-| `VITE_CLERK_PUBLISHABLE_KEY` | Yes | Clerk authentication public key |
-| `VITE_LOCAL_CLERK_PUBLISHABLE_KEY` | Local only | Optional localhost override used by `npm run start:local` |
-| `VITE_WEATHER_API_KEY` | No | WeatherAPI.com key; falls back to mock data in dev |
-| `VITE_AIRBNB_BOOKING_URL` | No | Verified property-specific Airbnb listing URL; browser-visible |
-| `VITE_VRBO_BOOKING_URL` | No | Verified property-specific Vrbo listing URL; browser-visible |
+| `VITE_WEATHER_API_KEY` | Browser-visible | Weather widget |
+| `VITE_AIRBNB_BOOKING_URL` | Browser-visible | Optional verified property-specific listing URL |
+| `VITE_VRBO_BOOKING_URL` | Browser-visible | Optional verified property-specific listing URL |
+| `RESEND_API_KEY` | Server-only | Send inbound-email notifications |
+| `RESEND_WEBHOOK_SECRET` | Server-only | Optional inbound webhook signature verification |
+| `SPOOKTOBERFEST_PASSCODE` | Server-only | Event passcode |
 
-### Backend (Node.js — server-side only)
-
-| Variable | Required | Purpose |
-|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `PRISMA_DATABASE_URL` | No | Prisma Accelerate proxy URL (overrides `DATABASE_URL` if set) |
-| `CLERK_SECRET_KEY` | Yes | Clerk backend secret for token verification |
-| `CLERK_WEBHOOK_SIGNING_SECRET` | Yes | Svix key for verifying Clerk webhook payloads |
-| `LOCAL_CLERK_SECRET_KEY` | Local only | Optional localhost override used by `npm run start:local` |
-| `LOCAL_CLERK_WEBHOOK_SIGNING_SECRET` | Local only | Optional localhost override used by `npm run start:local` |
-| `RESEND_API_KEY` | No | Resend email service key; emails log to console if unset |
-| `RESEND_WEBHOOK_SECRET` | No | Svix key for verifying inbound email webhooks |
-| `OWNER_EMAIL` | Yes | Owner's email — used for auto-approval matching and admin notifications |
-| `SPOOKTOBERFEST_PASSCODE` | No | Numeric passcode for the Spooktoberfest page |
-
-For localhost development, keep your Vercel-pulled values in `.env.local` and put localhost-only Clerk keys in `.env.clerk.local`. `npm run start:local` maps local overrides onto standard runtime keys before starting `vercel dev`, including local Clerk keys and optional `DEV_DATABASE_URL` / `DEV_PRISMA_DATABASE_URL` safety overrides.
-
----
+Every `VITE_*` value is public. Never put secrets, private guest information,
+arrival details, Wi-Fi credentials, access codes, or the cabin address in a
+browser-visible variable.
 
 ## Testing
 
-The project uses [Vitest](https://vitest.dev/) with `@testing-library/react` for component tests and direct handler invocation for API tests.
+The project uses Vitest and Testing Library.
 
-```bash
-npm test              # Run with coverage
-npm run test:run      # Run without coverage
-npm run test:ui       # Interactive browser UI
+```sh
+npm run lint
+npm run test:run
+npm run build
 ```
 
-**Coverage thresholds:** 80% lines · 80% functions · 75% branches · 80% statements
-
-Tests are organized in `__tests__/` mirroring the source tree:
-
-```
-__tests__/
-├── api/            # Serverless function handler tests
-├── components/     # React component tests
-├── hooks/          # Custom hook tests
-├── pages/          # Page-level integration tests
-│   └── dashboard/  # Dashboard sub-view tests
-└── utils/          # Client utility tests
-```
-
-Global mocks (Clerk, fetch, localStorage, IntersectionObserver) are configured in `src/setupTests.js`.
-
----
+See [testing](docs/testing.md) for test organization, coverage, and validation
+guidance.
 
 ## Deployment
 
-The app deploys to [Vercel](https://vercel.com) with zero additional configuration beyond environment variables.
+The site deploys to Vercel. Configure the environment variables above, register
+`/api/receive-email` with Resend, and verify public routes, external listing
+links, the event passcode flow, and inbound-email notifications after
+deployment. See [operations](docs/operations.md).
 
-- **Frontend:** Vite builds a static SPA; all non-API routes are rewritten to `index.html`.
-- **Observability:** Vercel Web Analytics and Vercel Speed Insights are mounted in `src/main.jsx` and report automatically in deployed environments.
-- **Custom analytics events:** Lightweight wrappers record frontend and backend events. Frontend examples: `reservation_page_viewed`, `reservation_dates_selected`, `reservation_submit_attempted`, `reservation_submit_succeeded`, `reservation_submit_conflict`, `reservation_submit_failed`, `auth_page_viewed`, `auth_gate_cta_clicked`. Backend examples: `reservation_api_created`, `reservation_api_conflict`, `reservation_api_failed`, `account_created`, `login_succeeded`, `clerk_webhook_processing_failed`.
-- **API:** Each file in `api/` becomes a serverless function (1024 MB memory, 10s max duration).
-- **Database:** Prisma Accelerate is recommended for production connection pooling. Run `npm run db:deploy` after provisioning a new database.
-- **Webhooks:** Register the deployed `/api/webhooks/clerk` URL in the Clerk dashboard and `/api/receive-email` in your Resend inbound routing settings.
-
-If Analytics or Speed Insights look empty after deployment, first verify traffic reached the deployment, then check for ad blockers or strict browser privacy settings that can suppress telemetry.
+The legacy application data is retired through the one-time destructive SQL
+script at `scripts/retire-legacy-data.sql`. Follow the backup, restore-test,
+and approval requirements in the operations guide before running it. It must
+not be run against a shared or unverified database.
