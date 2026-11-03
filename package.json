@@ -4,39 +4,26 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prestart": "prisma generate",
     "start": "vercel dev",
-    "prestart:local": "prisma generate",
     "start:local": "node scripts/start-local.js",
     "dev": "vite",
-    "build": "prisma generate && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run",
-    "db:deploy": "npx prisma migrate deploy",
-    "db:seed": "node prisma/seed.js",
-    "db:reset": "npx prisma migrate reset --force"
+    "test:run": "vitest run"
   },
   "dependencies": {
-    "@clerk/backend": "^3.2.0",
-    "@clerk/react": "6.1.0",
-    "@nivo/bar": "^0.99.0",
-    "@nivo/core": "^0.99.0",
-    "@nivo/line": "^0.99.0",
-    "@prisma/client": "^7.5.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "dotenv": "^17.2.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.6.2",
-    "svix": "^1.88.0"
+    "react-router": "^7.6.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
-    "@faker-js/faker": "^10.2.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -50,14 +37,10 @@
     "globals": "^16.0.0",
     "happy-dom": "^20.3.7",
     "jsdom": "^27.4.0",
-    "prisma": "^7.5.0",
     "sass": "^1.97.2",
     "vercel": "^50.32.5",
     "vite": "^6.3.5",
     "vitest": "^4.0.18"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   },
   "overrides": {
     "tar": "7.5.11",
