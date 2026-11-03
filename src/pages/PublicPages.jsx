@@ -548,7 +548,7 @@ export const Story = () => (
           <span className='public-hero-eyebrow'>A place, becoming itself</span>
           <CoelbrenLabel>The story of the Den</CoelbrenLabel>
           <h1>Some places name themselves</h1>
-          <p>The Druids Den is more than a name. It's a place to become one with nature and with one's true self.</p>
+          <p>The Druids Den is more than a name. It's a place to become one with nature and to better know oneself.</p>
         </div>
         <img src={imagePath('druids_den_into_the_woods_sign.png')} alt='The Into the Woods sign marking the way into the forest at The Druids Den' />
       </section>

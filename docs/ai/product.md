@@ -15,8 +15,8 @@ private information.
 
 1. People considering a future stay.
 2. Guests seeking practical public-facing context.
-3. Approved guests using the legacy reservation-request workflow.
-4. Owners, hosts, and grove keepers managing guest accounts and reservations.
+3. Event invitees using the separate Spooktoberfest passcode gate.
+4. Owners, hosts, and grove keepers receiving general inquiries.
 
 The public site should feel secluded, welcoming, curious, crafted, and
 trustworthy. It should not feel gimmicky, generic, overly luxurious, or like a
@@ -26,10 +26,10 @@ fantasy-game interface.
 
 | Topic | Current policy or behavior |
 | --- | --- |
-| Public booking | Not open yet. Use “Rental stays coming soon” until verified property-specific listing URLs are configured. |
+| Public booking | Rental stays are discovered through verified, property-specific listing URLs. The Druids Den site does not accept reservations or provide first-party booking availability. If no verified URL is configured, use “Rental stays coming soon.” |
 | Booking platforms | Northwoods Signature Vacation Homes plans to manage the property-specific Airbnb and Vrbo listings through its accounts. Do not invent URLs or imply a live listing. |
 | General inquiry | The existing owner email may be used for general questions; an email inquiry does not reserve a stay. |
-| Public price | Do not publish a nightly rate. The legacy reservation system's estimate is internal and is not an approved public price. |
+| Public price | Do not publish a nightly rate unless the owners confirm one for public use. |
 | Check-in / check-out | The public guide states 4 p.m. check-in and 10 a.m. checkout; Northwoods must confirm both before launch. |
 | Capacity | Maximum occupancy is four guests, as stated in the current Property Rules information supplied for the rental transition. |
 | Sleeping areas | One private bedroom plus an open loft, with a queen bed for two guests in each space. The loft is open to the main living area and reached by stairs. The living room is not an air-mattress sleeping area. |
@@ -68,9 +68,6 @@ infer storage or other unpictured supplies from older copy.
 | `/traditions` | Everyone with the route | Deployed seasonal and property traditions content; it may remain unlinked while it develops. |
 | `/spooktoberfest` | Event invitees | A separate passcode-protected event experience. Treat dates, itinerary, and logistics as event-specific rather than general stay policy. |
 | `/guide` | Public implementation | General guidance only. It must not contain actual arrival instructions, address, Wi-Fi credentials, access codes, or private guest-support details while publicly routable. |
-| `/reservations` | Approved signed-in guests | Reservation-request workflow. |
-| `/dashboard` | Owners and administrators | Private operational interface. |
-| `/feedback/:reservationId` | Guests with a valid feedback link | Post-stay feedback collection. |
 
 Read [content-and-privacy.md](content-and-privacy.md) before changing public
 copy, metadata, imagery, guest-guide content, or analytics. Read
@@ -88,9 +85,10 @@ Each public page should answer, in roughly this order:
 5. What is the appropriate next action?
 
 Use “Rental stays coming soon” until verified property-specific booking links
-are available. Once configured, make “Check availability” the primary action
-to the Airbnb and/or Vrbo listing. Avoid urgency, invented availability, price
-promotions, and claims that turn planned operations into approved policy.
+are available. Once configured, link visitors to the Airbnb and/or Vrbo
+listing. Do not describe this site as accepting reservations or checking
+availability. Avoid urgency, invented availability, price promotions, and
+claims that turn planned operations into approved policy.
 
 ## Canonical Language
 

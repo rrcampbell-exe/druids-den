@@ -7,11 +7,5 @@ import PageNav from './PageNav'
 import CaptionedImage from './CaptionedImage'
 import PasscodePrompt from './PasscodePrompt'
 import ProtectedRoute from './ProtectedRoute'
-import DatePicker from './DatePicker'
-import Modal from './Modal'
-import ClerkAuthGate from './ClerkAuthGate'
-import PendingApproval from './PendingApproval'
-import AuthHeader from './AuthHeader'
-import LoadingState from './LoadingState'
 
-export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute, DatePicker, Modal, ClerkAuthGate, PendingApproval, AuthHeader, LoadingState }
+export { Coelbren, Leaf, Flower, Awen, Weather, PageNav, CaptionedImage, PasscodePrompt, ProtectedRoute }

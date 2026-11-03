@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-Install Node.js 24 or later and PostgreSQL. A full local stack also needs Clerk
-development credentials. Resend and WeatherAPI credentials are optional for
-local feature testing; never place real production secrets in committed files.
+Install Node.js 24 or later. Resend and WeatherAPI credentials are optional
+for local feature testing; never place real production secrets in committed
+files.
 
 Install project dependencies with:
 
@@ -16,68 +16,36 @@ npm install
 
 Environment files are ignored by Git. Create them manually in the repository
 root or pull approved development values through the Vercel CLI. The repository
-does not currently ship `.env.example` or `.env.clerk.local.example` templates.
+does not currently ship an environment template.
 
-Use `.env.local` for ordinary local settings. Use `.env.clerk.local` only when
-localhost Clerk credentials must override values loaded from other sources.
-`npm run start:local` loads `.env`, `.env.local`, and `.env.clerk.local` in that
-order, then maps local overrides to the runtime variable names used by Vercel.
+Use `.env.local` for local settings. `npm run start:local` loads `.env` and
+`.env.local` before starting Vercel development.
 
 | Variable group | Purpose | Visibility |
 | --- | --- | --- |
-| `VITE_CLERK_PUBLISHABLE_KEY` and optional `VITE_LOCAL_CLERK_PUBLISHABLE_KEY` | Clerk client authentication | Browser-visible. |
 | `VITE_WEATHER_API_KEY` | Weather widget | Browser-visible. |
 | `VITE_AIRBNB_BOOKING_URL` and `VITE_VRBO_BOOKING_URL` | Optional verified property-specific listing URLs | Browser-visible; use only public listing destinations. |
-| `DATABASE_URL` and optional `PRISMA_DATABASE_URL` | PostgreSQL and optional Prisma Accelerate connection | Server-only. |
-| `DEV_DATABASE_URL` and optional `DEV_PRISMA_DATABASE_URL` | Explicit local database overrides | Server-only. |
-| Clerk, Resend, and passcode secrets | Authentication, webhooks, email, and event gate | Server-only. |
+| `RESEND_API_KEY` and optional `RESEND_WEBHOOK_SECRET` | Inbound-email notifications | Server-only. |
+| `SPOOKTOBERFEST_PASSCODE` | Event passcode gate | Server-only. |
 
 Do not configure private address, Wi-Fi, arrival, access, or guest-support
 details as Vite variables. Read [content and privacy](ai/content-and-privacy.md)
 before configuring values.
-`vite.config.js` explicitly allowlists the browser-visible variables in the
-table above. Review public visibility before adding another variable to that
-allowlist; the `VITE_` prefix does not make a value private.
-
-## Database Workflow
-
-Generate the Prisma client before commands that require it:
-
-```sh
-npx prisma generate
-```
-
-Apply migrations to the configured local database:
-
-```sh
-npm run db:deploy
-```
-
-Seed synthetic development data when appropriate:
-
-```sh
-npm run db:seed
-```
-
-`npm run db:reset` drops and recreates the target database before seeding it.
-Use it only with a disposable local database; confirm the resolved connection
-string before running it.
-
-`prisma.config.ts` and `api/_utils/db.js` prefer `DEV_*` database overrides in
-local development. This is intended to prevent accidental use of a shared
-database, but it does not replace careful environment review.
+`vite.config.js` explicitly allowlists browser-visible variables. Review
+public visibility before adding another variable to that allowlist; the
+`VITE_` prefix does not make a value private.
 
 ## Run The Application
 
-Use the full-stack Vercel environment when exercising API routes or webhooks:
+Use the full Vercel environment when exercising API routes or webhooks:
 
 ```sh
 npm run start:local
 ```
 
 Use `npm start` for the ordinary Vercel development command. Use `npm run dev`
-only for the Vite client; serverless API routes are unavailable there. Build and
-preview the production client with:
+only for the Vite client; serverless API routes are unavailable there. Build
+and preview the production client with:
 
 ```sh
 npm run build
@@ -92,15 +60,14 @@ npm run test:run
 npm run build
 ```
 
-For a change in one behavior, run the corresponding targeted Vitest file first,
-then the full test run when the behavior crosses component, API, auth, or data
+For a change in one behavior, run the corresponding targeted Vitest file
+first, then the full test run when the behavior crosses component or API
 boundaries. See [testing](testing.md) for the test layout and mock conventions.
 
 ## Common Boundaries
 
-- A missing Clerk publishable key intentionally stops the client during startup.
-- Email is logged rather than sent when `RESEND_API_KEY` is absent; do not treat
-  that as proof of delivery behavior.
+- Email is not forwarded when `RESEND_API_KEY` is absent; do not treat a local
+  run without it as proof of delivery behavior.
 - The public `/guide` route must only use placeholder or non-sensitive values.
 - Full webhook testing requires reachable local endpoints and development
   secrets; verify signatures rather than disabling verification.

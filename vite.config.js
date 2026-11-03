@@ -7,8 +7,6 @@ export default defineConfig({
     'VITE_AIRBNB_BOOKING_URL',
     'VITE_VRBO_BOOKING_URL',
     'VITE_WEATHER_API_KEY',
-    'VITE_LOCAL_CLERK_PUBLISHABLE_KEY',
-    'VITE_CLERK_PUBLISHABLE_KEY',
   ],
   plugins: [react()],
   test: {

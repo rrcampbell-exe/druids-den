@@ -2,36 +2,6 @@ import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
 
-const mockAuth = {
-  isLoaded: true,
-  isSignedIn: true,
-  getToken: vi.fn().mockResolvedValue('test-token'),
-  signOut: vi.fn(),
-}
-
-const mockUser = {
-  firstName: 'Test',
-  lastName: 'Owner',
-  primaryEmailAddress: {
-    emailAddress: 'owner@example.com',
-  },
-  primaryPhoneNumber: {
-    phoneNumber: '(555) 123-4567',
-  },
-}
-
-vi.mock('@clerk/react', () => ({
-  ClerkProvider: ({ children }) => children,
-  SignIn: () => 'SignIn',
-  SignUp: () => 'SignUp',
-  UserButton: () => 'UserButton',
-  useAuth: () => mockAuth,
-  useUser: () => ({
-    isLoaded: true,
-    user: mockUser,
-  }),
-}))
-
 vi.mock('@vercel/analytics/react', () => ({
   Analytics: () => null,
 }))
@@ -53,7 +23,7 @@ afterEach(() => {
 })
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
+globalThis.IntersectionObserver = class IntersectionObserver {
   constructor(callback) {
     this.callback = callback
   }
@@ -74,7 +44,7 @@ global.IntersectionObserver = class IntersectionObserver {
 }
 
 // Mock localStorage
-global.localStorage = {
+globalThis.localStorage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
@@ -82,4 +52,4 @@ global.localStorage = {
 }
 
 // Mock fetch
-global.fetch = vi.fn()
+globalThis.fetch = vi.fn()

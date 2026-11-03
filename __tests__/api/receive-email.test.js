@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { afterEach, describe, it, expect, beforeEach, vi } from 'vitest'
 import handler from '../../api/receive-email'
 import { setupTestEnv } from '../helpers/testEnv'
 
@@ -34,7 +34,7 @@ describe('receive-email API', () => {
     }
 
     // Mock fetch globally
-    fetchSpy = vi.spyOn(global, 'fetch')
+    fetchSpy = vi.spyOn(globalThis, 'fetch')
     
   })
 
