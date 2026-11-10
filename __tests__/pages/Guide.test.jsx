@@ -36,7 +36,7 @@ describe('Guest guide', () => {
     expect(screen.getByText('Cookware, a coffee maker, and a kettle are available in the kitchen.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Download the projector setup PDF' })).toHaveAttribute('href', '/assets/pdfs/Druids-Den-Projector-Setup.pdf')
     expect(screen.getByRole('link', { name: 'Download the outdoor recreation guide PDF' })).toHaveAttribute('href', '/assets/pdfs/Druids-Den-Outdoor-Recreation-Regulations.pdf')
-    expect(screen.getByText('Find the Wi-Fi network name and password in your reservation arrival information and in the cabin. You can also find it posted on the refrigerator and in the loft.')).toBeInTheDocument()
+    expect(screen.getByText('Find the Wi-Fi network name and password in your reservation arrival information and in the cabin on the refrigerator and in the loft.')).toBeInTheDocument()
     expect(screen.getByText(/For guest support, use the contact information provided with your reservation/)).toBeInTheDocument()
     expect(screen.getByText(/Use the cabin address in your arrival information or posted cabin instructions/)).toBeInTheDocument()
     expect(screen.queryByText(/provisional|existing check-in|existing checkout|have not been verified|not a 24-hour|public guide|public site|already invited|already arriving|invitation|guest-only|guest only/i)).not.toBeInTheDocument()
