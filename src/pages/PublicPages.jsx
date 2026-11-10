@@ -640,7 +640,7 @@ export const Stay = () => {
                 <AlternateBookingLinks />
               </>
             )}
-            <a href='mailto:grovekeeper@druidsdenwi.com?subject=General%20Druids%20Den%20inquiry' className='text-link'>General questions? Email the owners</a>
+            <a href='mailto:grovekeeper@druidsdenwi.com?cc=NSVH2025@GMAIL.COM&subject=General%20Druids%20Den%20inquiry' className='text-link'>General questions? Reach out by email</a>
           </div>
           <img src={imagePath('sunset-fire-pit.jpeg')} alt='The fire pit and trees at sunset around The Druids Den' />
         </section>

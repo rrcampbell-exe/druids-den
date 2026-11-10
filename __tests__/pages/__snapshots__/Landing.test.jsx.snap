@@ -627,9 +627,9 @@ exports[`Landing Page > matches snapshot 1`] = `
           Ask the keepers
         </span>
         <a
-          href="mailto:grovekeeper@druidsdenwi.com"
+          href="mailto:NSVH2025@GMAIL.COM?cc=grovekeeper@druidsdenwi.com"
         >
-          grovekeeper@druidsdenwi.com
+          Email
         </a>
         <span>
           Conover, Wisconsin
@@ -641,6 +641,9 @@ exports[`Landing Page > matches snapshot 1`] = `
     >
       <span>
         A private cabin in Conover, Wisconsin
+      </span>
+      <span>
+        Property managed by Northwoods Signature Vacation Homes
       </span>
       <span>
         ©

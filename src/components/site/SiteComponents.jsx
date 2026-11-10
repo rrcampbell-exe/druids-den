@@ -133,12 +133,13 @@ export const SiteFooter = () => (
       </div>
       <div>
         <span className='footer-label'>Ask the keepers</span>
-        <a href='mailto:grovekeeper@druidsdenwi.com'>grovekeeper@druidsdenwi.com</a>
+        <a href='mailto:NSVH2025@GMAIL.COM?cc=grovekeeper@druidsdenwi.com'>Email</a>
         <span>Conover, Wisconsin</span>
       </div>
     </div>
     <div className='site-footer-bottom'>
       <span>A private cabin in Conover, Wisconsin</span>
+      <span>Property managed by Northwoods Signature Vacation Homes</span>
       <span>©<span className='site-footer-year'>{new Date().getFullYear()}</span><span className='site-footer-title'>The Druids Den</span></span>
     </div>
   </footer>
